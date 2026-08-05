@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "adam-plugins",
+  "description": "Personal Claude Code plugins by Adam Perlis",
+  "owner": {
+    "name": "Adam Perlis",
+    "email": "adam.perlis@academyux.com"
+  },
+  "plugins": [
+    {
+      "name": "social-video",
+      "description": "Write briefs, scripts, and shot lists for short-form social video (Reels, TikTok, Shorts) using hook stacking and retention cadence.",
+      "source": "./plugins/social-video",
+      "category": "productivity"
+    }
+  ]
+}

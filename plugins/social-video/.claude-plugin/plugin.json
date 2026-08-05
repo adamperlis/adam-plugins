@@ -1,0 +1,9 @@
+{
+  "name": "social-video",
+  "description": "Write briefs, scripts, and shot lists for short-form social video (Reels, TikTok, Shorts) using hook stacking and retention cadence.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Perlis",
+    "email": "adam.perlis@academyux.com"
+  }
+}
