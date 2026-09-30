@@ -59,7 +59,7 @@ Use $kinetic-inflated-hero to implement a hero where the word "invisible" blurs 
 
 Use this for the section immediately after a loud hero: a quiet editorial argument that resolves from blurred ghost text into sharp copy as the user scrolls. It is especially useful for Lenis + GSAP ScrollTrigger builds.
 
-![Scroll blur manifesto reference](plugins/ui-motion/assets/scroll-blur-manifesto-reference.svg)
+![Scroll blur manifesto reference](plugins/ui-motion/assets/scroll-blur-manifesto-reference.png)
 
 Good requests:
 

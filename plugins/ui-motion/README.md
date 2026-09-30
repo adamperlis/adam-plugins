@@ -34,7 +34,7 @@ Use $kinetic-inflated-hero to design and implement a launch hero for Zine. The p
 
 This skill helps build the calmer section after a loud hero: the product argument becomes readable as the user scrolls.
 
-![Scroll blur manifesto reference](assets/scroll-blur-manifesto-reference.svg)
+![Scroll blur manifesto reference](assets/scroll-blur-manifesto-reference.png)
 
 It guides the agent to:
 
