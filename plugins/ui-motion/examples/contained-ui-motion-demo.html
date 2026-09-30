@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contained UI Motion Demo</title>
+    <style>
+      :root {
+        --blue: #1238ff;
+        --ink: #090909;
+        --paper: #f7f1e8;
+        --muted: rgba(9, 9, 9, 0.56);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .hero {
+        position: relative;
+        min-height: 100svh;
+        overflow: hidden;
+        background: var(--blue);
+        color: white;
+        isolation: isolate;
+      }
+
+      .nav {
+        position: absolute;
+        z-index: 4;
+        top: 22px;
+        left: clamp(18px, 4vw, 54px);
+        right: clamp(18px, 4vw, 54px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 13px;
+        letter-spacing: 0;
+      }
+
+      .brand {
+        font-weight: 800;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 18px;
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .letter-field {
+        position: absolute;
+        inset: -5vh -4vw;
+        z-index: 1;
+        filter: url("#goo");
+      }
+
+      .bubble-word {
+        position: absolute;
+        display: flex;
+        gap: 0.015em;
+        color: white;
+        font-size: clamp(76px, 17vw, 260px);
+        font-weight: 950;
+        line-height: 0.78;
+        letter-spacing: 0;
+        transform: translate3d(var(--x), var(--y), 0) rotate(var(--r));
+        text-transform: uppercase;
+      }
+
+      .bubble-word:nth-child(1) {
+        --x: -2vw;
+        --y: 14vh;
+        --r: -7deg;
+      }
+
+      .bubble-word:nth-child(2) {
+        --x: 36vw;
+        --y: 7vh;
+        --r: 6deg;
+      }
+
+      .bubble-word:nth-child(3) {
+        --x: 8vw;
+        --y: 55vh;
+        --r: 3deg;
+      }
+
+      .bubble-letter {
+        display: inline-block;
+        border-radius: 45%;
+        transform-origin: 50% 70%;
+        animation: float 6s ease-in-out infinite;
+        animation-delay: calc(var(--i) * -0.24s);
+        text-shadow:
+          0 0.035em 0 rgba(255, 255, 255, 0.2),
+          0 0.09em 0 rgba(0, 0, 0, 0.08);
+      }
+
+      .bubble-word:nth-child(2) .bubble-letter {
+        animation-name: invisible, float;
+        animation-duration: 4.8s, 6s;
+        animation-delay: calc(var(--i) * 0.08s), calc(var(--i) * -0.2s);
+        animation-iteration-count: infinite, infinite;
+        animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1), ease-in-out;
+      }
+
+      .hero-copy {
+        position: absolute;
+        z-index: 5;
+        left: 50%;
+        bottom: clamp(30px, 9vh, 86px);
+        width: min(620px, calc(100vw - 40px));
+        transform: translateX(-50%);
+        text-align: center;
+      }
+
+      .hero-copy p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: clamp(16px, 2vw, 22px);
+        line-height: 1.35;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 999px;
+        padding: 0 18px;
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px);
+      }
+
+      .btn.primary {
+        color: var(--blue);
+        background: white;
+      }
+
+      .manifesto {
+        min-height: 150vh;
+        padding: clamp(80px, 14vw, 170px) clamp(20px, 7vw, 90px);
+        background:
+          linear-gradient(rgba(18, 56, 255, 0.08), transparent 38%),
+          var(--paper);
+      }
+
+      .manifesto-inner {
+        position: sticky;
+        top: 16vh;
+        max-width: 1080px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border: 1px solid rgba(9, 9, 9, 0.2);
+        border-radius: 999px;
+        padding: 0 11px;
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+
+      .manifesto-copy {
+        position: relative;
+        margin-top: 34px;
+        font-size: clamp(38px, 7vw, 94px);
+        font-weight: 780;
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      .layer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.08em 0.18em;
+      }
+
+      .layer.ghost {
+        position: absolute;
+        inset: 0;
+        color: rgba(9, 9, 9, 0.28);
+        filter: blur(9px);
+      }
+
+      .word {
+        display: inline-block;
+        opacity: var(--sharp, 0.14);
+        transform: translateY(calc((1 - var(--sharp, 0.14)) * 12px));
+      }
+
+      .ghost .word {
+        opacity: var(--ghost, 0);
+        transform: none;
+      }
+
+      .pill {
+        border-radius: 999px;
+        padding: 0.02em 0.2em 0.08em;
+        color: white;
+        background: var(--blue);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0) scale(1, 1);
+        }
+
+        50% {
+          transform: translate3d(0, -0.05em, 0) scale(1.08, 0.94);
+        }
+      }
+
+      @keyframes invisible {
+        0%,
+        52%,
+        100% {
+          opacity: 1;
+          filter: blur(0);
+        }
+
+        64%,
+        76% {
+          opacity: 0.04;
+          filter: blur(18px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bubble-letter {
+          animation: none;
+        }
+
+        .word,
+        .ghost .word {
+          opacity: 1;
+          transform: none;
+        }
+
+        .layer.ghost {
+          display: none;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .nav-links {
+          display: none;
+        }
+
+        .bubble-word:nth-child(1) {
+          --x: -7vw;
+          --y: 18vh;
+        }
+
+        .bubble-word:nth-child(2) {
+          --x: 6vw;
+          --y: 34vh;
+        }
+
+        .bubble-word:nth-child(3) {
+          --x: -3vw;
+          --y: 58vh;
+        }
+
+        .manifesto-inner {
+          top: 12vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero" aria-label="Kinetic inflated hero">
+      <svg aria-hidden="true" width="0" height="0">
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+          <feColorMatrix
+            in="blur"
+            mode="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
+            result="goo"
+          />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </svg>
+
+      <nav class="nav" aria-label="Demo navigation">
+        <div class="brand">Zine</div>
+        <div class="nav-links" aria-hidden="true">
+          <span>Agents</span>
+          <span>Growth</span>
+          <span>Docs</span>
+        </div>
+      </nav>
+
+      <div class="letter-field" aria-hidden="true">
+        <div class="bubble-word" data-word="YOUR"></div>
+        <div class="bubble-word" data-word="INVISIBLE"></div>
+        <div class="bubble-word" data-word="SITE"></div>
+      </div>
+
+      <div class="hero-copy">
+        <p>
+          Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, and
+          Grok until your content is built for the places people now search.
+        </p>
+        <div class="actions">
+          <button class="btn primary">Start free</button>
+          <button class="btn">See how it works</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="manifesto" aria-labelledby="manifesto-copy">
+      <div class="manifesto-inner">
+        <span class="chip">Introducing Zine</span>
+        <p id="manifesto-copy" class="sr-only">
+          Your customers ask ChatGPT, Claude, Gemini, and Perplexity, then take
+          whatever answer appears. If you're not in it, you've disappeared.
+          Zine puts agents on your site, blog, newsletter, and social, so you
+          get more findable every week.
+        </p>
+        <div class="manifesto-copy" aria-hidden="true">
+          <div class="layer sharp"></div>
+          <div class="layer ghost"></div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const words = document.querySelectorAll(".bubble-word");
+
+      words.forEach((word, wordIndex) => {
+        word.dataset.word.split("").forEach((letter, index) => {
+          const span = document.createElement("span");
+          span.className = "bubble-letter";
+          span.style.setProperty("--i", index + wordIndex * 3);
+          span.textContent = letter;
+          word.append(span);
+        });
+      });
+
+      const text =
+        "Your customers ask ChatGPT, Claude, Gemini, and Perplexity, then take whatever answer appears. If you're not in it, you've disappeared. Zine puts agents on your site, blog, newsletter, and social, so you get more findable every week.";
+      const highlight = new Set([
+        "ChatGPT",
+        "Claude",
+        "Gemini",
+        "Perplexity",
+        "site",
+        "blog",
+        "newsletter",
+        "social",
+      ]);
+
+      const sharp = document.querySelector(".layer.sharp");
+      const ghost = document.querySelector(".layer.ghost");
+      const tokens = text.match(/\S+/g);
+
+      tokens.forEach((token, index) => {
+        const clean = token.replace(/[.,]/g, "");
+
+        [sharp, ghost].forEach((layer) => {
+          const span = document.createElement("span");
+          span.className = "word";
+          if (highlight.has(clean)) span.classList.add("pill");
+          span.style.setProperty("--i", index);
+          span.textContent = token;
+          layer.append(span);
+        });
+      });
+
+      const sharpWords = [...document.querySelectorAll(".sharp .word")];
+      const ghostWords = [...document.querySelectorAll(".ghost .word")];
+      const manifesto = document.querySelector(".manifesto");
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function updateManifesto() {
+        const rect = manifesto.getBoundingClientRect();
+        const progress = clamp(-rect.top / (rect.height - innerHeight), 0, 1);
+
+        sharpWords.forEach((word, index) => {
+          const start = index / tokens.length;
+          const local = clamp((progress - start * 0.78) * 5.5, 0, 1);
+          const ghostAmount = local < 0.55 ? local / 0.55 : 1 - (local - 0.55) / 0.45;
+          word.style.setProperty("--sharp", local.toFixed(3));
+          ghostWords[index].style.setProperty("--ghost", clamp(ghostAmount, 0, 1).toFixed(3));
+        });
+      }
+
+      updateManifesto();
+      addEventListener("scroll", updateManifesto, { passive: true });
+      addEventListener("resize", updateManifesto);
+    </script>
+  </body>
+</html>

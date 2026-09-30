@@ -101,3 +101,7 @@ Avoid:
 - animated effects that obscure the paragraph at rest
 
 The section should feel like chaos turning into clarity: after the loud hero, the product argument becomes readable.
+
+## Contained Example
+
+If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use the manifesto section as a concrete model for layered sharp and ghost text, scroll-derived progress, pre-blurred copy, highlighted pills, and reduced-motion fallback. In production work, prefer Lenis + GSAP ScrollTrigger when those tools already fit the project, but keep the same performance principle: pre-blur once, then animate opacity and transform.

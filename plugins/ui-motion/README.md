@@ -9,6 +9,18 @@ It contains two skills:
 | `kinetic-inflated-hero` | Full-screen kinetic typography heroes with inflated physical letterforms. | React/Next.js, Matter.js-style physics, Pretext-inspired typography, SVG goo/blur filters, CSS keyframes |
 | `scroll-blur-manifesto` | Quiet editorial sections where text resolves from blur into clarity on scroll. | Lenis, GSAP ScrollTrigger, layered sharp + pre-blurred text, opacity crossfades |
 
+## Contained Code Example
+
+For a concrete implementation reference, see [`examples/contained-ui-motion-demo.html`](examples/contained-ui-motion-demo.html). It is a single-file HTML/CSS/JS demo that includes:
+
+- an electric-blue kinetic inflated hero
+- a per-letter invisible-word blur/refocus effect
+- a warm editorial scroll section
+- sharp and pre-blurred text layers that crossfade on scroll
+- a reduced-motion fallback
+
+The demo intentionally avoids build tooling so it can be opened directly, pasted into another project, or translated into React/Next.js components.
+
 ## Invoking These Skills
 
 Claude Code and Codex use different explicit skill syntax:

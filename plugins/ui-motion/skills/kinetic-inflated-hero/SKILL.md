@@ -99,3 +99,7 @@ The hero can be experimental; the conversion controls should stay quiet and usab
 ## Reference Asset
 
 If available in this skill package, inspect `assets/zine-hero-reference.png` for the rough expected shape: electric-blue full viewport, sparse inflated white letterforms, lower-center copy and CTAs, and a floating nav.
+
+## Contained Example
+
+If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use it as a concrete starting point for the inflated type field, per-letter invisible-word blur/refocus effect, and reduced-motion fallback. In production React/Next.js work, translate the structure into components and replace the simplified float animation with the project's preferred physics or motion system when appropriate.
