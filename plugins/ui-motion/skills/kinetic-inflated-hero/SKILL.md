@@ -28,6 +28,7 @@ For implementation, prefer:
 
 - React / Next.js for the component surface
 - Matter.js or equivalent physics for collision and obstacle behavior
+- opentype.js when deforming real font outlines into soft-body glyphs
 - SVG filters for goo, dilation, blur, and deformation
 - CSS keyframes for small repeatable letter effects
 - requestAnimationFrame only when needed for physics/render loops
@@ -102,4 +103,4 @@ If available in this skill package, inspect `assets/zine-hero-reference.png` for
 
 ## Contained Example
 
-If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use it as a concrete starting point for the inflated type field, per-letter invisible-word blur/refocus effect, and reduced-motion fallback. In production React/Next.js work, translate the structure into components and replace the simplified float animation with the project's preferred physics or motion system when appropriate.
+If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use it as a concrete starting point for the inflated type composition, DialKit-style tuning controls, copyable standalone artifact pattern, per-letter invisible-word blur/refocus effect, and reduced-motion fallback. In production React/Next.js work, translate the structure into components, load local fonts with `next/font/local`, and use `opentype.js` plus Matter.js for real OT2049 soft-body glyph deformation when that level of fidelity is required.

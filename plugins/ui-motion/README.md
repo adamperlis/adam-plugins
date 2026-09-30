@@ -17,9 +17,12 @@ For a concrete implementation reference, see [`examples/contained-ui-motion-demo
 - a per-letter invisible-word blur/refocus effect
 - a warm editorial scroll section
 - sharp and pre-blurred text layers that crossfade on scroll
+- DialKit-style controls for pressure, blur, reveal spread, and accent color
+- a `Copy HTML` button for pasting the whole standalone demo elsewhere
+- CDN-loaded Lenis, GSAP, and ScrollTrigger when available
 - a reduced-motion fallback
 
-The demo intentionally avoids build tooling so it can be opened directly, pasted into another project, or translated into React/Next.js components.
+The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo does not ship licensed/local font files or the full Matter/opentype OT2049 glyph deformation engine, so treat it as a portable code reference for layout, controls, layering, timing, and choreography rather than a pixel-perfect production clone.
 
 ## Invoking These Skills
 
