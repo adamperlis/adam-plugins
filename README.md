@@ -1,4 +1,4 @@
-# adam-claude-plugins
+# adam-plugins
 
 Personal plugin marketplace by Adam Perlis. The repo is public so the same skill packages can be installed in Claude Code and, where supported, OpenAI/Codex plugin surfaces.
 
@@ -7,7 +7,7 @@ Personal plugin marketplace by Adam Perlis. The repo is public so the same skill
 ### Claude Code
 
 ```bash
-claude plugin marketplace add adamperlis/adam-claude-plugins
+claude plugin marketplace add adamperlis/adam-plugins
 claude plugin install social-video@adam-plugins
 claude plugin install ui-motion@adam-plugins
 ```
@@ -15,7 +15,7 @@ claude plugin install ui-motion@adam-plugins
 ### Codex / ChatGPT Desktop
 
 ```bash
-codex plugin marketplace add adamperlis/adam-claude-plugins
+codex plugin marketplace add adamperlis/adam-plugins
 ```
 
 Then open the Plugins Directory and install `ui-motion` from the `Adam Plugins` marketplace.
