@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Northstar. Keep the evidence behind your next product decision in view. An interactive fictional product study."
+    />
+    <title>Northstar — Find your next move.</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="masthead wrap" id="top">
+      <a class="wordmark" href="#top"
+        ><svg viewBox="0 0 32 32" aria-hidden="true">
+          <path
+            d="M16 0 19 13 32 16 19 19 16 32 13 19 0 16 13 13Z"
+            fill="currentColor"
+          /></svg
+        >northstar<span class="wordmark-dot">®</span></a
+      >
+      <nav aria-label="Primary">
+        <a href="#method">The method</a
+        ><a href="#workspace">Inside the workspace</a><a href="#plans">Plans</a>
+      </nav>
+      <a class="header-action" href="#workspace"
+        >Explore a decision <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="main">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-top">
+          <p class="label">
+            <span class="dot"></span> A workspace for product judgment
+          </p>
+          <span class="coordinate" aria-hidden="true">N 01° / E 03°</span>
+        </div>
+        <h1 id="hero-title">
+          Less noise.<br />More <em>north.</em
+          ><span class="heading-star" aria-hidden="true">✳</span>
+        </h1>
+        <div class="hero-bottom">
+          <p>
+            Your next move is in the evidence.<br />Bring the signals together.
+            See the tradeoffs.<br />Make a decision you can stand behind.
+          </p>
+          <a class="action" href="#workspace"
+            >Follow the evidence <span aria-hidden="true">↘</span></a
+          ><span class="vertical-note" aria-hidden="true"
+            >A CLEARER WAY FORWARD</span
+          >
+        </div>
+        <div class="hero-map" aria-hidden="true">
+          <svg viewBox="0 0 540 500" fill="none">
+            <g class="map-grid" stroke="currentColor">
+              <circle cx="274" cy="253" r="66" />
+              <circle cx="274" cy="253" r="130" />
+              <circle cx="274" cy="253" r="196" />
+              <path d="M274 15V490M30 253H520M103 82 445 424M103 424 445 82" />
+            </g>
+            <g class="map-path" stroke="currentColor">
+              <path
+                d="m77 346 110-126 87 33 131-123M187 220 227 81M274 253l-7 161 168-68"
+              />
+              <circle cx="77" cy="346" r="4" />
+              <circle cx="187" cy="220" r="4" />
+              <circle cx="405" cy="130" r="4" />
+              <circle cx="227" cy="81" r="4" />
+              <circle cx="267" cy="414" r="4" />
+              <circle cx="435" cy="346" r="4" />
+            </g>
+            <path
+              class="map-star"
+              d="m274 222 6 25 25 6-25 6-6 25-6-25-25-6 25-6Z"
+              fill="currentColor"
+            />
+            <g fill="currentColor" class="map-labels">
+              <text x="38" y="372">CUSTOMER VOICE</text>
+              <text x="350" y="109">PRODUCT SIGNAL</text>
+              <text x="290" y="436">TEAM JUDGMENT</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+      <div class="statement-bar">
+        <div class="wrap">
+          <span>Built for the questions without an obvious answer.</span
+          ><span>Evidence → Context → Commitment</span>
+        </div>
+      </div>
+      <section
+        id="workspace"
+        class="workspace-section wrap"
+        aria-labelledby="workspace-title"
+      >
+        <div class="section-heading">
+          <p class="label">01 / Inside a decision</p>
+          <h2 id="workspace-title">
+            A direction.<br /><em>With receipts.</em>
+          </h2>
+          <p>
+            One question. Three signals. A choice with context.<br />Open an
+            evidence note to see what changes.
+          </p>
+        </div>
+        <div class="workspace">
+          <div class="workspace-toolbar">
+            <span
+              ><span class="mini-star" aria-hidden="true">✳</span> Acme /
+              Product decisions</span
+            ><span class="sample-label">Interactive sample</span>
+          </div>
+          <div class="workspace-heading">
+            <div>
+              <p class="label">DEC–024 <span>·</span> Onboarding</p>
+              <h3>Should we ship<br />guided handoffs?</h3>
+            </div>
+            <span class="decision-status"
+              >Under review <span aria-hidden="true">◌</span></span
+            >
+          </div>
+          <div class="evidence-layout">
+            <div class="evidence-stack">
+              <p class="small-label">The evidence <span>03 notes</span></p>
+              <a
+                class="evidence-note"
+                data-evidence="customer"
+                href="#detail-customer"
+                ><span class="note-meta"
+                  ><span class="source-icon">↗</span> CUSTOMER INTERVIEW
+                  <span>01</span></span
+                ><strong
+                  >“I explain the same thing<br />to three different
+                  people.”</strong
+                ><span class="note-foot"
+                  >Maya · Operations lead
+                  <span class="tag support">Supports</span></span
+                ></a
+              >
+              <a
+                class="evidence-note"
+                data-evidence="behavior"
+                href="#detail-behavior"
+                ><span class="note-meta"
+                  ><span class="source-icon">▥</span> PRODUCT ANALYTICS
+                  <span>02</span></span
+                ><strong
+                  >18 of 50 teams stalled<br />at the first handoff.</strong
+                ><span class="note-foot"
+                  >Onboarding cohort · 30 days
+                  <span class="tag support">Supports</span></span
+                ></a
+              >
+              <a
+                class="evidence-note dissent-note"
+                data-evidence="dissent"
+                href="#detail-dissent"
+                ><span class="note-meta"
+                  ><span class="source-icon">≠</span> CONTRARY EVIDENCE
+                  <span>03</span></span
+                ><strong>Small teams already<br />have a faster way.</strong
+                ><span class="note-foot"
+                  >5 follow-up interviews
+                  <span class="tag dissent">Challenges</span></span
+                ></a
+              >
+            </div>
+            <div class="connection" aria-hidden="true">
+              <svg viewBox="0 0 80 430" preserveAspectRatio="none">
+                <path
+                  d="M0 75H28Q40 75 40 87V203Q40 215 52 215H80M0 215H80M0 355H28Q40 355 40 343V227Q40 215 52 215"
+                /></svg
+              ><span>CONTEXT<br />INTACT</span>
+            </div>
+            <div class="decision-detail">
+              <article
+                id="detail-customer"
+                class="detail-panel"
+                data-detail="customer"
+              >
+                <p class="small-label">01 / Listen to the friction</p>
+                <h4>The cost is<br />lost context.</h4>
+                <p>
+                  Maya’s team repeats project requirements at each handoff. A
+                  shared brief could carry that context forward.
+                </p>
+                <div class="insight">
+                  <span>Implication for the decision</span
+                  ><strong
+                    >Start with a reusable brief,<br />not a longer onboarding
+                    flow.</strong
+                  >
+                </div>
+                <dl>
+                  <div>
+                    <dt>Source</dt>
+                    <dd>Interview, 12 September</dd>
+                  </div>
+                  <div>
+                    <dt>Limitation</dt>
+                    <dd>One operations team</dd>
+                  </div>
+                </dl>
+              </article>
+              <article
+                id="detail-behavior"
+                class="detail-panel"
+                data-detail="behavior"
+              >
+                <p class="small-label">02 / Check the behavior</p>
+                <h4>The drop-off<br />is real.</h4>
+                <p>
+                  18 of 50 teams created a project but did not complete a
+                  handoff within seven days. This cohort shows where to
+                  investigate.
+                </p>
+                <div class="insight">
+                  <span>Implication for the decision</span
+                  ><strong
+                    >Measure completed handoffs,<br />not briefs
+                    created.</strong
+                  >
+                </div>
+                <dl>
+                  <div>
+                    <dt>Source</dt>
+                    <dd>Sample cohort, 30 days</dd>
+                  </div>
+                  <div>
+                    <dt>Limitation</dt>
+                    <dd>Correlation, not cause</dd>
+                  </div>
+                </dl>
+              </article>
+              <article
+                id="detail-dissent"
+                class="detail-panel"
+                data-detail="dissent"
+              >
+                <p class="small-label">03 / Keep the disagreement</p>
+                <h4>Friction for some.<br />Overhead for others.</h4>
+                <p>
+                  Four of five small teams already hand off work in chat. A
+                  mandatory brief would slow them down.
+                </p>
+                <div class="insight">
+                  <span>How this changes the decision</span
+                  ><strong
+                    >Make guided handoffs optional.<br />Pilot with larger teams
+                    first.</strong
+                  >
+                </div>
+                <dl>
+                  <div>
+                    <dt>Source</dt>
+                    <dd>Five follow-up interviews</dd>
+                  </div>
+                  <div>
+                    <dt>Limitation</dt>
+                    <dd>Small, selected sample</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+          </div>
+          <div class="decision-footer">
+            <p>
+              <span class="dot"></span> Proposed: an optional guided handoff for
+              teams of 10+
+            </p>
+            <a href="#commit"
+              >See the decision record <span aria-hidden="true">↓</span></a
+            >
+          </div>
+        </div>
+        <p class="caption">
+          A fictional scenario, with illustrative evidence. Select each note to
+          inspect the reasoning.
+        </p>
+      </section>
+      <section
+        id="method"
+        class="method-section"
+        aria-labelledby="method-title"
+      >
+        <div class="wrap">
+          <div class="method-header">
+            <p class="label">02 / The method</p>
+            <h2 id="method-title">
+              Conviction is built.<br /><em>Not conjured.</em>
+            </h2>
+            <p>
+              You don’t need another score pretending to know the answer. You
+              need a clear view of what you know, what you don’t, and what
+              happens next.
+            </p>
+          </div>
+          <div class="method-rows">
+            <article>
+              <span class="step-number">01</span>
+              <h3>Keep the source.</h3>
+              <p>
+                Carry the customer’s words, the cohort, and the date. A signal
+                is only useful if you can trace it.
+              </p>
+              <span class="method-glyph" aria-hidden="true">↗</span>
+            </article>
+            <article>
+              <span class="step-number">02</span>
+              <h3>Hold both sides.</h3>
+              <p>
+                Place supporting and contrary evidence together. See where a
+                promising idea needs a narrower scope.
+              </p>
+              <span class="method-glyph" aria-hidden="true">⇄</span>
+            </article>
+            <article>
+              <span class="step-number">03</span>
+              <h3>Leave a way back.</h3>
+              <p>
+                Name an owner and a review trigger. Future you should know what
+                would change your mind.
+              </p>
+              <span class="method-glyph" aria-hidden="true">↶</span>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section
+        id="commit"
+        class="commit-section wrap"
+        aria-labelledby="commit-title"
+      >
+        <div class="commit-copy">
+          <p class="label">03 / Make the call</p>
+          <h2 id="commit-title">A bet you can<br /><em>come back to.</em></h2>
+          <p>
+            All three signals stay attached. The disagreement becomes a
+            guardrail. The owner knows when to look again.
+          </p>
+          <a class="text-action" href="#workspace"
+            >Revisit the evidence <span aria-hidden="true">↑</span></a
+          >
+        </div>
+        <article class="decision-record">
+          <div class="record-top">
+            <span>DECISION RECORD / 024</span><span aria-hidden="true">✳</span>
+          </div>
+          <p class="record-status" id="record-status">Proposed pilot</p>
+          <h3>Guided handoffs.<br />For the teams<br />that need them.</h3>
+          <dl>
+            <div>
+              <dt>The bet</dt>
+              <dd>
+                An optional brief will help larger teams complete their first
+                handoff.
+              </dd>
+            </div>
+            <div>
+              <dt>The guardrail</dt>
+              <dd>Keep the existing chat flow. No mandatory steps.</dd>
+            </div>
+            <div>
+              <dt>The owner</dt>
+              <dd>Sam Rivera · Product</dd>
+            </div>
+            <div>
+              <dt>Look again when</dt>
+              <dd>
+                200 pilot sessions are complete. Stop if completion takes
+                longer.
+              </dd>
+            </div>
+          </dl>
+          <button
+            class="action record-action"
+            id="commit-button"
+            type="button"
+            hidden
+          >
+            Commit sample decision <span aria-hidden="true">↗</span>
+          </button>
+          <p id="commit-feedback" role="status" class="record-feedback">
+            Sample record · No data leaves this page.
+          </p>
+        </article>
+      </section>
+      <section id="plans" class="plans wrap" aria-labelledby="plans-title">
+        <div>
+          <p class="label">04 / Room for your team</p>
+          <h2 id="plans-title">
+            A small start.<br /><em>A shared direction.</em>
+          </h2>
+          <p>
+            Illustrative plans for this concept.<br />Unlimited readers. Pay for
+            the people shaping the work.
+          </p>
+        </div>
+        <div class="plan-list">
+          <article>
+            <div>
+              <h3>Team</h3>
+              <p>Evidence, decisions, and five integrations.</p>
+            </div>
+            <div class="plan-price">$18<span> / editor / month</span></div>
+          </article>
+          <article>
+            <div>
+              <h3>Organization</h3>
+              <p>Cross-team context and advanced permissions.</p>
+            </div>
+            <div class="plan-price">$32<span> / editor / month</span></div>
+          </article>
+          <a class="text-action" href="#workspace"
+            >Try the sample workspace <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </section>
+      <section class="closing wrap">
+        <p class="label">Every great move starts somewhere.</p>
+        <a href="#workspace"
+          >Find your <em>north.</em><span aria-hidden="true">↗</span></a
+        >
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="wordmark" href="#top">✳ northstar</a
+      ><span>Fictional product. Original design & code.</span
+      ><a href="../index.html">Explore the example library ↗</a>
+    </footer>
+  </body>
+</html>

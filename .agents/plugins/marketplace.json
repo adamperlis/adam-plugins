@@ -5,16 +5,16 @@
   },
   "plugins": [
     {
-      "name": "social-video",
+      "name": "frontend-design-director",
       "source": {
         "source": "local",
-        "path": "./plugins/social-video"
+        "path": "./plugins/frontend-design-director"
       },
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Productivity"
+      "category": "Design"
     },
     {
       "name": "ui-motion",
@@ -27,6 +27,78 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Design"
+    },
+    {
+      "name": "design-constraints",
+      "source": {
+        "source": "local",
+        "path": "./plugins/design-constraints"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
+      "name": "awwwards-motion",
+      "source": {
+        "source": "local",
+        "path": "./plugins/awwwards-motion"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
+      "name": "fullstack-coding",
+      "source": {
+        "source": "local",
+        "path": "./plugins/fullstack-coding"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    },
+    {
+      "name": "video-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/video-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Video"
+    },
+    {
+      "name": "social-video",
+      "source": {
+        "source": "local",
+        "path": "./plugins/social-video"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "seo-aeo-geo",
+      "source": {
+        "source": "local",
+        "path": "./plugins/seo-aeo-geo"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Marketing"
     }
   ]
 }

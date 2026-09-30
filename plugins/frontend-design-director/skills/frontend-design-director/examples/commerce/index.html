@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lilt — Light, with a little character.</title>
+    <link rel="stylesheet" href="../assets/fonts.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f5eee1;
+        color: #29251f;
+        font:
+          14px/1.7 Manrope,
+          Arial,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      :focus-visible {
+        outline: 3px solid #e58a42;
+        outline-offset: 5px;
+      }
+      header {
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5%;
+        border-bottom: 1px solid #d1c9b9;
+      }
+      .logo {
+        font:
+          italic 47px Instrument,
+          Georgia,
+          serif;
+        letter-spacing: -2px;
+      }
+      nav {
+        display: flex;
+        gap: 32px;
+        font-size: 11px;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        min-height: 680px;
+      }
+      .object {
+        background: #263f85;
+        color: #f6e7c6;
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+      }
+      .object svg {
+        width: 85%;
+        max-height: 620px;
+      }
+      .object-label {
+        position: absolute;
+        top: 26px;
+        left: 30px;
+        font-size: 9px;
+        letter-spacing: 0.13em;
+      }
+      .object-caption {
+        position: absolute;
+        bottom: 24px;
+        left: 30px;
+        right: 30px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+      }
+      .product {
+        padding: 65px 12%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .eyebrow {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .product h1 {
+        font:
+          clamp(70px, 7vw, 105px) / 0.9 Instrument,
+          Georgia,
+          serif;
+        letter-spacing: -0.04em;
+        margin: 26px 0;
+      }
+      .product .intro {
+        font-size: 13px;
+        max-width: 34ch;
+      }
+      .price {
+        font-size: 25px;
+        margin: 30px 0 20px;
+      }
+      .price small {
+        font-size: 10px;
+        margin-left: 10px;
+        color: #776c5b;
+      }
+      fieldset {
+        padding: 0;
+        border: 0;
+        margin: 0 0 24px;
+      }
+      legend {
+        font-size: 10px;
+        margin-bottom: 10px;
+      }
+      .variants {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .swatch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #cfc5b2;
+        padding: 8px 10px;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .swatch:has(input:checked) {
+        border-color: #29251f;
+        box-shadow: inset 0 0 0 1px #29251f;
+      }
+      .swatch input {
+        accent-color: #263f85;
+      }
+      .color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color);
+        border: 1px solid #0002;
+      }
+      .bag {
+        border: 0;
+        background: #29251f;
+        color: #f5eee1;
+        padding: 17px;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 12px;
+      }
+      .logistics {
+        font-size: 10px;
+        margin-top: 15px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #d1c9b9;
+      }
+      .feedback {
+        font-size: 11px;
+        min-height: 40px;
+        padding-top: 12px;
+      }
+      .story {
+        padding: 90px 8%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12%;
+        border-bottom: 1px solid #cfc5b2;
+      }
+      .story h2 {
+        font:
+          54px/1.03 Instrument,
+          Georgia,
+          serif;
+        margin: 22px 0;
+      }
+      .story p {
+        max-width: 38ch;
+        color: #6c6355;
+        font-size: 13px;
+      }
+      dl {
+        margin: 20px 0 0;
+      }
+      dl div {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #cfc5b2;
+        padding: 13px 0;
+        font-size: 12px;
+      }
+      dd {
+        margin: 0;
+      }
+      .detail {
+        background: #e7d8bc;
+        min-height: 330px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .detail:before {
+        content: "";
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(110deg, #b85c34, #e29a64 40%, #964a31);
+        box-shadow:
+          inset 0 -15px 0 #512b1c,
+          0 40px 35px -30px #53361e;
+        transform: rotate(-25deg);
+      }
+      .detail span {
+        position: absolute;
+        left: 25px;
+        bottom: 18px;
+        font-size: 9px;
+      }
+      .faq {
+        padding: 60px 8%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12%;
+      }
+      .faq h2 {
+        font:
+          43px Instrument,
+          serif;
+      }
+      .faq details {
+        border-bottom: 1px solid #cfc5b2;
+        padding: 15px 0;
+      }
+      .faq summary {
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .faq details p {
+        font-size: 12px;
+        margin-top: 14px;
+      }
+      footer {
+        padding: 25px 5%;
+        border-top: 1px solid #cfc5b2;
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        gap: 20px;
+      }
+      .sample {
+        color: #746653;
+        font-size: 9px;
+        margin-top: 8px;
+      }
+      @media (max-width: 700px) {
+        header {
+          height: 76px;
+        }
+        nav {
+          gap: 18px;
+        }
+        .hero {
+          display: block;
+        }
+        .object {
+          height: 450px;
+        }
+        .object svg {
+          height: 400px;
+        }
+        .product {
+          padding: 42px 7%;
+        }
+        .product h1 {
+          font-size: 74px;
+        }
+        .story,
+        .faq {
+          grid-template-columns: 1fr;
+          padding: 50px 7%;
+          gap: 35px;
+        }
+        .story h2 {
+          font-size: 47px;
+        }
+        .story .detail {
+          order: 2;
+        }
+        footer {
+          flex-wrap: wrap;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        #lamp-finish {
+          transition: fill 0.35s;
+        }
+        .object svg {
+          animation: arrive 0.8s ease-out;
+        }
+        @keyframes arrive {
+          from {
+            transform: translateY(15px);
+            opacity: 0.5;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="#top">lilt.</a>
+      <nav aria-label="Primary">
+        <a href="#details">The details</a><a href="#care">Care & delivery</a
+        ><a href="../index.html">Library ↗</a>
+      </nav>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <div class="object">
+          <span class="object-label">OBJECT NO. 001 / THE ARC LAMP</span
+          ><svg viewBox="0 0 600 600" role="img" aria-labelledby="lamp-title">
+            <title id="lamp-title">
+              Terracotta desk lamp with a broad curved shade and narrow stem
+            </title>
+            <defs>
+              <linearGradient id="metal" x1="0" x2="1">
+                <stop stop-color="#4d3327" />
+                <stop offset=".4" stop-color="#ce9c72" />
+                <stop offset=".7" stop-color="#8b5d41" />
+                <stop offset="1" stop-color="#432b23" />
+              </linearGradient>
+              <linearGradient id="shade" x1="0" y1="0" x2=".9" y2="1">
+                <stop stop-color="white" stop-opacity=".25" />
+                <stop offset="1" stop-color="black" stop-opacity=".3" />
+              </linearGradient>
+              <radialGradient id="glow">
+                <stop stop-color="#ffcb7e" stop-opacity=".38" />
+                <stop offset="1" stop-color="#ffcb7e" stop-opacity="0" />
+              </radialGradient>
+              <filter id="blur"><feGaussianBlur stdDeviation="12" /></filter>
+            </defs>
+            <ellipse
+              cx="307"
+              cy="509"
+              rx="149"
+              ry="18"
+              fill="#111c45"
+              filter="url(#blur)"
+            />
+            <ellipse cx="300" cy="410" rx="195" ry="110" fill="url(#glow)" />
+            <path d="M287 260h24v232h-24z" fill="url(#metal)" />
+            <ellipse cx="299" cy="493" rx="88" ry="17" fill="#5b3526" />
+            <ellipse cx="299" cy="486" rx="88" ry="16" fill="#bb8053" />
+            <g id="lamp-finish" fill="#bc6741">
+              <path d="M119 268c12-108 66-158 181-158s169 50 181 158Z" />
+              <ellipse cx="300" cy="267" rx="181" ry="28" />
+            </g>
+            <path
+              d="M119 268c12-108 66-158 181-158s169 50 181 158Z"
+              fill="url(#shade)"
+            />
+            <ellipse cx="300" cy="273" rx="167" ry="15" fill="#f8d897" />
+            <path
+              d="M325 494q93 22 137 4t98 4"
+              stroke="#142544"
+              stroke-width="4"
+              fill="none"
+            />
+          </svg>
+          <div class="object-caption">
+            <span>Made for the slower hours.</span><span>01 — 03</span>
+          </div>
+        </div>
+        <div class="product">
+          <p class="eyebrow">Thoughtful objects. Everyday company.</p>
+          <h1>Light, with<br />a little <em>character.</em></h1>
+          <p class="intro">
+            A gentle curve. A warm pool of light. The Arc brings a little
+            softness to your desk, bedside, or favorite corner.
+          </p>
+          <p class="price">
+            €185 <small>Illustrative price · incl. VAT</small>
+          </p>
+          <fieldset>
+            <legend>Finish — <span id="finish-name">Terracotta</span></legend>
+            <div class="variants">
+              <label class="swatch"
+                ><input
+                  type="radio"
+                  name="finish"
+                  value="Terracotta"
+                  data-color="#bc6741"
+                  checked
+                /><span class="color" style="--color: #bc6741"></span
+                >Clay</label
+              ><label class="swatch"
+                ><input
+                  type="radio"
+                  name="finish"
+                  value="Butter"
+                  data-color="#d7be74"
+                /><span class="color" style="--color: #d7be74"></span
+                >Butter</label
+              ><label class="swatch"
+                ><input
+                  type="radio"
+                  name="finish"
+                  value="Forest"
+                  data-color="#4f6346"
+                /><span class="color" style="--color: #4f6346"></span
+                >Forest</label
+              >
+            </div>
+          </fieldset>
+          <button class="bag" id="sample-bag" hidden>
+            Add to sample bag <span>+</span>
+          </button>
+          <p class="logistics">
+            Sample terms: delivery in 3–5 days · 30-day returns
+          </p>
+          <p class="feedback" id="feedback" role="status"></p>
+          <p class="sample">
+            Fictional product. Original SVG illustration. No checkout or
+            purchase.
+          </p>
+        </div>
+      </section>
+      <section class="story" id="details">
+        <div>
+          <p class="eyebrow">A few good decisions.</p>
+          <h2>Quietly useful.<br /><em>Deliberately simple.</em></h2>
+          <p>
+            A spun-metal shade directs the light down, away from your eyes. A
+            weighted base keeps it steady. One tactile switch does exactly what
+            you expect.
+          </p>
+          <dl>
+            <div>
+              <dt>Height / shade diameter</dt>
+              <dd>38 cm / 28 cm</dd>
+            </div>
+            <div>
+              <dt>Material</dt>
+              <dd>Powder-coated aluminum</dd>
+            </div>
+            <div>
+              <dt>Light</dt>
+              <dd>E27 · warm white · replaceable</dd>
+            </div>
+            <div>
+              <dt>Cable</dt>
+              <dd>1.8 m textile cord</dd>
+            </div>
+          </dl>
+        </div>
+        <div
+          class="detail"
+          role="img"
+          aria-label="Illustrative close-up of the lamp's powder-coated curved shade"
+        >
+          <span>FORM STUDY / SPUN METAL EDGE</span>
+        </div>
+      </section>
+      <section class="faq" id="care">
+        <h2>Live with it.<br /><em>Look after it.</em></h2>
+        <div>
+          <details>
+            <summary>How do I clean it?</summary>
+            <p>
+              For this sample design, specify a soft dry cloth and replaceable
+              components. A real product page needs manufacturer-verified care
+              guidance.
+            </p>
+          </details>
+          <details>
+            <summary>What if it isn’t quite right?</summary>
+            <p>
+              This concept illustrates a 30-day return window. There is no real
+              order. Replace this copy with the seller’s actual returns terms.
+            </p>
+          </details>
+          <details>
+            <summary>What comes in the box?</summary>
+            <p>
+              Sample contents: one lamp, one replaceable bulb, and a short setup
+              card. Product specifications are fictional.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <a class="logo" href="#top">lilt.</a
+      ><span>Original commerce study / Frontend Design Director</span
+      ><a href="../index.html">All studies ↗</a>
+    </footer>
+    <script>
+      const choice = document.querySelector("#finish-name"),
+        lamp = document.querySelector("#lamp-finish"),
+        title = document.querySelector("#lamp-title");
+      document.querySelectorAll("input[name=finish]").forEach((input) =>
+        input.addEventListener("change", () => {
+          choice.textContent = input.value;
+          lamp.setAttribute("fill", input.dataset.color);
+          title.textContent =
+            input.value + " desk lamp with a curved shade and narrow stem";
+          document.querySelector("#feedback").textContent = "";
+        }),
+      );
+      const bag = document.querySelector("#sample-bag");
+      bag.hidden = false;
+      bag.addEventListener("click", () => {
+        document.querySelector("#feedback").textContent =
+          "Arc lamp in " +
+          choice.textContent +
+          " added to this sample bag. No purchase was made.";
+      });
+    </script>
+  </body>
+</html>

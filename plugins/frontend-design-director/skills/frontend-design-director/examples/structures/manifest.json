@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-30",
+  "implementation": "Original HTML/CSS/JavaScript reconstructions of observed composition principles; not source-site code or Ditto output.",
+  "patterns": [
+    {"id":"product-stage","source":"https://cursor.com/","evidence":"Live desktop screenshot and DOM measurement, 1280x720","observed":{"headlineFontPx":26,"headlineLineHeightPx":32.5,"headlineWeight":400,"headlineTrackingPx":-0.325,"headlineX":20,"headlineY":164,"stageApproxY":350},"code":["index.html#product-stage","structures.css"],"mobile":"Original adaptation; source mobile not inspected this pass"},
+    {"id":"workflow","source":"https://linear.app/","evidence":"Live desktop homepage and chapter transition screenshots, 1280x720","observed":"Broad product stage, continuous artifacts, two-column intake chapter introduction; no motion claim","code":["index.html#workflow","structures.css"],"mobile":"Original adaptation; source mobile not inspected this pass"},
+    {"id":"operation","source":"https://www.firecrawl.dev/","evidence":"Live desktop opening screenshot, 1280x720","observed":"Marginal instrument grid surrounds a central proposition and adjacent operation UI","code":["index.html#operation","structures.css","structures.js"],"mobile":"Original adaptation; source mobile not inspected this pass"}
+  ],
+  "ditto":{"cursor":"queued","linear":"queued","firecrawl":"queued","elevenlabs":"queued","note":"Requests resubmitted. No generated app files received at creation of this manifest; do not infer source-code inspection."}
+}

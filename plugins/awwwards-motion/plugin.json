@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "awwwards-motion",
+  "version": "0.1.0",
+  "description": "Build Awwwards-quality web experiences with spring physics, GLSL shaders, R3F, post-processing, and interactive motion.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/awwwards-motion",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "awwwards",
+    "motion",
+    "threejs",
+    "glsl",
+    "webgl",
+    "framer-motion"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Awwwards Motion",
+        "shortDescription": "Build Awwwards-quality web experiences with spring physics, GLSL shaders, R3F, post-pro...",
+        "longDescription": "Build Awwwards-quality web experiences with spring physics, GLSL shaders, R3F, post-processing, and interactive motion.",
+        "developerName": "Adam Perlis",
+        "category": "Design",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

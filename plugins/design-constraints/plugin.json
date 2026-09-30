@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "design-constraints",
+  "version": "0.1.0",
+  "description": "Design UI with explicit spatial and typographic constraints instead of letting the model guess.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/design-constraints",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "ui",
+    "constraints",
+    "typography",
+    "spacing"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Design Constraints",
+        "shortDescription": "Design UI with explicit spatial and typographic constraints instead of letting the mode...",
+        "longDescription": "Design UI with explicit spatial and typographic constraints instead of letting the model guess.",
+        "developerName": "Adam Perlis",
+        "category": "Design",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "video-skills",
+  "version": "0.1.0",
+  "description": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand, creator, and social videos.",
+  "skills": "./skills/"
+}

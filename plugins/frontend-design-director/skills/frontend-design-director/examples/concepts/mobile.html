@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dayform — mobile review</title>
+    <style>
+      body {
+        margin: 0;
+        background: #deded8;
+        font:
+          14px Arial,
+          sans-serif;
+      }
+      header {
+        padding: 16px;
+        display: flex;
+        gap: 24px;
+        justify-content: center;
+      }
+      a {
+        color: #222;
+      }
+      iframe {
+        display: block;
+        height: 844px;
+        max-width: 100%;
+        margin: 0 auto;
+        border: 0;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="?direction=closing">Closing</a
+      ><a href="?direction=ledger">Ledger</a><a href="?direction=room">Room</a
+      ><a href="./index.html">Full browser</a>
+    </header>
+    <iframe title="Mobile concept preview"></iframe>
+    <script type="module">
+      const q = new URLSearchParams(location.search);
+      const direction = ["closing", "ledger", "room"].includes(
+        q.get("direction"),
+      )
+        ? q.get("direction")
+        : "closing";
+      const frame = document.querySelector("iframe");
+      frame.width = String(
+        [320, 390, 768].includes(Number(q.get("width")))
+          ? Number(q.get("width"))
+          : 390,
+      );
+      frame.src = `./index.html?direction=${direction}${q.get("scene") === "demo" ? "#demo" : ""}`;
+    </script>
+  </body>
+</html>

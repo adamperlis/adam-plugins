@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Design Director"
+  short_description: "Route and design polished sites by category"
+  default_prompt: "Design or improve this website using the most appropriate archetype, evidence patterns, and quality gates."

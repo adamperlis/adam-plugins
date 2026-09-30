@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Relay — One event. Everywhere.</title>
+    <link rel="stylesheet" href="../assets/fonts.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #eeeae1;
+        color: #25241f;
+        font:
+          14px/1.7 Manrope,
+          Arial,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 3px solid #e85c2e;
+        outline-offset: 5px;
+      }
+      header,
+      main,
+      footer {
+        max-width: 1320px;
+        margin: auto;
+      }
+      header {
+        height: 90px;
+        border-inline: 1px solid #c8c5bb;
+        border-bottom: 1px solid #c8c5bb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 38px;
+      }
+      .logo {
+        font-weight: 750;
+        font-size: 26px;
+        letter-spacing: -1px;
+      }
+      .logo span {
+        color: #e55327;
+        margin-right: 8px;
+      }
+      nav {
+        display: flex;
+        gap: 30px;
+        font: 11px monospace;
+      }
+      .hero {
+        position: relative;
+        padding: 65px 38px 55px;
+        border-inline: 1px solid #c8c5bb;
+        background-image: radial-gradient(#b8b5ab 0.6px, transparent 0.6px);
+        background-size: 14px 14px;
+        overflow: hidden;
+      }
+      .label {
+        font: 10px monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      .hero h1 {
+        font-size: clamp(72px, 9.3vw, 130px);
+        line-height: 0.91;
+        letter-spacing: -0.07em;
+        font-weight: 550;
+        margin: 39px 0;
+      }
+      .hero h1 span {
+        color: #dc5128;
+      }
+      .hero > p:last-of-type {
+        max-width: 39ch;
+        font-size: 14px;
+        background: #eeeae1;
+        margin: 0;
+      }
+      .hero-arrow {
+        position: absolute;
+        right: 5%;
+        top: 70px;
+        font-size: 260px;
+        line-height: 1;
+        color: #db5427;
+        font-weight: 300;
+        transform: rotate(-35deg);
+        opacity: 0.85;
+      }
+      .hero-links {
+        display: flex;
+        gap: 25px;
+        align-items: center;
+        margin-top: 30px;
+        font: 11px monospace;
+      }
+      .solid {
+        background: #25241f;
+        color: #f4eee2;
+        padding: 14px 20px;
+      }
+      .pipeline {
+        border: 1px solid #c8c5bb;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        font: 12px monospace;
+      }
+      .pipeline div {
+        padding: 21px 36px;
+        border-right: 1px solid #c8c5bb;
+        display: flex;
+        justify-content: space-between;
+      }
+      .pipeline div:last-child {
+        border: 0;
+      }
+      .pipeline span {
+        color: #9b472c;
+      }
+      .playground {
+        background: #1f2424;
+        color: #d8e0d7;
+        padding: 45px 38px 38px;
+        border-inline: 1px solid #1f2424;
+      }
+      .playground-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 28px;
+      }
+      .playground h2 {
+        font-size: 28px;
+        font-weight: 500;
+        letter-spacing: -1px;
+        margin: 0;
+      }
+      .playground-head p {
+        font: 10px monospace;
+        color: #a9b5a8;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        font: 11px monospace;
+      }
+      select {
+        border: 1px solid #657369;
+        background: #29302d;
+        color: #e7eadf;
+        padding: 10px;
+        max-width: 100%;
+      }
+      .run {
+        border: 0;
+        padding: 11px 20px;
+        background: #f08c60;
+        color: #211f18;
+        font: 600 12px monospace;
+      }
+      .code-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: #526055;
+        margin-top: 25px;
+        border: 1px solid #526055;
+      }
+      .code-grid article {
+        background: #1a201d;
+        padding: 25px;
+        min-width: 0;
+      }
+      .code-grid p {
+        font: 10px monospace;
+        letter-spacing: 0.07em;
+        color: #a1b59f;
+        margin: 0 0 24px;
+      }
+      .code-grid pre {
+        font: 12px/2 monospace;
+        overflow: auto;
+        margin: 0;
+        min-height: 220px;
+        tab-size: 2;
+        color: #d9e8cd;
+      }
+      .key {
+        color: #f1ab84;
+      }
+      .explain {
+        font: 11px/1.7 monospace;
+        min-height: 45px;
+        margin: 22px 0 0;
+        color: #b9c9b3;
+      }
+      .details {
+        border-inline: 1px solid #c8c5bb;
+        padding: 64px 38px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12%;
+      }
+      .details h2 {
+        font-size: 42px;
+        line-height: 1.1;
+        font-weight: 500;
+        letter-spacing: -2px;
+        margin: 22px 0;
+      }
+      .details p {
+        font-size: 13px;
+        max-width: 40ch;
+      }
+      .details dl {
+        margin: 0;
+      }
+      .details dl div {
+        border-bottom: 1px solid #c8c5bb;
+        padding: 18px 0;
+      }
+      .details dt {
+        font: 600 12px monospace;
+      }
+      .details dd {
+        font-size: 12px;
+        margin: 8px 0 0;
+        color: #66675b;
+      }
+      footer {
+        padding: 25px 38px;
+        border: 1px solid #c8c5bb;
+        display: flex;
+        justify-content: space-between;
+        font: 10px monospace;
+        gap: 20px;
+      }
+      @media (max-width: 700px) {
+        header {
+          padding-inline: 20px;
+          height: 75px;
+        }
+        nav {
+          gap: 15px;
+          font-size: 10px;
+        }
+        .hero {
+          padding: 42px 20px;
+        }
+        .hero h1 {
+          font-size: 17vw;
+        }
+        .hero-arrow {
+          font-size: 140px;
+          right: -10px;
+          top: 110px;
+          opacity: 0.12;
+        }
+        .hero-links {
+          gap: 15px;
+        }
+        .pipeline {
+          font-size: 9px;
+        }
+        .pipeline div {
+          padding: 17px 12px;
+        }
+        .playground {
+          padding: 32px 20px;
+        }
+        .playground-head {
+          display: block;
+        }
+        .code-grid {
+          grid-template-columns: 1fr;
+        }
+        .code-grid article {
+          padding: 20px;
+        }
+        .code-grid pre {
+          min-height: 180px;
+          font-size: 11px;
+        }
+        .details {
+          grid-template-columns: 1fr;
+          padding: 45px 20px;
+          gap: 25px;
+        }
+        .details h2 {
+          font-size: 36px;
+        }
+        footer {
+          flex-wrap: wrap;
+          padding: 25px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="#top"><span>↳</span>relay</a>
+      <nav aria-label="Primary">
+        <a href="#playground">Try a request</a
+        ><a href="#delivery">Delivery model</a
+        ><a href="../index.html">Library ↗</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero" id="top">
+        <p class="label">Event delivery for the work between systems.</p>
+        <h1>One event.<br /><span>Everywhere.</span></h1>
+        <p>
+          Route a webhook. Inspect its journey. Retry the failure. Keep your
+          product moving when the network doesn’t.
+        </p>
+        <span class="hero-arrow" aria-hidden="true">↳</span>
+        <div class="hero-links">
+          <a class="solid" href="#playground">Run a sample request ↗</a
+          ><a href="#delivery">Read the delivery model ↓</a>
+        </div>
+      </section>
+      <div class="pipeline" aria-label="Delivery sequence">
+        <div>01 / RECEIVE <span>→</span></div>
+        <div>02 / ROUTE <span>→</span></div>
+        <div>03 / DELIVER <span>↗</span></div>
+      </div>
+      <section class="playground" id="playground">
+        <div class="playground-head">
+          <h2>Read the response.</h2>
+          <p>LOCAL SIMULATION / NO API KEY REQUIRED</p>
+        </div>
+        <div class="controls" id="controls" hidden>
+          <label for="scenario">Destination state</label
+          ><select id="scenario">
+            <option value="delivered">Healthy endpoint</option>
+            <option value="retry">Rate-limited endpoint</option>
+            <option value="failed">Invalid signature</option></select
+          ><button class="run" id="run" type="button">
+            Send sample event →
+          </button>
+        </div>
+        <div class="code-grid">
+          <article>
+            <p>REQUEST / POST /V1/EVENTS</p>
+            <pre><span class="key">{
+  "type"</span>: "order.created",
+  <span class="key">"destination"</span>: "warehouse",
+  <span class="key">"idempotency_key"</span>: "order_1042",
+  <span class="key">"data"</span>: {
+    "order_id": "1042",
+    "items": 2
+  }
+}</pre>
+          </article>
+          <article>
+            <p id="response-label">RESPONSE / 202 ACCEPTED</p>
+            <pre id="response">
+{
+  "event_id": "evt_sample_1042",
+  "status": "delivered",
+  "attempts": 1,
+  "destination_status": 200
+}</pre
+            >
+          </article>
+        </div>
+        <p class="explain" id="explain" role="status">
+          Sample delivery accepted. The destination returned 200. Choose a
+          different endpoint state to inspect retry and error behavior.
+        </p>
+      </section>
+      <section class="details" id="delivery">
+        <div>
+          <p class="label">A model you can reason about.</p>
+          <h2>Expect failures.<br />Design the recovery.</h2>
+          <p>
+            Inspect the delivery history, preserve the event ID, and use an
+            idempotency key so a retry doesn’t become a duplicate order.
+          </p>
+        </div>
+        <dl>
+          <div>
+            <dt>At-least-once delivery</dt>
+            <dd>
+              Consumers must handle duplicates. Never promise exactly-once
+              delivery without a precise, verified guarantee.
+            </dd>
+          </div>
+          <div>
+            <dt>Explicit retry state</dt>
+            <dd>
+              The sample rate-limit response keeps its event ID and shows a
+              retry-after value. It does not invent a successful delivery.
+            </dd>
+          </div>
+          <div>
+            <dt>Observable failures</dt>
+            <dd>
+              A signature failure stops delivery and gives an actionable reason.
+              These are example semantics for a fictional API.
+            </dd>
+          </div>
+        </dl>
+      </section>
+    </main>
+    <footer>
+      <span>Relay / fictional developer product</span
+      ><a href="../index.html">All studies ↗</a>
+    </footer>
+    <script>
+      const responses = {
+        delivered: {
+          code: "202 ACCEPTED",
+          data: {
+            event_id: "evt_sample_1042",
+            status: "delivered",
+            attempts: 1,
+            destination_status: 200,
+          },
+          note: "Sample delivered. The destination returned 200.",
+        },
+        retry: {
+          code: "202 QUEUED",
+          data: {
+            event_id: "evt_sample_1042",
+            status: "retry_scheduled",
+            attempts: 1,
+            destination_status: 429,
+            retry_after_seconds: 30,
+          },
+          note: "Sample queued for retry after 30 seconds. No real retry or network request is scheduled.",
+        },
+        failed: {
+          code: "401 REJECTED",
+          data: {
+            error: "invalid_signature",
+            status: "rejected",
+            delivered: false,
+          },
+          note: "Sample rejected. Verify the signing secret and the signature timestamp before retrying.",
+        },
+      };
+      document.querySelector("#controls").hidden = false;
+      document.querySelector("#run").addEventListener("click", () => {
+        const state = responses[document.querySelector("#scenario").value];
+        document.querySelector("#response-label").textContent =
+          "RESPONSE / " + state.code;
+        document.querySelector("#response").textContent = JSON.stringify(
+          state.data,
+          null,
+          2,
+        );
+        document.querySelector("#explain").textContent = state.note;
+      });
+    </script>
+  </body>
+</html>

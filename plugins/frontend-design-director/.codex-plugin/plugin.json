@@ -1,0 +1,6 @@
+{
+  "name": "frontend-design-director",
+  "version": "0.1.0",
+  "description": "Route, design, build, and critique distinctive marketing sites using archetype-specific frontend direction.",
+  "skills": "./skills/"
+}

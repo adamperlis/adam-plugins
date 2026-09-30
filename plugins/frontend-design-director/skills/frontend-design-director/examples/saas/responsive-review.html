@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadence responsive review</title>
+<style>body{margin:0;background:#dedcd7;font:14px Arial,sans-serif}header{padding:12px 20px}iframe{display:block;border:0;margin:0 auto;background:white;width:390px;height:844px}button{padding:8px;margin-right:8px}</style>
+<header>Responsive test viewport: <button data-width="320">320</button><button data-width="390">390</button><button data-width="768">768</button><button data-width="1280">1280</button><span id="size">390 px</span><output id="metrics"></output><label style="display:block;margin-top:8px"><input type="checkbox" id="static-mode"> Disable frame scripts (static fallback test)</label></header>
+<iframe title="Cadence responsive page" src="./index.html"></iframe>
+<script>
+const frame=document.querySelector('iframe');
+function measure(){const doc=frame.contentDocument;if(!doc?.body)return;document.querySelector('#metrics').textContent=` · Document width ${doc.documentElement.scrollWidth}px · Viewport ${frame.contentWindow.innerWidth}px · Fonts ${[...new Set([...doc.querySelectorAll('body *')].map(el=>frame.contentWindow.getComputedStyle(el).fontFamily.split(',')[0]))].join(', ')}`}
+frame.addEventListener('load',()=>{new ResizeObserver(measure).observe(frame);measure()});
+document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{frame.style.width=button.dataset.width+'px';document.querySelector('#size').textContent=button.dataset.width+' px';requestAnimationFrame(measure)}));
+document.querySelector('#static-mode').addEventListener('change',event=>{if(event.target.checked)frame.setAttribute('sandbox','allow-same-origin');else frame.removeAttribute('sandbox');frame.src='./index.html'});
+</script>
+</html>

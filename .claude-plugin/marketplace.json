@@ -1,12 +1,48 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "adam-plugins",
-  "description": "Personal Claude Code plugins by Adam Perlis",
+  "description": "Personal Claude Code and Codex plugin marketplace by Adam Perlis",
   "owner": {
     "name": "Adam Perlis",
     "email": "adam.perlis@academyux.com"
   },
   "plugins": [
+    {
+      "name": "frontend-design-director",
+      "description": "Route, design, build, and critique distinctive marketing sites using archetype-specific frontend direction.",
+      "source": "./plugins/frontend-design-director",
+      "category": "design"
+    },
+    {
+      "name": "ui-motion",
+      "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
+      "source": "./plugins/ui-motion",
+      "category": "design"
+    },
+    {
+      "name": "design-constraints",
+      "description": "Design UI with explicit spatial and typographic constraints instead of letting the model guess.",
+      "source": "./plugins/design-constraints",
+      "category": "design"
+    },
+    {
+      "name": "awwwards-motion",
+      "description": "Build Awwwards-quality web experiences with spring physics, GLSL shaders, R3F, post-processing, and interactive motion.",
+      "source": "./plugins/awwwards-motion",
+      "category": "design"
+    },
+    {
+      "name": "fullstack-coding",
+      "description": "Systematic full-stack web development guidance for architecture, debugging, quality, testing, security, and deployment.",
+      "source": "./plugins/fullstack-coding",
+      "category": "development"
+    },
+    {
+      "name": "video-skills",
+      "description": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand, creator, and social videos.",
+      "source": "./plugins/video-skills",
+      "category": "video"
+    },
     {
       "name": "social-video",
       "description": "Write briefs, scripts, and shot lists for short-form social video (Reels, TikTok, Shorts) using hook stacking and retention cadence.",
@@ -14,10 +50,10 @@
       "category": "productivity"
     },
     {
-      "name": "ui-motion",
-      "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
-      "source": "./plugins/ui-motion",
-      "category": "design"
+      "name": "seo-aeo-geo",
+      "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
+      "source": "./plugins/seo-aeo-geo",
+      "category": "marketing"
     }
   ]
 }

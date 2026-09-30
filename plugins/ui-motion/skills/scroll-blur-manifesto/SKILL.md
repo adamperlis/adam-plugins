@@ -1,6 +1,6 @@
 ---
 name: scroll-blur-manifesto
-description: Design or implement quiet editorial manifesto sections where large text resolves from blurred ghost layers into sharp copy on scroll. Use when the user asks for scroll blur, blur-to-sharp transitions, Lenis/GSAP ScrollTrigger word reveals, or a Lightfield/Zine-style manifesto section.
+description: Design or implement quiet editorial manifesto sections where large text resolves from blurred ghost layers into sharp copy on scroll. Use when the user asks for scroll blur, blur-to-sharp transitions, Lenis/GSAP ScrollTrigger word reveals, or a warm editorial manifesto section.
 ---
 
 # Scroll Blur Manifesto

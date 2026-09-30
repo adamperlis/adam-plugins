@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fieldwork — The shape of change.</title>
+    <link rel="stylesheet" href="../assets/fonts.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #eaece1;
+        color: #183129;
+        font:
+          14px/1.7 Manrope,
+          Arial,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      :focus-visible {
+        outline: 3px solid #dd733f;
+        outline-offset: 5px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 28px 5%;
+        border-bottom: 1px solid #bdc7b5;
+      }
+      .logo {
+        font-size: 23px;
+        letter-spacing: -1px;
+        font-weight: 650;
+      }
+      nav {
+        display: flex;
+        gap: 32px;
+        font: 11px monospace;
+      }
+      .hero {
+        background: #16332b;
+        color: #e7e9d8;
+        padding: 60px 5% 0;
+        overflow: hidden;
+      }
+      .hero-top {
+        display: flex;
+        justify-content: space-between;
+        font: 10px monospace;
+        letter-spacing: 0.08em;
+      }
+      .hero h1 {
+        font:
+          clamp(74px, 10vw, 145px) / 0.91 Instrument,
+          Georgia,
+          serif;
+        letter-spacing: -0.025em;
+        margin: 55px 0 38px;
+        position: relative;
+        z-index: 1;
+      }
+      .hero h1 em {
+        color: #c5d798;
+      }
+      .thesis {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12%;
+        align-items: end;
+      }
+      .thesis > p {
+        max-width: 37ch;
+        font-size: 14px;
+        line-height: 1.9;
+        color: #c2cebb;
+      }
+      .thesis > a {
+        font: 11px monospace;
+        border-bottom: 1px solid #81937c;
+        padding-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .landscape {
+        height: 290px;
+        width: 100%;
+        margin-top: 10px;
+        opacity: 0.85;
+      }
+      .label {
+        font: 10px monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .experiment {
+        padding: 75px 5%;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 9%;
+      }
+      .experiment h2 {
+        font:
+          55px/1.03 Instrument,
+          Georgia,
+          serif;
+        margin: 26px 0;
+      }
+      .experiment p {
+        font-size: 13px;
+        max-width: 37ch;
+      }
+      .experiment figure {
+        margin: 0;
+      }
+      .chart {
+        border-block: 1px solid #a3b59a;
+        padding: 22px 0;
+      }
+      .chart-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        font: 9px monospace;
+      }
+      .chart svg {
+        width: 100%;
+        height: 270px;
+        overflow: visible;
+      }
+      .chart figcaption {
+        font: 10px/1.7 monospace;
+        color: #5b705d;
+        margin-top: 12px;
+      }
+      .slider {
+        margin-top: 22px;
+        font: 11px monospace;
+      }
+      .slider label {
+        display: flex;
+        justify-content: space-between;
+      }
+      input[type="range"] {
+        width: 100%;
+        margin-top: 18px;
+        accent-color: #476a41;
+        cursor: pointer;
+      }
+      .reading {
+        min-height: 54px;
+        font-size: 12px !important;
+        color: #476440;
+        max-width: none !important;
+      }
+      .index {
+        background: #dce2d0;
+        padding: 58px 5% 70px;
+      }
+      .index-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 50px;
+      }
+      .index h2 {
+        font:
+          58px Instrument,
+          Georgia,
+          serif;
+        margin: 0;
+      }
+      .index-head p {
+        font: 10px/1.7 monospace;
+        max-width: 30ch;
+      }
+      .index article {
+        display: grid;
+        grid-template-columns: 130px 1fr 120px;
+        border-top: 1px solid #a5b39b;
+        padding: 26px 0;
+        gap: 25px;
+      }
+      .index article:first-of-type {
+        margin-top: 35px;
+      }
+      .index article > span {
+        font: 10px monospace;
+      }
+      .index h3 {
+        font-size: 22px;
+        line-height: 1.3;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+        margin: 0 0 12px;
+      }
+      .index article p {
+        font-size: 12px;
+        margin: 0;
+        max-width: 58ch;
+        color: #4a634c;
+      }
+      .method {
+        padding: 64px 5%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12%;
+      }
+      .method h2 {
+        font:
+          51px/1.02 Instrument,
+          Georgia,
+          serif;
+        margin: 22px 0;
+      }
+      .method p {
+        font-size: 13px;
+        max-width: 45ch;
+      }
+      .method ol {
+        font-size: 13px;
+        padding-left: 20px;
+      }
+      .method li {
+        padding: 15px 0;
+        border-bottom: 1px solid #bac6b0;
+      }
+      footer {
+        border-top: 1px solid #bac6b0;
+        padding: 27px 5%;
+        display: flex;
+        justify-content: space-between;
+        font: 10px monospace;
+        gap: 20px;
+      }
+      @media (max-width: 700px) {
+        header {
+          padding: 22px 6%;
+        }
+        nav {
+          gap: 15px;
+          font-size: 10px;
+        }
+        .hero {
+          padding: 35px 6% 0;
+        }
+        .hero-top {
+          font-size: 8px;
+        }
+        .hero-top span:last-child {
+          display: none;
+        }
+        .hero h1 {
+          font-size: 20vw;
+          margin-top: 42px;
+        }
+        .thesis,
+        .experiment,
+        .method {
+          grid-template-columns: 1fr;
+          gap: 25px;
+        }
+        .thesis > p {
+          font-size: 13px;
+        }
+        .landscape {
+          height: 190px;
+        }
+        .experiment {
+          padding: 45px 6%;
+        }
+        .experiment h2 {
+          font-size: 47px;
+        }
+        .chart {
+          margin-top: 12px;
+        }
+        .index {
+          padding: 42px 6%;
+        }
+        .index h2 {
+          font-size: 45px;
+        }
+        .index-head {
+          display: block;
+        }
+        .index article {
+          grid-template-columns: 1fr;
+          gap: 13px;
+        }
+        .index article > span:last-child {
+          display: none;
+        }
+        .method {
+          padding: 45px 6%;
+        }
+        footer {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="#top"
+        >fieldwork<span aria-hidden="true"> ⊕</span></a
+      >
+      <nav aria-label="Primary">
+        <a href="#experiment">Experiment</a><a href="#notes">Field notes</a
+        ><a href="#method">Method</a>
+      </nav>
+    </header>
+    <main>
+      <section class="hero" id="top">
+        <div class="hero-top">
+          <span>Independent inquiry / An illustrative research institute</span
+          ><span>FIELD NOTES, VOL. 01</span>
+        </div>
+        <h1>The shape<br />of <em>change.</em></h1>
+        <div class="thesis">
+          <p>
+            A single measurement is a moment. A series begins to tell a story.
+            We study how patterns shift—and what those shifts might reveal.
+          </p>
+          <a href="#experiment">Explore the signal experiment <span>↓</span></a>
+        </div>
+        <svg class="landscape" viewBox="0 0 1200 280" aria-hidden="true">
+          <defs>
+            <pattern
+              id="grid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M40 0H0V40"
+                fill="none"
+                stroke="#bdce9e"
+                stroke-opacity=".15"
+              />
+            </pattern>
+          </defs>
+          <rect width="1200" height="280" fill="url(#grid)" />
+          <g fill="none" stroke="#bfd291" stroke-width="1">
+            <path d="M0 180Q170 220 310 110T650 120T980 60T1200 140" />
+            <path d="M0 192Q170 232 310 125T650 130T980 77T1200 156" />
+            <path d="M0 206Q170 246 310 140T650 142T980 95T1200 172" />
+            <path d="M0 220Q170 260 310 155T650 154T980 113T1200 188" />
+            <path d="M0 234Q170 274 310 170T650 166T980 131T1200 204" />
+            <path d="M0 248Q170 288 310 185T650 178T980 149T1200 220" />
+            <path d="M0 166Q170 206 310 95T650 108T980 42T1200 124" />
+            <path d="M0 152Q170 192 310 80T650 96T980 24T1200 108" />
+          </g>
+          <g fill="#d6e5b5">
+            <circle cx="310" cy="110" r="4" />
+            <circle cx="650" cy="120" r="4" />
+            <circle cx="980" cy="60" r="4" />
+          </g>
+        </svg>
+      </section>
+      <section class="experiment" id="experiment">
+        <div>
+          <p class="label">01 / A question you can touch</p>
+          <h2>How much signal<br /><em>survives the noise?</em></h2>
+          <p>
+            Move the slider to add synthetic noise to the same underlying wave.
+            The original signal stays visible so you can compare the two.
+          </p>
+          <p>
+            This is a teaching illustration, not measured data or a scientific
+            result.
+          </p>
+        </div>
+        <figure>
+          <div class="chart">
+            <div class="chart-top">
+              <span>FIG. 01 / NORMALIZED AMPLITUDE</span
+              ><span>— SIGNAL &nbsp; ·· OBSERVATION</span>
+            </div>
+            <svg
+              viewBox="0 0 600 260"
+              role="img"
+              aria-labelledby="chart-title chart-desc"
+            >
+              <title id="chart-title">
+                Synthetic signal and noisy observation
+              </title>
+              <desc id="chart-desc">
+                A smooth wave and a dotted noisy wave, with noise amplitude set
+                to 20 percent.
+              </desc>
+              <g stroke="#aabb9e" stroke-width=".7" fill="none">
+                <path d="M25 30V225H580M25 130H580M25 80H580M25 180H580" />
+              </g>
+              <path
+                id="signal"
+                d="M25 130Q85 20 150 130T275 130T400 130T525 130T580 130"
+                fill="none"
+                stroke="#486c3d"
+                stroke-width="2.5"
+              />
+              <path
+                id="observation"
+                d="M25 130Q85 35 150 120T275 142T400 120T525 143T580 130"
+                fill="none"
+                stroke="#956245"
+                stroke-width="1.5"
+                stroke-dasharray="3 3"
+              />
+              <g fill="#476341" font-family="monospace" font-size="10">
+                <text x="25" y="250">0</text>
+                <text x="552" y="250">TIME →</text>
+              </g>
+            </svg>
+            <figcaption>
+              Green: underlying wave. Brown dotted line: the same wave plus
+              deterministic synthetic noise.
+            </figcaption>
+          </div>
+          <div class="slider" id="slider-controls" hidden>
+            <label for="noise"
+              >Noise amplitude
+              <output for="noise" id="noise-value">20%</output></label
+            ><input
+              id="noise"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value="20"
+            />
+          </div>
+          <p class="reading" id="reading" aria-live="polite">
+            At low noise, the repeating pattern remains easy to follow.
+          </p>
+        </figure>
+      </section>
+      <section class="index" id="notes">
+        <div class="index-head">
+          <h2>From the field.</h2>
+          <p>
+            ILLUSTRATIVE EDITORIAL INDEX<br />These are concept summaries, not
+            real publications.
+          </p>
+        </div>
+        <article>
+          <span>NOTE 001 / METHODS</span>
+          <div>
+            <h3>What a single snapshot leaves out</h3>
+            <p>
+              Why a sequence can reveal variation that disappears in an
+              average—and why that still does not establish a cause.
+            </p>
+          </div>
+          <span>READING TIME / 04</span>
+        </article>
+        <article>
+          <span>NOTE 002 / MEASUREMENT</span>
+          <div>
+            <h3>Start with the uncertainty</h3>
+            <p>
+              Record sampling conditions and limitations alongside the
+              observation. A precise display is not proof of a precise
+              measurement.
+            </p>
+          </div>
+          <span>READING TIME / 06</span>
+        </article>
+      </section>
+      <section class="method" id="method">
+        <div>
+          <p class="label">An open method.</p>
+          <h2>Make the question<br /><em>inspectable.</em></h2>
+          <p>
+            This study shows a research site's hierarchy: thesis, manipulable
+            explanation, evidence index, then methods. Replace synthetic data
+            and sample articles with validated research before publication.
+          </p>
+        </div>
+        <ol>
+          <li>State the hypothesis and what would disprove it.</li>
+          <li>Expose the measurement, assumptions, and limitations.</li>
+          <li>Show uncertainty with the result.</li>
+          <li>Link to reproducible methods and source data.</li>
+        </ol>
+      </section>
+    </main>
+    <footer>
+      <span>Fieldwork / Original research-site study</span
+      ><a href="../index.html">All studies ↗</a>
+    </footer>
+    <script>
+      const slider = document.querySelector("#noise");
+      function draw() {
+        const amplitude = Number(slider.value);
+        let original = "",
+          observed = "";
+        for (let x = 25; x <= 580; x += 3) {
+          const signal = 130 - Math.sin((x - 25) / 43) * 63;
+          const noise =
+            (Math.sin(x * 2.17) * 0.6 + Math.sin(x * 0.79) * 0.4) *
+            amplitude *
+            0.48;
+          original += (x === 25 ? "M" : "L") + x + " " + signal.toFixed(2);
+          observed +=
+            (x === 25 ? "M" : "L") + x + " " + (signal + noise).toFixed(2);
+        }
+        document.querySelector("#signal").setAttribute("d", original);
+        document.querySelector("#observation").setAttribute("d", observed);
+        document.querySelector("#noise-value").textContent = amplitude + "%";
+        document.querySelector("#chart-desc").textContent =
+          "A smooth wave compared with a noisy observation. Synthetic noise amplitude is " +
+          amplitude +
+          " percent.";
+        document.querySelector("#reading").textContent =
+          amplitude < 35
+            ? "At low noise, the repeating pattern remains easy to follow."
+            : amplitude < 70
+              ? "The observation varies more, while the underlying pattern is unchanged."
+              : "At high noise, individual peaks become unreliable guides to the underlying pattern.";
+      }
+      document.querySelector("#slider-controls").hidden = false;
+      slider.addEventListener("input", draw);
+      draw();
+    </script>
+  </body>
+</html>

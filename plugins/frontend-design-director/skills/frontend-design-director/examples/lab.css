@@ -1,0 +1,47 @@
+@import "tailwindcss";
+body {
+  background: #f8f6f1;
+  color: #242721;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+:focus-visible {
+  outline: 3px solid #385fbc;
+  outline-offset: 4px;
+}
+[hidden] {
+  display: none !important;
+}
+.scroll-grid {
+  display: grid;
+  gap: 24px;
+}
+.story-visual {
+  display: grid;
+  gap: 12px;
+  align-self: start;
+}
+.story-frame {
+  padding: 30px;
+  background: #dce2d0;
+  min-height: 220px;
+}
+.story-step {
+  padding: 45px 0;
+  border-bottom: 1px solid #adb89f;
+}
+.story-step h3 {
+  font-size: 28px;
+}
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .scroll-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+  }
+  [data-scroll-enhanced="true"] .story-frame {
+    grid-area: 1/1;
+  }
+  .story-step {
+    min-height: 75vh;
+  }
+}

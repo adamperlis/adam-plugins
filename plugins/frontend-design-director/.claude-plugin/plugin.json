@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "frontend-design-director",
+  "description": "Route, design, build, and critique distinctive marketing sites using archetype-specific frontend direction.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Perlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/frontend-design-director",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "frontend",
+    "design",
+    "marketing-sites",
+    "landing-pages",
+    "ui",
+    "motion"
+  ]
+}

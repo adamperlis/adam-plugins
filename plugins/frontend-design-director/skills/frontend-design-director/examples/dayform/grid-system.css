@@ -1,0 +1,1067 @@
+/* Explicit design layer. 8px layout grid; component type budgets: 12 / 16 / 24.
+   Editorial display is 64 (40 mobile). Native icon geometry and 1px rules excepted. */
+:root {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-10: 80px;
+  --radius: 24px;
+  --inset: 24px;
+  --serif: Besley, Georgia, serif;
+  font-family: Onest, Arial, sans-serif;
+}
+button,
+input {
+  font-family: inherit;
+}
+strong,
+b {
+  font-weight: 600;
+}
+.wrap {
+  width: min(1200px, calc(100% - 80px));
+}
+.site-header {
+  height: 96px;
+  gap: 48px;
+}
+.site-header nav,
+.nav-actions {
+  gap: 24px;
+  font-size: 12px;
+}
+.button,
+.button.small {
+  padding: 16px 24px;
+  font-size: 16px;
+  gap: 24px;
+  border-radius: 8px;
+}
+.site-header .button {
+  padding: 16px;
+  font-size: 12px;
+  gap: 16px;
+}
+.brand {
+  font-weight: 600;
+}
+.hero {
+  padding: 48px 0;
+  gap: 64px;
+  grid-template-columns: 1.3fr 1fr;
+}
+.eyebrow {
+  font-size: 12px;
+  gap: 8px;
+  letter-spacing: 1px;
+}
+.hero h1 {
+  font-size: 64px;
+  margin-top: 24px;
+  line-height: 1.2;
+  letter-spacing: -3.5px;
+}
+.hero-copy {
+  padding: 0 0 0 32px;
+  font-size: 16px;
+}
+.hero-copy .muted {
+  font-size: 16px;
+  margin: 16px 0 24px;
+  max-width: 360px;
+}
+.hero-copy small {
+  font-size: 12px;
+  margin-top: 16px;
+}
+.work-tabs {
+  border-radius: 24px 24px 0 0;
+}
+.work-tabs button {
+  padding: 24px;
+  gap: 16px;
+}
+.work-tabs button > span:nth-child(2) {
+  font-size: 16px;
+}
+.step-no,
+.work-tabs small {
+  font-size: 12px;
+}
+.step-no {
+  padding-top: 0;
+}
+.work-tabs small {
+  margin-top: 8px;
+  line-height: 1.4;
+}
+.work-stage {
+  padding: 40px 64px;
+  border-radius: 0 0 24px 24px;
+}
+.stage-rail {
+  inset: 24px auto 24px 16px;
+  gap: 24px;
+}
+.app-window {
+  border-radius: 16px;
+}
+.app-nav {
+  height: 48px;
+  padding: 0 24px;
+  gap: 24px;
+  font-size: 12px;
+}
+.app-nav b {
+  font-size: 24px;
+  margin-right: 16px;
+}
+.app-nav .chosen {
+  height: 48px;
+}
+.avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+.app-body {
+  padding: 24px 24px 0;
+}
+.app-title {
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.mini-label,
+.date {
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.app-title h3 {
+  font-size: 24px;
+  margin-top: 8px;
+}
+.week {
+  font-size: 12px;
+}
+.week > div {
+  padding: 8px 16px 16px;
+}
+.week strong {
+  font-size: 16px;
+  margin-top: 8px;
+}
+.time-row {
+  padding: 16px 0;
+  gap: 16px;
+  font-size: 16px;
+}
+.time-row p {
+  font-size: 12px;
+  margin-top: 8px;
+}
+.time-row p span {
+  margin: 0 8px;
+}
+.time-row time {
+  font-size: 16px;
+}
+.project-dot {
+  height: 24px;
+}
+.timer-control {
+  padding: 8px 16px;
+  gap: 8px;
+  font-size: 12px;
+  min-width: 128px;
+  min-height: 40px;
+  border-radius: 8px;
+}
+.row-note {
+  width: 128px;
+  font-size: 12px;
+}
+.app-foot {
+  font-size: 12px;
+  padding: 16px 0;
+  gap: 16px;
+}
+.app-foot .icon {
+  margin-right: 8px;
+}
+.floating-note {
+  position: static;
+  margin: 16px 0 0 auto;
+  width: fit-content;
+  padding: 16px 24px;
+  gap: 16px;
+  border-radius: 8px;
+}
+.floating-note strong,
+.floating-note p {
+  font-size: 12px;
+}
+.floating-note > span {
+  margin-top: 0;
+}
+.floating-note p {
+  margin-top: 8px;
+}
+.scene-caption {
+  padding: 16px 0;
+  gap: 16px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+#background-toggle {
+  font-size: 12px;
+  padding: 8px;
+  border-radius: 8px;
+}
+.belief {
+  padding: 48px 0;
+  gap: 32px;
+}
+.belief p {
+  font-size: 16px;
+}
+.belief > div {
+  gap: 24px;
+  font-size: 12px;
+}
+.details {
+  padding-top: 80px;
+}
+.section-heading {
+  gap: 32px;
+  margin-bottom: 40px;
+}
+.section-heading h2 {
+  font-size: 40px;
+  margin-top: 16px;
+}
+.section-heading > p {
+  font-size: 16px;
+  margin: 0;
+  max-width: 400px;
+}
+.feature-grid {
+  gap: 16px;
+}
+.feature {
+  border-radius: var(--radius);
+}
+.feature-copy {
+  padding: var(--inset) var(--inset) 0;
+}
+.feature-number {
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.feature h3 {
+  font-size: 24px;
+  margin: 16px 0;
+  line-height: 1.3;
+}
+.feature-copy p {
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+}
+.feature-copy a {
+  margin-top: 24px;
+  font-size: 12px;
+  gap: 16px;
+}
+.art {
+  margin-top: 32px;
+  height: 320px;
+}
+.calendar {
+  padding: 24px;
+  border-radius: 0;
+  width: calc(100% - 48px);
+  margin-left: 48px;
+}
+.cal-head {
+  font-size: 12px;
+  padding-bottom: 24px;
+}
+.cal-head span,
+.cal-hour {
+  font-size: 12px;
+}
+.cal-hour {
+  height: 72px;
+  padding-top: 8px;
+}
+.event {
+  left: 48px;
+  padding: 16px;
+  font-size: 12px;
+}
+.event small {
+  font-size: 12px;
+  margin-top: 8px;
+}
+.entry-slip {
+  left: 24px;
+  bottom: 40px;
+  padding: 16px;
+  gap: 16px;
+  width: calc(100% - 72px);
+  border-radius: 8px;
+}
+.entry-slip strong,
+.entry-slip small {
+  font-size: 12px;
+}
+.entry-slip small {
+  margin-top: 8px;
+}
+.entry-slip b {
+  font-size: 16px;
+}
+.budget-sheet {
+  margin: 0 24px;
+  width: calc(100% - 48px);
+  padding: 24px;
+  border-radius: 0;
+}
+.budget-value {
+  font-size: 24px;
+  margin: 16px 0 24px;
+  letter-spacing: -0.5px;
+}
+.budget-value span {
+  font-size: 16px;
+}
+.budget-meter {
+  height: 16px;
+  border-radius: 0;
+}
+.budget-legend {
+  font-size: 12px;
+  margin-top: 16px;
+  gap: 8px;
+}
+.budget-sheet hr {
+  margin: 24px 0 16px;
+}
+.budget-task {
+  font-size: 12px;
+  padding: 8px 0;
+}
+.team-sheet {
+  padding: 24px;
+  margin: 8px 24px 0;
+  width: calc(100% - 24px);
+  border-radius: 0;
+}
+.person-row {
+  gap: 16px;
+  font-size: 12px;
+  margin: 8px 0 24px;
+}
+.person-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+.person-row i {
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 0;
+}
+.person-row > b {
+  font-size: 12px;
+}
+.team-legend {
+  gap: 8px;
+  margin-left: 48px;
+  font-size: 12px;
+}
+.team-legend > span {
+  width: 8px;
+  height: 8px;
+}
+.team-legend > span:nth-of-type(2) {
+  margin-left: 8px;
+}
+.mini-invoice {
+  width: calc(100% - 80px);
+  margin-left: 40px;
+  padding: 24px;
+  border-radius: 0;
+}
+.invoice-top {
+  font-size: 12px;
+  letter-spacing: 0;
+  gap: 16px;
+}
+.mini-invoice h4 {
+  font-size: 24px;
+  margin: 24px 0;
+}
+.invoice-line {
+  font-size: 12px;
+  padding: 16px 0;
+  gap: 16px;
+}
+.invoice-sum {
+  padding: 24px 0;
+  font-size: 12px;
+}
+.invoice-sum strong {
+  font-size: 24px;
+}
+.payment-slip {
+  right: 24px;
+  bottom: 24px;
+  padding: 16px 24px;
+  gap: 16px;
+  border-radius: 8px;
+}
+.payment-slip strong,
+.payment-slip small {
+  font-size: 12px;
+}
+.payment-slip small {
+  margin-top: 8px;
+}
+.illustration-note {
+  font-size: 12px;
+  margin-top: 16px;
+}
+.integration {
+  gap: 80px;
+  padding: 80px 0;
+}
+.integration h2 {
+  margin-top: 16px;
+  font-size: 40px;
+}
+.integration-right {
+  padding-top: 24px;
+}
+.integration-right > p {
+  font-size: 16px;
+}
+.integration-names {
+  gap: 24px;
+  font-size: 16px;
+  margin: 24px 0;
+}
+.text-link {
+  font-size: 12px;
+  gap: 24px;
+}
+.closing-inner {
+  padding: 64px 0;
+}
+.closing h2 {
+  font-size: 64px;
+  margin: 24px 0 32px;
+}
+.closing-inner > p:last-of-type {
+  font-size: 12px;
+  margin-top: 16px;
+}
+footer {
+  padding: 40px 0 32px;
+  gap: 32px;
+}
+footer nav {
+  gap: 24px;
+}
+footer > p {
+  padding-top: 24px;
+  font-size: 12px;
+}
+.footer-brand {
+  font-size: 24px;
+}
+.report-stats {
+  gap: 64px;
+  padding: 16px 0 24px;
+}
+.report-stats small {
+  font-size: 12px;
+}
+.report-stats strong {
+  font-size: 24px;
+  margin-top: 16px;
+}
+.report-stats strong span {
+  font-size: 16px;
+  margin-left: 8px;
+}
+.status {
+  padding: 8px 16px;
+  font-size: 12px;
+  border-radius: 16px;
+}
+.report-chart {
+  padding: 16px 0 24px;
+}
+.chart-label {
+  font-size: 16px;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.chart-label span {
+  font-size: 12px;
+}
+.bar-row {
+  font-size: 12px;
+  gap: 24px;
+  margin: 16px 0;
+}
+.bar-row > span {
+  width: 96px;
+}
+.bar-row i {
+  height: 24px;
+  border-radius: 0;
+}
+.invoice-layout {
+  gap: 48px;
+}
+.invoice-context h3 {
+  font-size: 24px;
+  margin: 24px 0;
+}
+.invoice-context p {
+  font-size: 16px;
+}
+.invoice-context .button {
+  font-size: 12px;
+  padding: 16px;
+  margin-top: 24px;
+}
+.invoice-context .invoice-feedback {
+  font-size: 12px;
+  margin-top: 16px;
+}
+.invoice-paper {
+  padding: 24px;
+}
+.invoice-paper h4 {
+  font-size: 24px;
+  margin: 24px 0;
+}
+.invoice-paper h4 span {
+  font:
+    12px Onest,
+    Arial,
+    sans-serif;
+  margin-left: 8px;
+}
+.invoice-address {
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+.invoice-thanks {
+  font-size: 12px;
+  padding-top: 16px;
+}
+.invoice-paper #invoice-state {
+  padding: 8px;
+}
+.invoice-paper {
+  border-radius: 0;
+}
+/* Optional developer view: grid at page level, safe/content areas per component. */
+@media (max-width: 680px) {
+  .site-header.wrap {
+    height: auto;
+    min-height: 80px;
+    flex-wrap: wrap;
+    padding: 16px 0;
+    row-gap: 16px;
+  }
+  .site-header nav {
+    display: flex;
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .site-header nav a:nth-child(3) {
+    display: block;
+  }
+  .nav-actions {
+    margin-left: auto;
+  }
+}
+.layout-inspector {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 100;
+  background: #fff;
+  color: #232820;
+  border: 1px solid #c9ccc1;
+  border-radius: 8px;
+  padding: 16px;
+  font:
+    12px Onest,
+    Arial,
+    sans-serif;
+  box-shadow: 0 8px 24px #0002;
+}
+.layout-inspector summary {
+  cursor: pointer;
+}
+.layout-inspector label {
+  display: block;
+  margin-top: 16px;
+}
+.layout-inspector input {
+  margin-right: 8px;
+}
+.layout-inspector p {
+  max-width: 240px;
+  line-height: 1.5;
+  margin-top: 16px;
+}
+.show-grid:after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  background:
+    linear-gradient(#dc641e20 1px, transparent 1px),
+    linear-gradient(90deg, #dc641e20 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+.show-safe .feature-copy,
+.show-safe .app-body {
+  outline: 1px dashed #a33bba;
+  outline-offset: -24px;
+  background-color: #b05bcc08;
+}
+.show-safe .feature {
+  outline: 1px solid #588654;
+}
+.show-safe .art {
+  outline: 1px dashed #227cbe;
+  outline-offset: -1px;
+}
+@media (max-width: 1000px) {
+  .wrap {
+    width: calc(100% - 48px);
+  }
+  .site-header {
+    gap: 24px;
+  }
+  .site-header nav {
+    gap: 16px;
+  }
+  .hero {
+    gap: 32px;
+  }
+  .hero h1 {
+    font-size: 48px;
+  }
+  .hero-copy {
+    padding-left: 0;
+  }
+  .work-tabs button {
+    padding: 16px;
+    gap: 8px;
+  }
+  .work-stage {
+    padding: 32px;
+  }
+  .stage-rail {
+    display: none;
+  }
+  .section-heading > p {
+    max-width: 320px;
+  }
+  .belief > div {
+    gap: 16px;
+  }
+  .integration {
+    gap: 32px;
+  }
+  .invoice-layout {
+    gap: 24px;
+  }
+  .invoice-top {
+    gap: 8px;
+  }
+  .invoice-address {
+    gap: 8px;
+  }
+  .report-stats {
+    gap: 32px;
+  }
+}
+@media (max-width: 680px) {
+  .wrap {
+    width: calc(100% - 32px);
+  }
+  .site-header {
+    height: 80px;
+    gap: 16px;
+  }
+  .brand img {
+    width: 112px;
+  }
+  .site-header .button {
+    padding: 16px;
+    font-size: 12px;
+    gap: 8px;
+  }
+  .hero {
+    padding: 32px 0;
+  }
+  .eyebrow {
+    font-size: 12px;
+  }
+  .hero h1 {
+    font-size: 40px;
+    letter-spacing: -2px;
+    margin-top: 16px;
+  }
+  .hero-copy {
+    padding-top: 24px;
+    font-size: 16px;
+  }
+  .hero-copy .muted {
+    font-size: 16px;
+    margin: 0 0 24px;
+  }
+  .hero-copy .button {
+    font-size: 16px;
+    padding: 16px 24px;
+    gap: 24px;
+  }
+  .hero-copy small {
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .work-tabs button {
+    padding: 16px 8px;
+    gap: 8px;
+    min-height: 80px;
+  }
+  .work-tabs button > span:nth-child(2),
+  .step-no {
+    font-size: 12px;
+  }
+  .step-no {
+    display: none;
+  }
+  .work-stage {
+    padding: 16px 8px 24px;
+  }
+  .app-nav {
+    height: 48px;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .app-nav b {
+    font-size: 24px;
+  }
+  .app-nav .chosen {
+    font-size: 12px;
+    height: 48px;
+  }
+  .app-body {
+    padding: 24px 16px 0;
+  }
+  .app-title {
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+  .app-title h3,
+  .review-window .app-title h3 {
+    font-size: 24px;
+    margin-top: 8px;
+  }
+  .mini-label {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .week > div {
+    font-size: 12px;
+    padding: 8px 0 16px;
+  }
+  .week strong {
+    font-size: 12px;
+  }
+  .time-row {
+    font-size: 16px;
+    padding: 16px 0;
+    gap: 8px;
+  }
+  .time-row p {
+    font-size: 12px;
+    margin-top: 8px;
+    max-width: 176px;
+    line-height: 1.5;
+  }
+  .time-row p span {
+    margin: 0;
+  }
+  .time-row time {
+    font-size: 16px;
+  }
+  .timer-control {
+    font-size: 12px;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+  .active-entry .timer-control {
+    margin-left: 0;
+    min-height: 40px;
+  }
+  .app-foot {
+    font-size: 12px;
+    padding: 16px 0;
+  }
+  .scene-caption {
+    font-size: 12px;
+    padding: 16px 0;
+    line-height: 1.5;
+  }
+  .scene-caption > span:last-child {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  #background-toggle {
+    margin: 8px 0 0;
+    font-size: 12px;
+  }
+  .belief {
+    padding: 32px 0;
+    gap: 16px;
+  }
+  .belief p {
+    font-size: 16px;
+  }
+  .belief > div {
+    font-size: 12px;
+    gap: 16px;
+    max-width: 128px;
+  }
+  .details {
+    padding-top: 48px;
+  }
+  .section-heading {
+    margin-bottom: 24px;
+  }
+  .section-heading h2 {
+    font-size: 32px;
+    margin-top: 16px;
+  }
+  .section-heading > p {
+    font-size: 16px;
+    margin-top: 24px;
+  }
+  .feature {
+    margin-bottom: 16px;
+  }
+  .feature-copy {
+    padding: 24px 24px 0;
+  }
+  .feature-number {
+    font-size: 12px;
+  }
+  .feature h3 {
+    font-size: 24px;
+    margin: 16px 0;
+  }
+  .feature-copy p {
+    font-size: 16px;
+  }
+  .feature-copy a {
+    font-size: 12px;
+    margin-top: 24px;
+    gap: 16px;
+  }
+  .art {
+    height: 304px;
+    margin-top: 32px;
+  }
+  .calendar {
+    padding: 16px;
+    margin-left: 24px;
+    width: calc(100% - 24px);
+  }
+  .entry-slip {
+    left: 16px;
+    bottom: 32px;
+    width: calc(100% - 32px);
+    padding: 16px;
+    gap: 8px;
+  }
+  .entry-slip strong,
+  .entry-slip small {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .budget-sheet {
+    padding: 24px;
+    margin: 0 24px;
+    width: calc(100% - 48px);
+  }
+  .budget-value {
+    font-size: 24px;
+  }
+  .budget-value span {
+    font-size: 12px;
+  }
+  .budget-legend {
+    flex-wrap: wrap;
+  }
+  .team-sheet {
+    padding: 16px;
+    margin-left: 24px;
+    width: calc(100% - 24px);
+  }
+  .person-row {
+    gap: 8px;
+  }
+  .team-legend {
+    margin-left: 0;
+    font-size: 12px;
+  }
+  .mini-invoice {
+    padding: 24px;
+    margin-left: 24px;
+    width: calc(100% - 24px);
+  }
+  .invoice-top {
+    font-size: 12px;
+    gap: 16px;
+  }
+  .mini-invoice h4 {
+    font-size: 24px;
+  }
+  .payment-slip {
+    right: 16px;
+    bottom: 24px;
+    padding: 16px;
+    gap: 16px;
+  }
+  .illustration-note {
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .integration {
+    padding: 48px 0;
+  }
+  .integration h2 {
+    font-size: 32px;
+  }
+  .integration-right {
+    padding-top: 24px;
+  }
+  .integration-right > p {
+    font-size: 16px;
+  }
+  .integration-names {
+    font-size: 16px;
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .closing-inner {
+    padding: 48px 0;
+  }
+  .closing h2 {
+    font-size: 40px;
+    margin: 24px 0;
+  }
+  .closing .button {
+    font-size: 16px;
+    padding: 16px 24px;
+  }
+  .closing-inner > p:last-of-type {
+    font-size: 12px;
+  }
+  footer {
+    padding: 32px 0;
+    gap: 24px;
+  }
+  footer nav,
+  footer > p {
+    font-size: 12px;
+  }
+  footer nav {
+    gap: 16px;
+  }
+  .report-stats {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .report-stats small {
+    font-size: 12px;
+  }
+  .report-stats strong {
+    font-size: 24px;
+  }
+  .report-stats strong span {
+    font-size: 16px;
+  }
+  .status {
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .bar-row {
+    font-size: 12px;
+    gap: 8px;
+  }
+  .bar-row > span {
+    width: 88px;
+  }
+  .bar-row i {
+    height: 16px;
+  }
+  .invoice-layout {
+    padding: 8px;
+    gap: 24px;
+  }
+  .invoice-context h3 {
+    font-size: 24px;
+    margin: 16px 0;
+  }
+  .invoice-context p {
+    font-size: 16px;
+  }
+  .invoice-context .button {
+    font-size: 12px;
+    margin-top: 16px;
+  }
+  .invoice-layout .invoice-feedback {
+    font-size: 12px;
+  }
+  .invoice-paper {
+    padding: 24px 16px;
+  }
+  .invoice-paper h4 {
+    font-size: 24px;
+  }
+  .invoice-line {
+    font-size: 12px;
+    padding: 16px 0;
+  }
+  .invoice-top {
+    font-size: 12px;
+  }
+  .invoice-address {
+    flex-wrap: wrap;
+  }
+  .layout-inspector {
+    font-size: 12px;
+    max-width: 250px;
+  }
+}

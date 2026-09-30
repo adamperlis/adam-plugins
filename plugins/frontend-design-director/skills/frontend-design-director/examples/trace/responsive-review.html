@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>TRACE responsive review</title
+  ><style>
+    body {
+      margin: 0;
+      background: #d9d9d3;
+      font:
+        14px Arial,
+        sans-serif;
+    }
+    header {
+      padding: 12px 20px;
+    }
+    button {
+      padding: 8px;
+      margin-right: 8px;
+    }
+    iframe {
+      display: block;
+      border: 0;
+      margin: 0 auto;
+      width: 390px;
+      height: 844px;
+      background: #10110f;
+    }
+  </style>
+  <header>
+    Viewport: <button data-width="320">320</button
+    ><button data-width="390">390</button><button data-width="768">768</button
+    ><output id="metrics"></output
+    ><label style="display: block; margin-top: 8px"
+      ><input type="checkbox" id="static" /> Disable frame scripts</label
+    >
+  </header>
+  <iframe src="./index.html" title="TRACE responsive preview"></iframe>
+  <script>
+    const frame = document.querySelector("iframe");
+    function measure() {
+      const doc = frame.contentDocument;
+      if (!doc?.body) return;
+      document.querySelector("#metrics").textContent =
+        `Document ${doc.documentElement.scrollWidth}px / Viewport ${frame.contentWindow.innerWidth}px`;
+    }
+    frame.addEventListener("load", () => {
+      new ResizeObserver(measure).observe(frame);
+      measure();
+    });
+    document.querySelectorAll("button").forEach((b) =>
+      b.addEventListener("click", () => {
+        frame.style.width = b.dataset.width + "px";
+        requestAnimationFrame(measure);
+      }),
+    );
+    document.querySelector("#static").addEventListener("change", (e) => {
+      if (e.target.checked) frame.setAttribute("sandbox", "allow-same-origin");
+      else frame.removeAttribute("sandbox");
+      frame.src = "./index.html";
+    });
+  </script>
+</html>

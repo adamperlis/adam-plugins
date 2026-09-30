@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Studies in form & function — Frontend Design Director</title>
+    <link rel="stylesheet" href="assets/fonts.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f1f0e9;
+        color: #242721;
+        font-family: Manrope, Arial, sans-serif;
+      }
+      main {
+        max-width: 1320px;
+        margin: auto;
+        padding: 50px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #bbbfb0;
+        padding-bottom: 22px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      h1 {
+        font:
+          clamp(60px, 8vw, 115px) / 0.95 Instrument,
+          Georgia,
+          serif;
+        letter-spacing: -0.04em;
+        margin: 70px 0 24px;
+      }
+      h1 em {
+        color: #747d58;
+      }
+      p {
+        max-width: 580px;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      a:focus-visible {
+        outline: 3px solid #305ac3;
+        outline-offset: 6px;
+      }
+      .studies {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 60px;
+      }
+      .study {
+        display: block;
+      }
+      .cover {
+        height: 320px;
+        padding: 32px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.3s;
+      }
+      .study:hover .cover {
+        transform: translateY(-4px);
+      }
+      .cover small {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .cover strong {
+        font-size: 60px;
+        line-height: 1;
+        letter-spacing: -3px;
+        font-weight: 500;
+      }
+      .cover em {
+        font-family: Instrument, Georgia, serif;
+      }
+      .north {
+        background: #f1c8bb;
+      }
+      .lilt {
+        background: #233d87;
+        color: #f6e6bf;
+      }
+      .lilt strong {
+        font:
+          italic 100px Instrument,
+          serif;
+      }
+      .relay {
+        background: #eb5628;
+        color: #201b16;
+      }
+      .field {
+        background: #142924;
+        color: #d8e799;
+      }
+      .field strong {
+        font-family: Instrument, serif;
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        font-size: 12px;
+        padding: 16px 0 25px;
+      }
+      .meta span {
+        color: #64655d;
+        font-size: 10px;
+      }
+      .note {
+        margin: 30px 0;
+        border-block: 1px solid #bfc3b5;
+        padding: 25px 0;
+        display: flex;
+        gap: 30px;
+        justify-content: space-between;
+        font-size: 12px;
+      }
+      .note a {
+        text-decoration: underline;
+      }
+      footer {
+        font-size: 11px;
+        color: #64655d;
+        margin-top: 45px;
+      }
+      @media (max-width: 650px) {
+        main {
+          padding: 25px;
+        }
+        .studies {
+          grid-template-columns: 1fr;
+        }
+        .cover {
+          height: 280px;
+        }
+        header {
+          font-size: 8px;
+        }
+        .note {
+          display: block;
+        }
+        .note a {
+          display: block;
+          margin-top: 15px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .cover {
+          transition: none;
+        }
+        .study:hover .cover {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <span>Frontend Design Director</span
+        ><span>Volume 01 / Original code studies</span>
+      </header>
+      <h1>Studies in<br />form <em>& function.</em></h1>
+      <p><a href="trace/index.html"><strong>New: TRACE ↗</strong> — Inspect a failed agent run. Replay with better evidence.</a></p>
+      <p><a href="concepts/index.html"><strong>Three Dayform directions ↗</strong></a> — Closing Time, The Working Ledger, and Room for the Work. Distinct responsive prototypes with working product demonstrations.</p>
+      <p><a href="dayform/index.html">Previous Dayform exploration</a> — Retained for comparison; not the selected direction.</p>
+      <p><a href="reference-ui/index.html"><strong>Direct UI studies ↗</strong></a> — Four independent compositions studied from Cursor, Linear, Firecrawl, and ElevenLabs.</p>
+      <p><a href="structures/index.html"><strong>Structural reference library ↗</strong></a> — Three runnable, source-attributed layout studies with borrowable HTML, CSS, and JavaScript.</p>
+      <p>
+        Original products and contrasting visual arguments. Open a study,
+        try the interaction, and borrow the parts that fit your project. These
+        are fictional examples, with original copy and illustrations.
+      </p>
+      <div class="studies">
+        <a class="study" href="saas/index.html" style="grid-column:1/-1">
+          <div class="cover" style="padding:0;height:auto"><img src="previews/saas-desktop.jpg" alt="Cadence rebuilt: a connected release workspace with source, handoff, and approval UI scenes" width="1280" height="720" style="display:block;width:100%;height:auto" /></div>
+          <div class="meta">Cadence — keep the whole launch in step <span>SaaS · Purpose-built UI scenes · Two font families · Requires local server</span></div>
+        </a>
+        <a class="study" href="luma-directed/index.html" style="grid-column:1/-1">
+          <div class="cover" style="padding:0;height:auto"><img src="previews/luma-directed-desktop.jpg" alt="Rebuilt LUMA: an ivory studio composition with a serif LM–01 designation and original three-dimensional lens" width="1280" height="720" style="display:block;width:100%;height:auto" /></div>
+          <div class="meta">LUMA, rebuilt with Frontend Design Director <span>Current proposal · Material selection · Requires local server</span></div>
+        </a>
+        <a class="study" href="cinematic/index.html" style="grid-column: 1/-1">
+          <div class="cover" style="background: #101918; color: #d4ec85">
+            <small>Proposed flagship / Cinematic product study</small>
+            <strong
+              style="
+                font-family: Impact, sans-serif;
+                font-style: normal;
+                letter-spacing: -0.03em;
+              "
+              >LUMA — Less between<br />you & light.</strong
+            >
+            <small>Explore the scroll-driven optical instrument ↗</small>
+          </div>
+          <div class="meta">
+            One object. Four chapters.
+            <span
+              >Three.js · GLSL · Scroll choreography · Requires local
+              server</span
+            >
+          </div>
+        </a>
+        <a class="study" href="vanilla/index.html"
+          ><div class="cover north">
+            <small>01 / Product judgment</small
+            ><strong>Less noise.<br />More <em>north.</em></strong
+            ><small>Northstar ↗</small>
+          </div>
+          <div class="meta">
+            Evidence becomes a decision <span>HTML · CSS · JavaScript</span>
+          </div></a
+        ><a class="study" href="commerce/index.html"
+          ><div class="cover lilt">
+            <small>02 / Objects for living</small><strong>Lilt.</strong
+            ><small>Light, with a little character. ↗</small>
+          </div>
+          <div class="meta">
+            An object, its material, your choice
+            <span>SVG · Variant state</span>
+          </div></a
+        ><a class="study" href="developer/index.html"
+          ><div class="cover relay">
+            <small>03 / Developer infrastructure</small
+            ><strong>One event.<br />Everywhere.</strong><small>Relay ↗</small>
+          </div>
+          <div class="meta">
+            Inspectable input and output <span>Request · Response · Retry</span>
+          </div></a
+        ><a class="study" href="research/index.html"
+          ><div class="cover field">
+            <small>04 / Research & editorial</small
+            ><strong>The shape<br />of change.</strong
+            ><small>Fieldwork ↗</small>
+          </div>
+          <div class="meta">
+            A hypothesis you can manipulate <span>SVG · Range input</span>
+          </div></a
+        >
+      </div>
+      <div class="note">
+        <span>Optional ingredients, not mandatory page templates.</span
+        ><a href="lab.html">React / motion / WebGL integration lab ↗</a>
+      </div>
+      <p>
+        The four studies open directly as static HTML. The integration lab needs
+        the development server: run <code>bun install</code>, then
+        <code>bun run dev</code> in this directory.
+      </p>
+      <footer>
+        MIT licensed original code. Fonts under the included SIL Open Font
+        Licenses. No claim of comparative superiority has been validated.
+      </footer>
+    </main>
+  </body>
+</html>

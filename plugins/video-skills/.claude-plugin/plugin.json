@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "video-skills",
+  "description": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand, creator, and social videos.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Perlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/video-skills",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "remotion",
+    "creator-video",
+    "product-demo",
+    "social-video"
+  ]
+}

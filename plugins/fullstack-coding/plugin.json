@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "fullstack-coding",
+  "version": "0.1.0",
+  "description": "Systematic full-stack web development guidance for architecture, debugging, quality, testing, security, and deployment.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/fullstack-coding",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "fullstack",
+    "coding",
+    "architecture",
+    "debugging",
+    "testing"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Fullstack Coding",
+        "shortDescription": "Systematic full-stack web development guidance for architecture, debugging, quality, te...",
+        "longDescription": "Systematic full-stack web development guidance for architecture, debugging, quality, testing, security, and deployment.",
+        "developerName": "Adam Perlis",
+        "category": "Development",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

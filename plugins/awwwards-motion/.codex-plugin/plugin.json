@@ -1,0 +1,6 @@
+{
+  "name": "awwwards-motion",
+  "version": "0.1.0",
+  "description": "Build Awwwards-quality web experiences with spring physics, GLSL shaders, R3F, post-processing, and interactive motion.",
+  "skills": "./skills/"
+}

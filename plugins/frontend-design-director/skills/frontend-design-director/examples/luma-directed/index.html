@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#eeece5" />
+    <meta
+      name="description"
+      content="LUMA LM–01. An original, interactive optical instrument concept, rebuilt with Frontend Design Director."
+    />
+    <title>LUMA — A study in attention</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#construction">Skip to construction</a>
+    <canvas id="lens-canvas" aria-hidden="true"></canvas>
+    <header class="header">
+      <a class="wordmark" href="#top" aria-label="Luma home"
+        >LUMA<span>OPTICAL<br />INSTRUMENTS</span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#construction">Construction</a><a href="#field">Field notes</a
+        ><a href="#specimen">The specimen <span>↗</span></a>
+      </nav>
+      <button
+        id="motion"
+        type="button"
+        aria-pressed="false"
+        aria-label="Disable motion"
+      >
+        MOTION <span>ON</span><i></i>
+      </button>
+    </header>
+    <main>
+      <section class="hero" id="opening" aria-labelledby="hero-title">
+        <div class="hero-intro">
+          <p class="index">01 — AN INSTRUMENT FOR LOOKING</p>
+          <h1 id="hero-title">A closer kind<br />of attention.</h1>
+          <p class="hero-description">
+            A 35 mm lens concept.<br />For the things worth noticing.
+          </p>
+          <a class="arrow-link" href="#construction"
+            ><span class="round-arrow">↘</span
+            ><span>EXPLORE THE INSTRUMENT</span></a
+          >
+        </div>
+        <div
+          class="hero-stage lens-stage"
+          data-scene="hero"
+          aria-label="Three-dimensional view of the fictional LUMA lens"
+        >
+          <div class="studio-disc" aria-hidden="true"></div>
+          <div class="studio-shadow" aria-hidden="true"></div>
+          <img
+            class="lens-fallback"
+            src="./lens-fallback.svg"
+            alt="Illustration of the LUMA lens barrel and optical elements"
+            width="600"
+            height="500"
+          />
+          <span class="annotation top-annotation"
+            ><i></i> MANUAL FOCUS<br /><span
+              >AN INTENTIONAL GESTURE.</span
+            ></span
+          >
+          <span class="annotation bottom-annotation"
+            ><i></i> 35 / 1.4<br /><span>CONCEPT SERIES Nº 01</span></span
+          >
+        </div>
+        <div class="hero-designation" aria-hidden="true">
+          LM–01<span>35 MM</span>
+        </div>
+        <div class="hero-baseline">
+          <span>A STUDY IN LIGHT, MATERIAL & PERSPECTIVE.</span
+          ><span>ORIGINAL DESIGN CONCEPT — NOT FOR SALE</span
+          ><a href="#construction" aria-label="Scroll to construction">↓</a>
+        </div>
+      </section>
+      <section class="interlude">
+        <span class="index">THE STARTING POINT</span>
+        <p>The scene is already there.<br />What you notice is yours.</p>
+        <span class="interlude-note"
+          >A quiet object. A deliberate gesture.<br />A little more room to
+          look.</span
+        >
+      </section>
+      <section
+        class="construction"
+        id="construction"
+        aria-labelledby="construction-title"
+      >
+        <div class="construction-sticky">
+          <div class="section-topline">
+            <span>02 — INSIDE THE INSTRUMENT</span
+            ><span>EXPLODED VIEW / ORIGINAL 3D MODEL</span>
+          </div>
+          <div class="workbench">
+            <div class="mechanism-area">
+              <div class="mechanism-stage lens-stage" data-scene="mechanism">
+                <img
+                  class="lens-fallback"
+                  src="./lens-fallback.svg"
+                  alt="Diagram of the lens housing, optical glass and aperture"
+                  width="600"
+                  height="500"
+                />
+              </div>
+              <div class="component-legend">
+                <span>01 / HOUSING</span><span>02 / OPTICS</span
+                ><span>03 / APERTURE</span>
+              </div>
+              <div class="mechanism-scale" aria-hidden="true">
+                <i></i><span>FORM STUDY — NOT TO SCALE</span><i></i>
+              </div>
+            </div>
+            <div class="mechanism-copy">
+              <p class="index">A FEW PARTS.<br />A VERY PARTICULAR PURPOSE.</p>
+              <h2 id="construction-title">Look beneath<br />the surface.</h2>
+              <p class="mechanism-intro">
+                The object comes apart as you scroll.<br />Select a component to
+                examine its role.
+              </p>
+              <div
+                class="component-controls"
+                role="group"
+                aria-label="Inspect a lens component"
+              >
+                <button
+                  type="button"
+                  data-component="housing"
+                  aria-pressed="true"
+                >
+                  <span>01</span> The housing <i>↗</i></button
+                ><button
+                  type="button"
+                  data-component="glass"
+                  aria-pressed="false"
+                >
+                  <span>02</span> The optical elements <i>↗</i></button
+                ><button
+                  type="button"
+                  data-component="aperture"
+                  aria-pressed="false"
+                >
+                  <span>03</span> The aperture <i>↗</i>
+                </button>
+              </div>
+              <div class="component-description" aria-live="polite">
+                <h3 id="component-title">The part you feel.</h3>
+                <p id="component-copy">
+                  A knurled focus ring gives the hand a reference point. The
+                  housing holds the optical elements in relation to one another.
+                </p>
+              </div>
+              <div class="aperture-control" hidden>
+                <label for="aperture"
+                  >CHANGE THE OPENING
+                  <output id="aperture-value">ƒ / 2.8</output></label
+                ><input
+                  type="range"
+                  id="aperture"
+                  min="14"
+                  max="80"
+                  value="28"
+                  step="1"
+                />
+                <p>
+                  Illustrative mechanism; not a calibrated optical simulation.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="construction-bottom">
+            <span>GLASS, METAL, AND THE SPACE BETWEEN.</span
+            ><a href="#field">BACK TO THE WORLD <span>↓</span></a>
+          </div>
+        </div>
+      </section>
+      <section class="field" id="field" aria-labelledby="field-title">
+        <div class="field-heading">
+          <p class="index">03 — FIELD NOTES</p>
+          <h2 id="field-title">
+            Before you take a picture,<br />you have to see one.
+          </h2>
+          <span>LIGHT / DISTANCE / A MOMENT</span>
+        </div>
+        <figure class="field-image">
+          <img
+            src="./field-study.png"
+            alt="Generated black-and-white seaside scene: long shadows across a concrete diving platform and a small swimmer in the silver sea."
+            width="1536"
+            height="1024"
+            loading="lazy"
+          />
+          <div class="viewfinder" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><span>FRAME STUDY 001</span>
+          </div>
+          <figcaption>
+            <span>AN EXERCISE IN LOOKING.</span
+            ><span
+              >AI-GENERATED CONCEPT IMAGERY — NOT CAPTURED WITH THIS LENS.</span
+            >
+          </figcaption>
+        </figure>
+        <div class="field-afterword">
+          <span class="field-number">001</span>
+          <p>
+            The long shadow. The small figure.<br />The ordinary afternoon you
+            might have walked past.
+          </p>
+          <span class="index"
+            >A FIELD JOURNAL,<br />NOT A PERFORMANCE CLAIM.</span
+          >
+        </div>
+      </section>
+      <section class="specimen" id="specimen" aria-labelledby="specimen-title">
+        <div class="section-topline">
+          <span>04 — MAKE IT TANGIBLE</span
+          ><span>INTERACTIVE MATERIAL STUDY</span>
+        </div>
+        <div class="specimen-grid">
+          <div class="specimen-copy">
+            <p class="index">LUMA / LM–01</p>
+            <h2 id="specimen-title">An object.<br />Your point of view.</h2>
+            <p>
+              Same form. A different presence.<br />Choose a finish and turn the
+              instrument.
+            </p>
+            <fieldset class="finishes">
+              <legend>SELECT A FINISH</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="finish"
+                  value="carbon"
+                  checked
+                /><span class="swatch carbon"></span><span>Carbon</span></label
+              ><label
+                ><input type="radio" name="finish" value="alloy" /><span
+                  class="swatch alloy"
+                ></span
+                ><span>Alloy</span></label
+              ><label
+                ><input type="radio" name="finish" value="oxide" /><span
+                  class="swatch oxide"
+                ></span
+                ><span>Oxide</span></label
+              >
+            </fieldset>
+            <div class="view-control">
+              <label for="rotation"
+                >TURN THE INSTRUMENT
+                <output id="rotation-value">−30°</output></label
+              ><input
+                type="range"
+                id="rotation"
+                min="-100"
+                max="100"
+                value="-30"
+              />
+            </div>
+            <dl class="specification">
+              <div>
+                <dt>Object</dt>
+                <dd>Manual-focus lens concept</dd>
+              </div>
+              <div>
+                <dt>Designation</dt>
+                <dd>LM–01 / 35 mm</dd>
+              </div>
+              <div>
+                <dt>Finish</dt>
+                <dd id="finish-name">Carbon / satin dark metal</dd>
+              </div>
+              <div>
+                <dt>Availability</dt>
+                <dd>Design study. Not for sale.</dd>
+              </div>
+            </dl>
+            <button type="button" class="spec-button" id="create-card">
+              Create a specimen card <span>↗</span>
+            </button>
+            <p class="local-note">A local preview. No order or signup.</p>
+          </div>
+          <div class="specimen-visual">
+            <div class="finish-disc" aria-hidden="true"></div>
+            <div class="finish-stage lens-stage" data-scene="finish">
+              <img
+                class="lens-fallback"
+                src="./lens-fallback.svg"
+                alt="Lens specimen illustration"
+                width="600"
+                height="500"
+              />
+            </div>
+            <div class="specimen-caption">
+              <span id="specimen-code">LM–01 / C</span
+              ><span>SELECTED FINISH <b id="finish-caption">CARBON</b></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <a class="wordmark" href="#top">LUMA</a>
+      <p>
+        An original physical-product concept.<br />Rebuilt with Frontend Design
+        Director.
+      </p>
+      <a href="../cinematic/index.html">Compare the first version ↗</a
+      ><a href="../index.html">Design library ↗</a>
+      <a href="?view=static">Static diagrams ↗</a>
+    </footer>
+    <dialog id="specimen-card" aria-labelledby="card-title">
+      <div class="card-top">
+        <span>LUMA / SPECIMEN RECORD</span
+        ><button type="button" id="close-card" aria-label="Close specimen card">
+          ×
+        </button>
+      </div>
+      <div class="card-body">
+        <p class="index">SELECTED BY YOU</p>
+        <h2 id="card-title">LM–01</h2>
+        <p id="card-finish">Carbon</p>
+        <hr />
+        <p>
+          35 mm manual-focus lens concept.<br />Original geometry. Illustrative
+          materials.
+        </p>
+        <span
+          >Design study only. No purchase, reservation,<br />or real-world
+          compatibility is implied.</span
+        >
+      </div>
+    </dialog>
+    <noscript>
+      <style>
+        .component-controls,
+        .finishes,
+        .view-control,
+        #create-card,
+        #motion,
+        .local-note {
+          display: none !important;
+        }
+        .construction {
+          min-height: 0;
+        }
+        .construction-sticky {
+          position: relative;
+        }
+      </style>
+      <p style="padding: 24px var(--pad)">
+        Static edition. The illustrations and story remain available without
+        JavaScript. The optical elements guide light through the assembly; the
+        aperture blades vary its opening. Interactive rotation, finish
+        selection, and specimen cards require JavaScript.
+      </p>
+    </noscript>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

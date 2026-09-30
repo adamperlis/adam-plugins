@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "frontend-design-director",
+  "version": "0.1.0",
+  "description": "Route, design, build, and critique distinctive marketing sites using archetype-specific frontend direction.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/frontend-design-director",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "frontend",
+    "design",
+    "marketing-sites",
+    "landing-pages",
+    "ui",
+    "motion"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Frontend Design Director",
+        "shortDescription": "Route, design, build, and critique distinctive marketing sites using archetype-specific...",
+        "longDescription": "Route, design, build, and critique distinctive marketing sites using archetype-specific frontend direction.",
+        "developerName": "Adam Perlis",
+        "category": "Design",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

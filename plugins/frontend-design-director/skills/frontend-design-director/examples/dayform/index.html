@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dayform — Make room for good work. A redesign concept.</title>
+    <meta
+      name="description"
+      content="A Dayform homepage concept connecting time tracking, project insight, and invoicing in one clear workflow."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./grid-system.css" />
+    <link rel="stylesheet" href="./hero-moment.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header wrap">
+      <a class="brand dayform-brand" href="#" aria-label="Dayform home"
+        ><svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+          <path
+            d="M0 2h16v6H0zm0 11h24v6H0zm0 11h32v6H0z"
+            fill="currentColor"
+          /></svg
+        >dayform</a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#workflow">Product</a><a href="#details">Why Dayform</a
+        ><a href="#connections">Integrations</a><a href="#details">The idea</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="login" href="#details">Our approach</a
+        ><a class="button small" href="#workflow"
+          >Explore Dayform <span data-icon="arrow"></span
+        ></a>
+      </div>
+    </header>
+    <main id="main">
+      <section class="hero wrap">
+        <div class="hero-heading">
+          <p class="eyebrow">
+            <span class="orange-dot"></span> DAYFORM / TIME WELL SPENT
+          </p>
+          <h1>A good day<br />takes shape.</h1>
+        </div>
+        <div class="hero-copy">
+          <p class="muted">
+            A sketch becomes a direction. A conversation becomes a plan. See
+            what your team’s time makes possible—with time tracking, project
+            insights, and invoicing in Dayform.
+          </p>
+          <a class="button" href="#workflow"
+            >See it in action <span data-icon="arrow"></span></a
+          ><small>Explore the concept. No account needed.</small>
+        </div>
+        <figure
+          class="hero-timepiece"
+          aria-label="The shape of a workday: 48 flowing strands grouped into 24 design hours, 16 development hours, and 8 strategy hours. Illustrative project data, not a live report."
+        >
+          <div class="timepiece-label">
+            <span>THE SHAPE OF A WORKDAY</span><span>001 / STUDIO NORTH</span>
+          </div>
+          <div class="timepiece-face">
+            <div
+              class="shader-background"
+              id="paper-background"
+              aria-hidden="true"
+            ></div>
+          </div>
+          <div class="workday-key">
+            <span><i></i>Design / 24h</span><span><i></i>Build / 16h</span
+            ><span><i></i>Strategy / 8h</span>
+          </div>
+          <figcaption>
+            <span
+              >48 hours. One shared effort.<small
+                >Generative artwork · sample project</small
+              ></span
+            ><button id="background-toggle" type="button" hidden>
+              Pause background motion
+            </button>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section
+        class="work-section wrap"
+        id="workflow"
+        aria-labelledby="work-title"
+      >
+        <h2 class="sr-only" id="work-title">
+          From a day’s work to a clearer picture
+        </h2>
+        <div
+          class="work-tabs"
+          role="tablist"
+          aria-label="Explore the Dayform workflow"
+        >
+          <button
+            id="tab-track"
+            role="tab"
+            aria-controls="panel-track"
+            aria-selected="true"
+            data-mode="track"
+          >
+            <span class="step-no">01</span
+            ><span>Track the work<small>Less admin. More doing.</small></span
+            ><span data-icon="clock"></span>
+          </button>
+          <button
+            id="tab-review"
+            role="tab"
+            aria-controls="panel-review"
+            aria-selected="false"
+            tabindex="-1"
+            data-mode="review"
+          >
+            <span class="step-no">02</span
+            ><span
+              >See the bigger picture<small
+                >Know where your time goes.</small
+              ></span
+            ><span data-icon="chart"></span>
+          </button>
+          <button
+            id="tab-bill"
+            role="tab"
+            aria-controls="panel-bill"
+            aria-selected="false"
+            tabindex="-1"
+            data-mode="bill"
+          >
+            <span class="step-no">03</span
+            ><span
+              >Bring it home<small
+                >Turn billable hours into invoices.</small
+              ></span
+            ><span data-icon="file"></span>
+          </button>
+        </div>
+        <div class="work-stage">
+          <div class="stage-rail" aria-hidden="true">
+            <span>TIME WELL SPENT</span>
+            <div class="ruler"></div>
+            <span>DAYFORM / EVERY DAY</span>
+          </div>
+          <div
+            class="panel"
+            id="panel-track"
+            role="tabpanel"
+            aria-labelledby="tab-track"
+          >
+            <div class="app-window">
+              <div class="app-nav">
+                <b>dayform</b><span class="chosen">Time</span
+                ><span>Expenses</span><span>Projects</span><span>Reports</span
+                ><span>Invoices</span><span class="avatar">JL</span>
+              </div>
+              <div class="app-body">
+                <div class="app-title">
+                  <div>
+                    <span class="mini-label">STUDIO NORTH / JAMIE LEE</span>
+                    <h3>A good day’s work.</h3>
+                  </div>
+                  <span class="date">Wednesday, September 30</span>
+                </div>
+                <div class="week">
+                  <div>Mon <strong>6:30</strong></div>
+                  <div>Tue <strong>7:15</strong></div>
+                  <div class="today">
+                    Wed <strong id="day-total">5:45</strong>
+                  </div>
+                  <div>Thu <strong>0:00</strong></div>
+                  <div>Fri <strong>0:00</strong></div>
+                  <div class="week-total">
+                    Week total<strong id="week-total">19:30</strong>
+                  </div>
+                </div>
+                <div class="time-row active-entry">
+                  <span class="project-dot"></span>
+                  <div>
+                    <strong>Brand & website</strong>
+                    <p>Acme Studio <span>/</span> Design exploration</p>
+                  </div>
+                  <time id="timer">1:45:00</time
+                  ><button
+                    class="timer-control"
+                    id="timer-toggle"
+                    aria-pressed="false"
+                  >
+                    <span data-icon="play"></span
+                    ><span id="timer-label">Start timer</span>
+                  </button>
+                </div>
+                <div class="time-row">
+                  <span class="project-dot green"></span>
+                  <div>
+                    <strong>Spring campaign</strong>
+                    <p>Fieldwork <span>/</span> Art direction</p>
+                  </div>
+                  <time>2:30</time><span class="row-note">Logged</span>
+                </div>
+                <div class="time-row">
+                  <span class="project-dot lilac"></span>
+                  <div>
+                    <strong>Studio time</strong>
+                    <p>Internal <span>/</span> Planning & catch-ups</p>
+                  </div>
+                  <time>1:30</time><span class="row-note">Logged</span>
+                </div>
+                <div class="app-foot">
+                  <span
+                    ><span data-icon="check"></span> Every hour, in its right
+                    place.</span
+                  ><span>Sample timesheet</span>
+                </div>
+              </div>
+            </div>
+            <div class="floating-note">
+              <span data-icon="clock"></span>
+              <div>
+                <strong>Small habit. Big picture.</strong>
+                <p>A timer today. Better decisions tomorrow.</p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="panel"
+            id="panel-review"
+            role="tabpanel"
+            aria-labelledby="tab-review"
+            hidden
+          >
+            <div class="app-window review-window">
+              <div class="app-nav">
+                <b>dayform</b><span>Time</span><span>Expenses</span
+                ><span>Projects</span><span class="chosen">Reports</span
+                ><span>Invoices</span><span class="avatar">JL</span>
+              </div>
+              <div class="app-body">
+                <div class="app-title">
+                  <div>
+                    <span class="mini-label"
+                      >ACME STUDIO / BRAND & WEBSITE</span
+                    >
+                    <h3>See the work behind the numbers.</h3>
+                  </div>
+                  <span class="status">Within budget</span>
+                </div>
+                <div class="report-stats">
+                  <div>
+                    <small>Hours tracked</small
+                    ><strong data-project-hours>48.0<span>h</span></strong>
+                  </div>
+                  <div>
+                    <small>Project budget</small
+                    ><strong>80<span>h</span></strong>
+                  </div>
+                  <div>
+                    <small>Hours remaining</small
+                    ><strong data-hours-remaining>32.0<span>h</span></strong>
+                  </div>
+                </div>
+                <div class="report-chart">
+                  <div class="chart-label">
+                    <strong>Time by task</strong
+                    ><span>Hours · illustrative project</span>
+                  </div>
+                  <div class="bar-row">
+                    <span>Design</span><i style="--w: 75%"></i><b>24h</b>
+                  </div>
+                  <div class="bar-row">
+                    <span>Development</span><i style="--w: 50%"></i><b>16h</b>
+                  </div>
+                  <div class="bar-row">
+                    <span>Strategy</span><i style="--w: 25%"></i><b>8h</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="panel"
+            id="panel-bill"
+            role="tabpanel"
+            aria-labelledby="tab-bill"
+            hidden
+          >
+            <div class="invoice-layout">
+              <div class="invoice-context">
+                <span class="mini-label">THE LAST STEP, SIMPLIFIED</span>
+                <h3>The work is done.<br />So is the paperwork.</h3>
+                <p>
+                  Use the hours you’ve already tracked to create an invoice. No
+                  second spreadsheet.
+                </p>
+                <button class="button" id="invoice-preview">
+                  Create sample invoice <span data-icon="arrow"></span>
+                </button>
+                <p class="invoice-feedback" id="invoice-feedback" role="status">
+                  Local demonstration. Nothing will be sent.
+                </p>
+              </div>
+              <div class="invoice-paper">
+                <div class="invoice-top">
+                  <strong>STUDIO NORTH</strong
+                  ><span id="invoice-state">DRAFT PREVIEW</span>
+                </div>
+                <h4>Invoice <span>#1042</span></h4>
+                <div class="invoice-address">
+                  <p>Bill to<br /><strong>Acme Studio</strong></p>
+                  <p>Project<br /><strong>Brand & website</strong></p>
+                </div>
+                <div class="invoice-line">
+                  <strong>Description</strong><strong>Amount</strong>
+                </div>
+                <div class="invoice-line">
+                  <span>Design · 24 hours</span><span>$3,000.00</span>
+                </div>
+                <div class="invoice-line">
+                  <span>Development · 16 hours</span><span>$2,000.00</span>
+                </div>
+                <div class="invoice-line">
+                  <span>Strategy · 8 hours</span><span>$1,000.00</span>
+                </div>
+                <div class="invoice-sum">
+                  <span>Total due</span><strong>$6,000.00</strong>
+                </div>
+                <p class="invoice-thanks">
+                  Thank you for a great collaboration.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="scene-caption">
+          <span>One connected workflow. From first hour to final invoice.</span
+          ><span>Interactive concept · illustrative UI & sample data</span>
+        </div>
+      </section>
+
+      <section class="belief wrap">
+        <p>
+          For the teams who care about<br />the work <em>and</em> the way they
+          work.
+        </p>
+        <div>
+          <span>Creative studios</span><span>Consultancies</span
+          ><span>Architecture firms</span><span>Independent teams</span>
+        </div>
+      </section>
+
+      <section class="details wrap" id="details">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE DETAILS MAKE THE DIFFERENCE</p>
+            <h2>Less keeping up.<br />More looking ahead.</h2>
+          </div>
+          <p>
+            Start with something simple: your time.<br />Then use it to make
+            sense of your workload,<br class="desktop-break" />
+            your budgets, and your next move.
+          </p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature feature-time">
+            <div class="feature-copy">
+              <span class="feature-number">01 / TIME TRACKING</span>
+              <h3>Fits into your day.<br />Not the other way around.</h3>
+              <p>
+                Start a timer, fill in your week, or bring in a calendar event.
+                There’s no single right way to track.
+              </p>
+              <a href="#workflow"
+                >Explore time tracking <span data-icon="arrow"></span
+              ></a>
+            </div>
+            <div
+              class="art calendar-art"
+              role="img"
+              aria-label="Illustrative calendar with a design review connected to a 45-minute time entry"
+            >
+              <div class="calendar">
+                <div class="cal-head">
+                  <strong>Your workday</strong><span>Wednesday 30</span>
+                </div>
+                <div class="cal-hour">
+                  09:00
+                  <div class="event green-event">
+                    Weekly studio sync<small>09:00 – 09:30</small>
+                  </div>
+                </div>
+                <div class="cal-hour">
+                  10:00
+                  <div class="event orange-event">
+                    Brand design review<small
+                      >10:00 – 10:45 · Acme Studio</small
+                    >
+                  </div>
+                </div>
+                <div class="cal-hour">
+                  11:00
+                  <div class="event pale-event">
+                    Focus time<small>11:00 – 12:30</small>
+                  </div>
+                </div>
+                <div class="cal-hour">12:00</div>
+              </div>
+              <div class="entry-slip">
+                <span class="slip-check" data-icon="check"></span>
+                <div>
+                  <strong>Brand design review</strong
+                  ><small>Acme Studio · Design</small>
+                </div>
+                <b>0:45</b>
+              </div>
+            </div>
+          </article>
+          <article class="feature feature-budget">
+            <div class="feature-copy">
+              <span class="feature-number">02 / PROJECT BUDGETS</span>
+              <h3>Catch the overrun.<br />Before it happens.</h3>
+              <p>
+                Keep the plan and the actuals in the same picture. See what’s
+                left before you say yes to more.
+              </p>
+              <a href="#details"
+                >Explore project reports <span data-icon="arrow"></span
+              ></a>
+            </div>
+            <div class="art budget-art">
+              <div class="budget-sheet">
+                <span class="mini-label">BRAND & WEBSITE</span>
+                <div class="budget-value">48 <span>/ 80 hours</span></div>
+                <div class="budget-meter"><i></i></div>
+                <div class="budget-legend">
+                  <span>60% of budget used</span><b>32h left</b>
+                </div>
+                <hr />
+                <div class="budget-task"><span>Design</span><b>24h</b></div>
+                <div class="budget-task">
+                  <span>Development</span><b>16h</b>
+                </div>
+                <div class="budget-task"><span>Strategy</span><b>8h</b></div>
+              </div>
+            </div>
+          </article>
+          <article class="feature feature-team">
+            <div class="feature-copy">
+              <span class="feature-number">03 / TEAM INSIGHT</span>
+              <h3>A fuller picture.<br />A fairer workload.</h3>
+              <p>
+                Look beyond the total. Understand how your team’s time is split
+                across client work and everything else.
+              </p>
+              <a href="#details"
+                >See team reporting <span data-icon="arrow"></span
+              ></a>
+            </div>
+            <div class="art team-art">
+              <div class="team-sheet">
+                <div class="cal-head">
+                  <strong>This week</strong><span>Billable / Other</span>
+                </div>
+                <div class="person-row">
+                  <span class="person-avatar">JL</span
+                  ><span
+                    >Jamie Lee<i style="--bill: 68%; --other: 23%"></i></span
+                  ><b>36.5h</b>
+                </div>
+                <div class="person-row">
+                  <span class="person-avatar">AM</span
+                  ><span
+                    >Alex Morgan<i style="--bill: 55%; --other: 20%"></i></span
+                  ><b>30h</b>
+                </div>
+                <div class="person-row">
+                  <span class="person-avatar">SK</span
+                  ><span>Sam Kim<i style="--bill: 75%; --other: 20%"></i></span
+                  ><b>38h</b>
+                </div>
+                <div class="team-legend">
+                  <span></span>Billable <span></span>Other time
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="feature feature-invoice">
+            <div class="feature-copy">
+              <span class="feature-number">04 / INVOICING</span>
+              <h3>Good work, accounted for.</h3>
+              <p>
+                Build invoices from billable time and expenses. Give clients a
+                straightforward way to pay with Stripe or PayPal.
+              </p>
+              <a href="#workflow"
+                >Explore invoicing <span data-icon="arrow"></span
+              ></a>
+            </div>
+            <div class="art billing-art">
+              <div class="mini-invoice">
+                <div class="invoice-top">
+                  <strong>STUDIO NORTH</strong><span>INVOICE #1042</span>
+                </div>
+                <h4>Brand & website</h4>
+                <div class="invoice-line">
+                  <span>Design & development</span><span>$5,000.00</span>
+                </div>
+                <div class="invoice-line">
+                  <span>Strategy</span><span>$1,000.00</span>
+                </div>
+                <div class="invoice-sum">
+                  <span>Total</span><strong>$6,000.00</strong>
+                </div>
+              </div>
+              <div class="payment-slip">
+                <span data-icon="check"></span>
+                <div>
+                  <strong>Payment received</strong
+                  ><small>Sample invoice · $6,000.00</small>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <p class="illustration-note">
+          Product illustrations use fictional projects and sample figures. This
+          is a product concept, not a live service.
+        </p>
+      </section>
+
+      <section class="integration wrap" id="connections">
+        <div>
+          <p class="eyebrow">THE CONNECTIONS WE’RE EXPLORING</p>
+          <h2>Your work doesn’t<br />happen in one place.</h2>
+        </div>
+        <div class="integration-right">
+          <p>
+            The vision: capture time where work happens, then carry it through
+            to your accounts. These are proposed integrations—not connected
+            services in this prototype.
+          </p>
+          <div class="integration-names">
+            <span>Asana</span><span>Slack</span><span>QuickBooks</span
+            ><span>Stripe</span>
+          </div>
+          <a class="text-link" href="#connections"
+            >Explore the workflow <span data-icon="arrow"></span
+          ></a>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="wrap closing-inner">
+          <p class="eyebrow">HERE’S TO A BETTER WORKDAY.</p>
+          <h2>Make room<br />for <em>good work.</em></h2>
+          <a class="button" href="#workflow"
+            >Explore Dayform <span data-icon="arrow"></span
+          ></a>
+          <p>A working concept. Try the sample workflow.</p>
+          <div class="closing-lines" aria-hidden="true"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="brand footer-brand" href="#workflow">dayform</a>
+      <nav aria-label="Footer">
+        <a href="#workflow">Product demo</a><a href="#details">Our approach</a
+        ><a href="#connections">Connections</a>
+      </nav>
+      <p>
+        Dayform is an independent brand and product concept. Sample data only;
+        no accounts, payments, or live integrations.<br />Working name.
+        Trademark and domain availability have not been assessed.
+      </p>
+    </footer>
+    <noscript
+      ><style>
+        .work-tabs {
+          display: none;
+        }
+        .panel[hidden] {
+          display: block !important;
+          margin-top: 30px;
+        }
+        .timer-control,
+        #invoice-preview {
+          display: none;
+        }
+        .floating-note {
+          display: none;
+        }
+      </style></noscript
+    >
+    <details class="layout-inspector" id="layout-inspector" hidden>
+      <summary>Layout inspector</summary>
+      <label><input type="checkbox" id="grid-switch" />8px base grid</label
+      ><label
+        ><input type="checkbox" id="safe-switch" />Safe areas & media
+        bounds</label
+      >
+      <p>
+        Cards: 24px radius / 24px inset.<br />Card type: 12 / 16 / 24px.<br />Two
+        families · up to three weights.
+      </p>
+    </details>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

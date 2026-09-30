@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10110f" />
+    <meta
+      name="description"
+      content="TRACE: an original interactive design study for an AI-agent flight recorder. Inspect a failed run and replay a corrected source."
+    />
+    <title>TRACE — Find where your agent went wrong.</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./reference-directed.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="skip" href="#investigate">Skip to the sample trace</a>
+    <header class="nav wrap">
+      <a class="wordmark" href="#top" aria-label="Trace home"
+        ><span class="trace-mark" aria-hidden="true"><i></i><i></i><i></i></span
+        >trace<span class="registered">®</span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#investigate">Inspect</a><a href="#evidence">Understand</a
+        ><a href="#replay">Replay</a>
+      </nav>
+      <a class="nav-cta" href="#replay"
+        >Run the sample <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="top">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title">
+            See the evidence behind an agent’s answer. <br />Find the failure. Test the correction.
+          </h1>
+          <div class="hero-aside">
+            <a class="button light" href="#investigate"
+              >Explore the sample <span aria-hidden="true">↘</span></a
+            >
+            <a class="secondary-action" href="#replay">Replay a correction →</a>
+          </div>
+        </div>
+        <div class="product-stage">
+        <div class="stage-heading"><span>Trace / Investigation workspace</span><span>Interactive sample · No live data</span></div>
+        <div class="workspace-shell">
+        <aside class="workspace-rail" aria-label="Sample workspace context">
+          <div class="rail-brand">◈ <strong>Northstar</strong><span>⌄</span></div>
+          <p>Workspace</p><div class="rail-item active">↳ Runs <span>24</span></div><div class="rail-item">▤ Sources <span>8</span></div><div class="rail-item">◷ Evaluations</div>
+          <p>Recent runs <span>Today</span></p>
+          <div class="recent-run selected"><i></i><strong>Return eligibility</strong><small>support-agent · 08f2</small></div>
+          <div class="recent-run"><i></i><strong>Order status</strong><small>support-agent · 08f1</small></div>
+          <div class="recent-run"><i></i><strong>Change delivery address</strong><small>support-agent · 08f0</small></div>
+          <div class="recent-run"><i></i><strong>Product availability</strong><small>support-agent · 08ef</small></div>
+          <div class="rail-bottom">Local demonstration<br /><span>Data and results are fictional.</span></div>
+        </aside>
+        <div class="instrument" id="investigate">
+          <div class="app-top">
+            <span class="app-project"
+              ><span class="project-icon">n</span> Northstar / support-agent
+              <span class="muted">/ Runs</span></span
+            ><span class="run-id"
+              >run_08f2 <span class="status-badge">1 issue</span></span
+            >
+          </div>
+          <div class="run-heading">
+            <div>
+              <span class="mono muted">USER REQUEST</span>
+              <h2>“Can I return an opened headset?”</h2>
+            </div>
+            <div class="run-stats">
+              <span>4 spans <i>·</i> 2.84s</span
+              ><span class="amber">Answer grounded in an outdated source</span>
+            </div>
+          </div>
+          <div class="execution-layout">
+            <div class="waterfall">
+              <div class="timeline-labels mono">
+                <span>EXECUTION TRACE</span>
+                <div>
+                  <span>0s</span><span>1s</span><span>2s</span><span>3s</span>
+                </div>
+              </div>
+              <div
+                class="trace-rows"
+                role="group"
+                aria-label="Inspect an execution span"
+              >
+                <button
+                  class="trace-row"
+                  data-span="request"
+                  aria-pressed="false"
+                  disabled
+                >
+                  <span class="span-name"
+                    ><span class="span-icon">↳</span> receive_request</span
+                  ><span class="lane"
+                    ><span class="duration receive"></span></span
+                  ><span class="timing">42ms</span
+                  ><span class="row-status">✓</span>
+                </button>
+                <button
+                  class="trace-row"
+                  data-span="search"
+                  aria-pressed="false"
+                  disabled
+                >
+                  <span class="span-name"
+                    ><span class="span-icon">⌕</span> search_knowledge</span
+                  ><span class="lane"
+                    ><span class="duration search"></span></span
+                  ><span class="timing">816ms</span
+                  ><span class="row-status">✓</span>
+                </button>
+                <button
+                  class="trace-row selected"
+                  data-span="policy"
+                  aria-pressed="true"
+                  disabled
+                >
+                  <span class="span-name"
+                    ><span class="span-icon amber">!</span>
+                    get_return_policy</span
+                  ><span class="lane"
+                    ><span class="duration policy"
+                      ><span>STALE SOURCE</span></span
+                    ></span
+                  ><span class="timing">324ms</span
+                  ><span class="row-status amber">!</span>
+                </button>
+                <button
+                  class="trace-row"
+                  data-span="answer"
+                  aria-pressed="false"
+                  disabled
+                >
+                  <span class="span-name"
+                    ><span class="span-icon">◇</span> generate_answer</span
+                  ><span class="lane"
+                    ><span class="duration answer"></span></span
+                  ><span class="timing">1.66s</span
+                  ><span class="row-status amber">!</span>
+                </button>
+              </div>
+              <div class="trace-diagnosis">
+                <span class="diagnosis-icon">↳</span>
+                <div>
+                  <span class="mono amber"
+                    >THE CALL SUCCEEDED. THE CONTEXT DIDN’T.</span
+                  >
+                  <p>An HTTP 200 isn’t the whole story.</p>
+                </div>
+                <span class="diagnosis-line" aria-hidden="true"></span>
+              </div>
+              <div class="output-line">
+                <span class="mono muted">AGENT ANSWER</span>
+                <p>
+                  “Opened items can’t be returned.”
+                  <span class="answer-flag">Unsupported</span>
+                </p>
+              </div>
+            </div>
+            <aside
+              class="inspector"
+              aria-label="Selected span details"
+              aria-live="polite"
+            >
+              <div class="inspector-top mono">
+                <span>SPAN DETAILS</span><span id="span-number">03 / 04</span>
+              </div>
+              <h3 id="span-title">get_return_policy</h3>
+              <div class="span-facts">
+                <span id="span-kind">TOOL CALL</span
+                ><span id="span-duration">324ms</span>
+              </div>
+              <div class="code-block">
+                <span class="code-label">INPUT</span
+                ><code id="span-input"
+                  >{ "product": "headset",<br />
+                  "condition": "opened" }</code
+                >
+              </div>
+              <div class="code-block">
+                <span class="code-label">RETURNED</span
+                ><code id="span-output"
+                  ><span class="amber">"version": "2023-11"</span
+                  ><br />"returns": "unopened only"</code
+                >
+              </div>
+              <p class="finding" id="span-finding">
+                The retrieved policy is archived. The active policy allows
+                opened returns within 30 days.
+              </p>
+              <a href="#replay" class="inspector-link"
+                >Replay with the current policy
+                <span aria-hidden="true">↗</span></a
+              >
+            </aside>
+          </div>
+          <div class="app-bottom mono">
+            <span
+              ><span class="signal-dot"></span> CAPTURED LOCALLY · FICTIONAL
+              RUN</span
+            ><span
+              >SELECT A SPAN TO INSPECT <span aria-hidden="true">↑</span></span
+            >
+          </div>
+        </div>
+        </div></div>
+        <noscript
+          ><p class="noscript">
+            This is the original failed run. Enable JavaScript to select spans
+            and replay a different source. No external requests are made.
+          </p></noscript
+        >
+        <div class="compatibility">
+          <span class="mono">A VIEW OF THE WHOLE RUN</span><span>Messages</span
+          ><span>Tool calls</span><span>Retrieved context</span
+          ><span>Final answers</span>
+        </div>
+      </section>
+
+      <section
+        class="evidence wrap"
+        id="evidence"
+        aria-labelledby="evidence-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 / UNDERSTAND THE FAILURE</p>
+            <h2 id="evidence-title">
+              Inspect the source, not just the status code.
+            </h2>
+          </div>
+          <p>
+            This request returned successfully. It also returned an archived policy. The version history explains why the answer was wrong.
+          </p>
+        </div>
+        <div class="evidence-grid">
+          <article class="context-card">
+            <div class="feature-copy">
+              <span class="feature-index">01.1 — CONTEXT</span>
+              <h3>returns-policy</h3>
+              <p>
+                Two versions. One change in eligibility. Compare the archived source with the policy the agent should have retrieved.
+              </p>
+            </div>
+            <div
+              class="context-art"
+              role="img"
+              aria-label="Illustrative source comparison: archived 2023 policy excludes opened returns; active 2026 policy allows them within 30 days."
+            >
+              <div class="source-sheet back-sheet" aria-hidden="true">
+                <div class="sheet-bar">
+                  ▤ returns-policy / 2023-11 <span>ARCHIVED</span>
+                </div>
+                <div class="sheet-content">
+                  <span class="mono">SECTION 4.2 / ELIGIBILITY</span>
+                  <h4>Returns & exchanges</h4>
+                  <p>Items must be unopened and in their original packaging.</p>
+                  <div class="redaction"></div>
+                  <div class="redaction short"></div>
+                </div>
+              </div>
+              <div class="source-sheet front-sheet" aria-hidden="true">
+                <div class="sheet-bar">
+                  ▤ returns-policy / 2026-09 <span>ACTIVE</span>
+                </div>
+                <div class="sheet-content">
+                  <span class="mono">SECTION 4.2 / ELIGIBILITY</span>
+                  <h4>Returns & exchanges</h4>
+                  <p>
+                    <mark
+                      >Opened headsets may be returned within 30 days of
+                      delivery.</mark
+                    >
+                  </p>
+                  <p>Include all original accessories and your order number.</p>
+                </div>
+                <div class="sheet-footer mono">
+                  SOURCE VERSION MATTERS. <span>↗</span>
+                </div>
+              </div>
+            </div>
+          </article>
+          <article class="latency-card">
+            <div class="feature-copy">
+              <span class="feature-index">01.2 — LATENCY</span>
+              <h3>Execution time</h3>
+              <p>Separate model time from tool time.</p>
+            </div>
+            <div
+              class="latency-art"
+              role="img"
+              aria-label="Sample run total 2.84 seconds; answer generation takes 1.66 seconds, the longest step."
+            >
+              <div class="latency-number">
+                2.84<span>s</span><small>TOTAL RUN TIME</small>
+              </div>
+              <div class="latency-bars" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                ><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="latency-legend mono">
+                <span>↳ generate_answer</span><span>1.66s</span>
+              </div>
+            </div>
+          </article>
+          <article class="lineage-card">
+            <div class="feature-copy">
+              <span class="feature-index">01.3 — LINEAGE</span>
+              <h3>Source lineage</h3>
+              <p>From retrieved source to final response.</p>
+            </div>
+            <div
+              class="lineage-art"
+              role="img"
+              aria-label="The archived policy flows into the model context and then into the unsupported answer."
+            >
+              <div class="lineage-node">
+                <span>▤</span> returns-policy <small>2023-11</small>
+              </div>
+              <div class="lineage-connector"></div>
+              <div class="lineage-node middle">
+                <span>◇</span> model context <small>1 source</small>
+              </div>
+              <div class="lineage-connector"></div>
+              <div class="lineage-node last">
+                <span class="amber">!</span> unsupported answer
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="replay-section"
+        id="replay"
+        aria-labelledby="replay-title"
+      >
+        <div class="wrap">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">02 / CHANGE ONE THING</p>
+              <h2 id="replay-title">Change the source.<br />Compare the answer.</h2>
+            </div>
+            <p>
+              Same question. Same agent.<br />A different piece of evidence.
+            </p>
+          </div>
+          <div class="replay-workbench">
+            <div class="replay-toolbar">
+              <div>
+                <span class="mono">REPLAY / run_08f2</span
+                ><span class="replay-tag">LOCAL FIXTURE</span>
+              </div>
+              <button id="reset" class="text-button" disabled>
+                Reset sample <span aria-hidden="true">↺</span>
+              </button>
+            </div>
+            <div class="replay-control">
+              <div>
+                <label for="policy-source">Replace the policy source</label>
+                <p>Nothing is sent to a model or a production agent.</p>
+              </div>
+              <div class="replay-actions">
+                <select id="policy-source" disabled>
+                  <option value="current">2026-09 · Current policy</option>
+                  <option value="archived">
+                    2023-11 · Archived policy
+                  </option></select
+                ><button id="run-replay" class="button dark" disabled>
+                  Replay run <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </div>
+            <div class="comparison">
+              <article class="original-result">
+                <div class="result-top mono">
+                  <span>ORIGINAL RUN</span
+                  ><span class="fail-badge">UNSUPPORTED</span>
+                </div>
+                <span class="quote-symbol" aria-hidden="true">“</span>
+                <h3>Opened items can’t<br />be returned.</h3>
+                <div class="result-evidence">
+                  <span class="mono">SOURCE</span>
+                  <p>returns-policy / 2023-11 <span>Archived</span></p>
+                </div>
+              </article>
+              <article
+                class="replayed-result"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <div class="result-top mono">
+                  <span>REPLAY</span><span id="replay-state">READY TO RUN</span>
+                </div>
+                <div id="replay-empty">
+                  <div class="replay-glyph" aria-hidden="true">↻</div>
+                  <h3>Give it better context.</h3>
+                  <p>Choose a policy above, then replay the run.</p>
+                </div>
+                <div id="replay-answer" hidden>
+                  <span class="quote-symbol" aria-hidden="true">“</span>
+                  <h3 id="corrected-answer"></h3>
+                  <div class="result-evidence">
+                    <span class="mono">SOURCE</span>
+                    <p id="corrected-source"></p>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="replay-footer">
+              <span class="mono" id="replay-feedback" role="status"
+                >A REPLAY CHANGES THIS SAMPLE ONLY.</span
+              ><span class="mono">01 INPUT → 01 CHANGE → 01 COMPARISON</span>
+            </div>
+          </div>
+          <div class="replay-note">
+            <span class="note-mark" aria-hidden="true">↳</span>
+            <p>
+              Better evidence produces a better answer <em>in this sample.</em
+              ><br />Real evaluations still need representative cases and human
+              judgment.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="closing wrap">
+        <div>
+          <p class="eyebrow">TRACE / PRODUCT STUDY</p>
+          <h2>Take another look at the run.</h2>
+        </div>
+        <a class="button light" href="#investigate"
+          >Inspect the run <span aria-hidden="true">↗</span></a
+        >
+        <div class="closing-path" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="wordmark" href="#top"
+        >trace<span class="registered">®</span></a
+      >
+      <p>
+        Fictional product. Original design study.<br />Built with Frontend
+        Design Director.
+      </p>
+      <a href="../index.html">All studies <span aria-hidden="true">↗</span></a>
+    </footer>
+  </body>
+</html>

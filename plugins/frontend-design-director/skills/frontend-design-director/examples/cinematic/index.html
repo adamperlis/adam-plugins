@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0c0c" />
+    <title>LUMA — An instrument for seeing</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#anatomy">Skip introduction</a>
+    <header class="masthead">
+      <a class="wordmark" href="#opening" aria-label="Luma, back to beginning"
+        >LUMA<span>®</span></a
+      >
+      <span class="edition">OPTICAL INSTRUMENTS<br />CONCEPT SERIES — 001</span>
+      <button class="motion-toggle" type="button" aria-pressed="false">
+        Motion <span>on</span><i></i>
+      </button>
+    </header>
+    <main>
+      <div class="film" id="film">
+        <div class="stage" aria-hidden="true">
+          <div class="halo"></div>
+          <div class="crosshair c1"></div>
+          <div class="crosshair c2"></div>
+          <canvas id="optics"></canvas>
+          <div class="fallback"><div class="fallback-lens"></div></div>
+          <div class="stage-caption">
+            <span>LM—01</span
+            ><span class="scene-label">ASSEMBLED / PERSPECTIVE</span>
+          </div>
+        </div>
+        <section
+          class="chapter opening"
+          id="opening"
+          aria-labelledby="opening-title"
+        >
+          <div class="copy hero-copy">
+            <p class="eyebrow">
+              <span class="status-dot"></span> A STUDY IN LIGHT & MATTER
+            </p>
+            <h1 id="opening-title">
+              LESS<br />BETWEEN<br /><span>YOU & LIGHT.</span>
+            </h1>
+            <p class="intro">
+              An instrument for seeing.<br />And seeing differently.
+            </p>
+            <a class="round-link" href="#anatomy"
+              ><span class="circle">↓</span><span>LOOK A LITTLE CLOSER</span></a
+            >
+          </div>
+          <div class="hero-foot">
+            <span>35 MM / ƒ 1.4</span
+            ><span>DESIGNED TO DISAPPEAR.<br />ENGINEERED TO REVEAL.</span>
+          </div>
+        </section>
+        <section
+          class="chapter anatomy"
+          id="anatomy"
+          aria-labelledby="anatomy-title"
+        >
+          <div class="copy side-copy">
+            <p class="eyebrow">01 / THE ANATOMY OF CLARITY</p>
+            <h2 id="anatomy-title">
+              NOTHING<br />EXTRA.<br /><span>EVERYTHING<br />ESSENTIAL.</span>
+            </h2>
+            <p>
+              A shell. An aperture. A sequence of glass.<br />Separate the
+              instrument and its purpose<br />becomes clear: give light a way
+              through.
+            </p>
+            <div class="spec-line">
+              <span>01—03</span><span>COATED OPTICAL ELEMENTS</span>
+            </div>
+            <div class="spec-line">
+              <span>04</span><span>VARIABLE APERTURE</span>
+            </div>
+            <div class="spec-line">
+              <span>05</span><span>MACHINED HOUSING</span>
+            </div>
+          </div>
+        </section>
+        <section class="chapter light" id="light" aria-labelledby="light-title">
+          <div class="copy light-copy">
+            <p class="eyebrow">02 / FOLLOW THE INVISIBLE</p>
+            <h2 id="light-title">LIGHT IN.<br /><span>WORLD OUT.</span></h2>
+            <p>
+              A small opening changes the whole picture.<br />Move the aperture.
+              Watch the path respond.
+            </p>
+            <div class="aperture-control">
+              <label for="aperture"
+                >APERTURE
+                <output id="aperture-value" for="aperture"
+                  >ƒ / 2.8</output
+                ></label
+              >
+              <input
+                type="range"
+                id="aperture"
+                min="14"
+                max="80"
+                value="28"
+                step="1"
+              />
+              <div class="range-ends">
+                <span>MORE LIGHT</span><span>LESS LIGHT</span>
+              </div>
+            </div>
+          </div>
+          <span class="diagram-note"
+            >LIGHT-PATH VISUALIZATION / NOT AN OPTICAL SIMULATION</span
+          >
+        </section>
+        <section
+          class="chapter closing"
+          id="closing"
+          aria-labelledby="closing-title"
+        >
+          <div class="copy end-copy">
+            <p class="eyebrow">03 / BACK TO THE WORLD</p>
+            <h2 id="closing-title">
+              SEE WHAT<br /><span>STAYS WITH YOU.</span>
+            </h2>
+            <a class="round-link" href="#opening"
+              ><span class="circle">↗</span><span>TAKE ANOTHER LOOK</span></a
+            >
+          </div>
+          <footer>
+            <span>LUMA / AN ORIGINAL, FICTIONAL DESIGN STUDY</span
+            ><a href="../index.html">BACK TO THE DESIGN LIBRARY ↗</a>
+          </footer>
+        </section>
+      </div>
+    </main>
+    <nav class="chapter-nav" aria-label="Story chapters">
+      <a href="#opening" aria-label="Introduction" aria-current="location"
+        ><span>00</span><i></i
+      ></a>
+      <a href="#anatomy" aria-label="Anatomy"><span>01</span><i></i></a>
+      <a href="#light" aria-label="Light path"><span>02</span><i></i></a>
+      <a href="#closing" aria-label="Closing"><span>03</span><i></i></a>
+    </nav>
+    <div class="scroll-cue" aria-hidden="true">
+      SCROLL TO EXPLORE <span>↓</span>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

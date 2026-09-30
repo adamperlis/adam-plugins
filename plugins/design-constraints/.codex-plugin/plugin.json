@@ -1,0 +1,6 @@
+{
+  "name": "design-constraints",
+  "version": "0.1.0",
+  "description": "Design UI with explicit spatial and typographic constraints instead of letting the model guess.",
+  "skills": "./skills/"
+}

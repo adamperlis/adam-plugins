@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Reference UI responsive review</title
+  ><style>
+    body {
+      margin: 0;
+      background: #d9d9d3;
+      font:
+        14px Arial,
+        sans-serif;
+    }
+    header {
+      padding: 12px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    button,
+    select {
+      padding: 8px;
+    }
+    iframe {
+      display: block;
+      border: 0;
+      margin: 0 auto;
+      width: 390px;
+      height: 844px;
+      background: #fff;
+    }
+    output {
+      font-size: 12px;
+    }
+  </style>
+  <header>
+    <label
+      >Study
+      <select id="study">
+        <option>cursor</option>
+        <option>linear</option>
+        <option>firecrawl</option>
+        <option>elevenlabs</option>
+      </select></label
+    ><button data-width="320">320</button><button data-width="390">390</button
+    ><button data-width="768">768</button><button data-width="1280">1280</button
+    ><button id="grid">Show feature grid</button><output id="metrics"></output>
+  </header>
+  <iframe
+    src="./index.html?study=cursor"
+    title="Reference UI responsive preview"
+  ></iframe>
+  <script>
+    const frame = document.querySelector("iframe");
+    const choice = document.querySelector("#study");
+    let observer;
+    function measure() {
+      const doc = frame.contentDocument;
+      if (!doc?.body) return;
+      const width = frame.contentWindow.innerWidth;
+      document.querySelector("#metrics").textContent =
+        `Document ${doc.documentElement.scrollWidth}px / Viewport ${width}px · ${doc.documentElement.scrollWidth > width ? "OVERFLOW" : "no horizontal overflow"}`;
+    }
+    frame.addEventListener("load", () => {
+      observer?.disconnect();
+      observer = new ResizeObserver(measure);
+      observer.observe(frame.contentDocument.body);
+      measure();
+    });
+    choice.addEventListener("change", () => {
+      frame.src = `./index.html?study=${choice.value}#features`;
+    });
+    document.querySelector("#grid").addEventListener("click", () => {
+      frame.src = `./index.html?study=${choice.value}#features`;
+    });
+    document.querySelectorAll("[data-width]").forEach((button) =>
+      button.addEventListener("click", () => {
+        frame.style.width = button.dataset.width + "px";
+        requestAnimationFrame(measure);
+      }),
+    );
+  </script>
+</html>

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "seo-aeo-geo",
+  "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Perlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/seo-aeo-geo",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "seo",
+    "aeo",
+    "geo",
+    "schema",
+    "ai-visibility",
+    "ghost"
+  ]
+}

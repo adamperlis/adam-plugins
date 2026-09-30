@@ -1,0 +1,34 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "video-skills",
+  "version": "0.1.0",
+  "description": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand, creator, and social videos.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/video-skills",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "remotion",
+    "creator-video",
+    "product-demo",
+    "social-video"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Video Skills",
+        "shortDescription": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand...",
+        "longDescription": "Eleven reusable skills for planning, capturing, scripting, and finishing product, brand, creator, and social videos.",
+        "developerName": "Adam Perlis",
+        "category": "Video",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "seo-aeo-geo",
+  "version": "0.1.0",
+  "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/seo-aeo-geo",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "seo",
+    "aeo",
+    "geo",
+    "schema",
+    "ai-visibility",
+    "ghost"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Seo Aeo Geo",
+        "shortDescription": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank...",
+        "longDescription": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
+        "developerName": "Adam Perlis",
+        "category": "Marketing",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

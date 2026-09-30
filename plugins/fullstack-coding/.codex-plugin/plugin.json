@@ -1,0 +1,6 @@
+{
+  "name": "fullstack-coding",
+  "version": "0.1.0",
+  "description": "Systematic full-stack web development guidance for architecture, debugging, quality, testing, security, and deployment.",
+  "skills": "./skills/"
+}
