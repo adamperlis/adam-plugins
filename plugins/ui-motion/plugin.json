@@ -1,0 +1,37 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ui-motion",
+  "version": "0.1.0",
+  "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-claude-plugins/tree/master/plugins/ui-motion",
+  "repository": "https://github.com/adamperlis/adam-claude-plugins",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "motion",
+    "kinetic-typography",
+    "lenis",
+    "gsap",
+    "matter-js",
+    "pretext",
+    "frontend"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "UI Motion",
+        "shortDescription": "Kinetic typography heroes and scroll-blur manifesto sections.",
+        "longDescription": "Two reusable UI motion skills extracted from the Zine homepage direction: an electric inflated-type hero and a quiet Lenis/GSAP blur-to-sharp manifesto transition.",
+        "developerName": "Adam Perlis",
+        "category": "Design",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}
