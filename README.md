@@ -35,6 +35,15 @@ The `ui-motion` plugin includes both portable OpenAI packaging and compatibility
 | `social-video` | skill: `social-video-hooks` | Writes briefs, scripts, and shot lists for short-form social video. |
 | `ui-motion` | skills: `kinetic-inflated-hero`, `scroll-blur-manifesto` | Builds high-taste kinetic typography heroes and scroll-linked blur manifesto transitions. |
 
+## Invoking Skills
+
+You can usually ask for a skill by name in plain language, as the examples below do. Direct invocation syntax varies by host:
+
+- Claude Code commonly exposes plugin skills as slash commands, such as `/kinetic-inflated-hero`.
+- Codex uses dollar-prefixed skill invocation, such as `$kinetic-inflated-hero`.
+
+The examples use plain language so they work in either environment.
+
 ## UI Motion
 
 The `ui-motion` plugin is for front-end work where the motion idea is the product story, not decoration. It packages two reusable UI skills extracted from the Zine homepage direction.
@@ -48,11 +57,11 @@ Use this when you want a full-viewport hero built around living typography: infl
 Good requests:
 
 ```text
-Use $kinetic-inflated-hero to design a full-screen launch hero for an AI visibility product. Make the main visual inflated physical type, not a dashboard screenshot.
+Use the kinetic-inflated-hero skill to design a full-screen launch hero for an AI visibility product. Make the main visual inflated physical type, not a dashboard screenshot.
 ```
 
 ```text
-Use $kinetic-inflated-hero to implement a hero where the word "invisible" blurs and disappears letter-by-letter, then resolves back into focus.
+Use the kinetic-inflated-hero skill to implement a hero where the word "invisible" blurs and disappears letter-by-letter, then resolves back into focus.
 ```
 
 ### `scroll-blur-manifesto`
@@ -64,11 +73,11 @@ Use this for the section immediately after a loud hero: a quiet editorial argume
 Good requests:
 
 ```text
-Use $scroll-blur-manifesto to build a Lightfield-style manifesto section where each word appears as a blurred ghost before sharpening on scroll.
+Use the scroll-blur-manifesto skill to build a Lightfield-style manifesto section where each word appears as a blurred ghost before sharpening on scroll.
 ```
 
 ```text
-Use $scroll-blur-manifesto after the hero. Keep it warm, editorial, and restrained; use sharp and pre-blurred text layers instead of animating blur on every word.
+Use the scroll-blur-manifesto skill after the hero. Keep it warm, editorial, and restrained; use sharp and pre-blurred text layers instead of animating blur on every word.
 ```
 
 ## Layout

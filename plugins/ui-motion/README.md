@@ -9,6 +9,15 @@ It contains two skills:
 | `kinetic-inflated-hero` | Full-screen kinetic typography heroes with inflated physical letterforms. | React/Next.js, Matter.js-style physics, Pretext-inspired typography, SVG goo/blur filters, CSS keyframes |
 | `scroll-blur-manifesto` | Quiet editorial sections where text resolves from blur into clarity on scroll. | Lenis, GSAP ScrollTrigger, layered sharp + pre-blurred text, opacity crossfades |
 
+## Invoking These Skills
+
+Ask for the skill by name in plain language, or use the host-specific shortcut if your client exposes one:
+
+- Claude Code: `/kinetic-inflated-hero` or `/scroll-blur-manifesto`
+- Codex: `$kinetic-inflated-hero` or `$scroll-blur-manifesto`
+
+The examples below use plain language because it travels better across clients.
+
 ## Kinetic Inflated Hero
 
 This skill helps create a hero that behaves like a kinetic brand object. Use it when a normal SaaS headline plus screenshot would feel too generic.
@@ -27,7 +36,7 @@ It guides the agent to:
 Example prompt:
 
 ```text
-Use $kinetic-inflated-hero to design and implement a launch hero for Zine. The phrase is “Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, Grok.” Make the word “invisible” defocus and vanish letter-by-letter, then resolve back into focus.
+Use the kinetic-inflated-hero skill to design and implement a launch hero for Zine. The phrase is “Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, Grok.” Make the word “invisible” defocus and vanish letter-by-letter, then resolve back into focus.
 ```
 
 ## Scroll Blur Manifesto
@@ -49,7 +58,7 @@ It guides the agent to:
 Example prompt:
 
 ```text
-Use $scroll-blur-manifesto to build the section after my hero. The section should start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
+Use the scroll-blur-manifesto skill to build the section after my hero. The section should start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
 ```
 
 ## Packaging
