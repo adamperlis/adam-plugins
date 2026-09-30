@@ -1,6 +1,8 @@
-# ui-motion
+# UI Motion
 
-`ui-motion` is a small cross-agent plugin for high-taste front-end motion patterns. It is packaged for Claude Code and for OpenAI/Codex-compatible plugin hosts.
+Two reusable frontend skills for kinetic hero typography and scroll-driven text reveals, available for Claude Code and Codex.
+
+**[Try the live interactive demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html)** — explore both effects, adjust the DialKit controls, and copy a component with your settings.
 
 ## Install The Pack
 
@@ -22,8 +24,6 @@ codex plugin marketplace add adamperlis/adam-plugins
 
 Then install `frontend-design-director` and `ui-motion` from the Plugins Directory. Ask for both in the same task when you want the page-wide design direction and one of these specific effects.
 
-[Open the live UI Motion demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html) to try the hero, scroll reveal, and DialKit controls.
-
 It contains two skills:
 
 | Skill | Use it for | Primary tools |
@@ -33,7 +33,7 @@ It contains two skills:
 
 ## Contained Code Example
 
-For a concrete implementation reference, see [`examples/contained-ui-motion-demo.html`](examples/contained-ui-motion-demo.html). It is a single-file HTML/CSS/JS demo that includes:
+The [live demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html) is a single-file HTML/CSS/JS example. You can also [view its source](examples/contained-ui-motion-demo.html). It includes:
 
 - an electric-blue kinetic inflated hero whose letters fit measured space around the nav, statement, and bottom copy
 - a per-letter invisible-word blur/refocus effect
