@@ -17,12 +17,18 @@
         - next/font/local with Geist, Fragment Mono, Inter, DM Mono, and
           OT2049-Bold.ttf for the hero glyphs
 
-        This standalone file loads Matter, Lenis, GSAP, and ScrollTrigger
-        from CDNs when available. It cannot ship Zine's local/licensed fonts
-        or the full OT2049 outline deformation engine, so treat it as a
-        portable implementation reference for structure, controls, layering,
-        and timing rather than a pixel-perfect clone.
+        This standalone file loads Matter, DialKit, Lenis, GSAP, and
+        ScrollTrigger from CDNs. The local preview resolves Zine's OT2049
+        font from the sibling project; distributed copies should provide
+        their own licensed OT2049 file at the path below.
       */
+
+      @font-face {
+        font-family: "OT2049 Demo";
+        src: url("../../../../Zine/apps/marketing/public/fonts/OT2049-Bold.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 700;
+      }
 
       :root {
         --electric: #0600ff;
@@ -31,8 +37,6 @@
         --ink: #0d0d0c;
         --ink-mid: rgba(13, 13, 12, 0.55);
         --rule: rgba(13, 13, 12, 0.11);
-        --hero-pressure: 1;
-        --goo: 0.9;
         --blur: 10;
         --scroll-spread: 6.2;
         --font-sans:
@@ -41,7 +45,7 @@
         --font-mono:
           "DM Mono", "Fragment Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         --font-display:
-          "OT2049 Bold", "Arial Black", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+          "OT2049 Demo", "Arial Black", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
       }
 
       * {
@@ -133,15 +137,17 @@
       }
 
       .invisible-word {
-        display: inline-flex;
-        min-width: 8.2ch;
-        justify-content: center;
+        display: inline;
+        white-space: nowrap;
       }
 
       .invisible-word span {
         display: inline-block;
-        animation: invisible-wash 4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
-        animation-delay: calc(var(--i) * 75ms);
+      }
+
+      .hero-label.is-washing .invisible-word span {
+        animation: invisible-wash 2s 1;
+        animation-delay: calc(var(--i) * 50ms);
       }
 
       .hero-copy {
@@ -188,25 +194,45 @@
         position: absolute;
         inset: 0;
         z-index: 2;
-        filter: url("#hero-goo");
         pointer-events: none;
       }
 
       .glyph {
         position: absolute;
+        left: var(--x);
+        top: var(--y);
         color: var(--paper-2);
         font-family: var(--font-display);
-        font-weight: 950;
+        font-weight: 700;
         line-height: 0.75;
-        letter-spacing: -0.08em;
+        letter-spacing: 0;
         text-transform: uppercase;
-        transform: translate3d(var(--x), var(--y), 0) scale(var(--sx), var(--sy));
-        transform-origin: center;
+        transform-origin: 50% 50%;
+        will-change: transform, filter, opacity;
         text-shadow:
           0 0 1px rgba(255, 255, 255, 0.25),
           0 12px 22px rgba(0, 0, 0, 0.035);
-        animation: pressure calc(6.5s / max(var(--hero-pressure), 0.2)) ease-in-out infinite;
-        animation-delay: var(--delay);
+      }
+
+      .glyph.is-popping {
+        opacity: 0;
+        transition: opacity 80ms ease-out;
+      }
+
+      .hero-confetti {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .particle {
+        position: absolute;
+        width: var(--size);
+        height: var(--size);
+        background: var(--paper-2);
+        animation: particle-flight 950ms cubic-bezier(0.18, 0.4, 0.52, 1) forwards;
       }
 
       .g-c {
@@ -263,94 +289,19 @@
         font-size: clamp(220px, 23vw, 350px);
       }
 
-      .controls {
+      .copy-btn {
         position: fixed;
         z-index: 30;
-        right: 14px;
+        left: 14px;
         bottom: 14px;
-        width: min(360px, calc(100vw - 28px));
-        padding: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.32);
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.78);
-        background: rgba(0, 0, 0, 0.22);
-        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 5px;
+        padding: 8px 12px;
+        color: white;
+        background: #171717;
         font-family: var(--font-mono);
-        font-size: 10px;
-        line-height: 1.45;
-      }
-
-      .controls:not([open]) {
-        width: auto;
-        padding: 0;
-      }
-
-      .controls:not([open]) .controls-body {
-        display: none;
-      }
-
-      .controls summary {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        list-style: none;
+        font-size: 11px;
         cursor: pointer;
-      }
-
-      .controls summary::-webkit-details-marker {
-        display: none;
-      }
-
-      .controls:not([open]) summary {
-        padding: 9px 11px;
-      }
-
-      .controls-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 10px;
-      }
-
-      .controls-title {
-        color: white;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-
-      .copy-btn {
-        border: 1px solid rgba(255, 255, 255, 0.38);
-        border-radius: 8px;
-        padding: 6px 8px;
-        color: white;
-        background: rgba(255, 255, 255, 0.08);
-        cursor: pointer;
-      }
-
-      .control {
-        display: grid;
-        grid-template-columns: 112px 1fr 34px;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-
-      .control input {
-        width: 100%;
-        accent-color: white;
-      }
-
-      .control output {
-        text-align: right;
-        color: white;
-      }
-
-      .stack-note {
-        margin-top: 10px;
-        color: rgba(255, 255, 255, 0.6);
       }
 
       .manifesto {
@@ -454,33 +405,38 @@
         border: 0;
       }
 
-      @keyframes pressure {
-        0%,
-        100% {
-          translate: 0 0;
-          scale: 1 1;
+      @keyframes invisible-wash {
+        0% {
+          filter: blur(0);
+          opacity: 1;
+          transform: rotate(0) translateY(0);
+          animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.4);
         }
-
-        45% {
-          translate: 0 calc(-0.022em * var(--hero-pressure));
-          scale: calc(1 + 0.018 * var(--hero-pressure)) calc(1 - 0.013 * var(--hero-pressure));
+        30% {
+          filter: blur(calc(var(--invisible-blur, 6) * 1px));
+          opacity: 0;
+          transform: rotate(-8deg) translateY(-0.12em);
+          animation-timing-function: linear;
+        }
+        55% {
+          filter: blur(calc(var(--invisible-blur, 6) * 1px));
+          opacity: 0;
+          transform: rotate(6deg) translateY(0.1em);
+          animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        100% {
+          filter: blur(0);
+          opacity: 1;
+          transform: rotate(0) translateY(0);
         }
       }
 
-      @keyframes invisible-wash {
-        0%,
-        46%,
+      @keyframes particle-flight {
+        0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
+        55% { opacity: 1; }
         100% {
-          opacity: 1;
-          filter: blur(0);
-          transform: translateY(0) rotate(0deg);
-        }
-
-        62%,
-        75% {
-          opacity: 0.08;
-          filter: blur(calc(var(--blur) * 1.4px));
-          transform: translateY(-0.1em) rotate(-2deg);
+          opacity: 0;
+          transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--rot));
         }
       }
 
@@ -536,17 +492,11 @@
           margin-top: 28px;
         }
 
-        .controls {
-          left: 10px;
-          right: 10px;
-          bottom: 10px;
-          width: auto;
-        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .glyph,
-        .invisible-word span {
+        .particle,
+        .hero-label.is-washing .invisible-word span {
           animation: none;
         }
 
@@ -556,7 +506,6 @@
           transform: none;
         }
 
-        .layer.ghost,
         .layer.ghost {
           display: none;
         }
@@ -600,11 +549,10 @@
         <span class="glyph g-d">D</span>
         <span class="glyph g-e">E</span>
       </div>
+      <div class="hero-confetti" aria-hidden="true"></div>
 
       <p class="hero-label">
-        Your site is
-        <span class="invisible-word" data-word="invisible"></span>
-        to
+        Your site is <span class="invisible-word" data-word="invisible"></span> to
       </p>
 
       <div class="hero-copy">
@@ -638,77 +586,89 @@
       </div>
     </section>
 
-    <details class="controls" aria-label="Dial controls">
-      <summary>
-        <span class="controls-title">DialKit-style controls</span>
-        <span aria-hidden="true">+</span>
-      </summary>
-      <div class="controls-body">
-      <div class="controls-head">
-        <span class="controls-title">Tune and reuse</span>
-        <button class="copy-btn" data-copy>Copy HTML</button>
-      </div>
-      <label class="control">
-        <span>Pressure</span>
-        <input data-var="--hero-pressure" type="range" min="0.2" max="2" value="1" step="0.05" />
-        <output>1.00</output>
-      </label>
-      <label class="control">
-        <span>Blur</span>
-        <input data-var="--blur" type="range" min="2" max="18" value="10" step="1" />
-        <output>10</output>
-      </label>
-      <label class="control">
-        <span>Reveal spread</span>
-        <input data-var="--scroll-spread" type="range" min="3" max="9" value="6.2" step="0.1" />
-        <output>6.2</output>
-      </label>
-      <label class="control">
-        <span>Blue</span>
-        <input data-var="--electric" type="range" min="235" max="255" value="242" step="1" />
-        <output>242</output>
-      </label>
-      <div class="stack-note">
-        Loads Lenis + GSAP ScrollTrigger from CDNs; notes the production
-        Matter.js/opentype.js soft-body stack. Real Zine also uses local
-        OT2049/Geist/Inter/DM Mono fonts.
-      </div>
-      </div>
-    </details>
+    <button class="copy-btn" data-copy>Copy HTML</button>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/browser.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.23/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
     <script>
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const root = document.documentElement;
+      const hero = document.querySelector(".hero");
+      const heroType = document.querySelector(".hero-type");
+      const initialGlyphMarkup = heroType.innerHTML;
+      const confetti = document.querySelector(".hero-confetti");
+      const label = document.querySelector(".hero-label");
+      const names = ["CLAUDE", "CHATGPT", "GEMINI", "PERPLEXITY", "GROK"];
+      const heroDefaults = {
+        hoverPressure: 0.85,
+        pointerRadius: 46,
+        cycleSeconds: 4,
+        popStagger: 60,
+        invisibleBlur: 6,
+        blue: "#0600ff",
+      };
+      const revealDefaults = { blur: 10, revealSpread: 6.2 };
+      let heroSettings = { ...heroDefaults, ...JSON.parse(root.dataset.heroSettings || "{}") };
+      let revealSettings = { ...revealDefaults, ...JSON.parse(root.dataset.revealSettings || "{}") };
+      let restartHero = () => {};
+      root.style.setProperty("--electric", heroSettings.blue);
+      root.style.setProperty("--invisible-blur", heroSettings.invisibleBlur);
+      root.style.setProperty("--blur", revealSettings.blur);
+      root.style.setProperty("--scroll-spread", revealSettings.revealSpread);
 
-      document.querySelectorAll("[data-var]").forEach((input) => {
-        const output = input.parentElement.querySelector("output");
-        function apply() {
-          const value = input.value;
-          if (input.dataset.var === "--electric") {
-            root.style.setProperty("--electric", `hsl(${value} 100% 50%)`);
-          } else {
-            root.style.setProperty(input.dataset.var, value);
-          }
-          output.textContent = value;
-        }
-        input.addEventListener("input", apply);
-        apply();
-      });
+      if (window.DialKit) {
+        DialKit.createDialRoot({ position: "bottom-right", theme: "dark", defaultOpen: false });
+        const heroKit = DialKit.createDialKit("Hero", {
+          hoverPressure: [heroSettings.hoverPressure, 0, 1.8, 0.05],
+          pointerRadius: [heroSettings.pointerRadius, 20, 100, 1],
+          cycleSeconds: [heroSettings.cycleSeconds, 2, 10, 0.1],
+          popStagger: [heroSettings.popStagger, 20, 150, 5],
+          invisibleBlur: [heroSettings.invisibleBlur, 0, 16, 1],
+          blue: heroSettings.blue,
+          replay: { type: "action" },
+        }, {
+          id: "zine-demo-hero",
+          onAction: (path) => { if (path === "replay") restartHero(); },
+        });
+        const revealKit = DialKit.createDialKit("Section reveal", {
+          blur: [revealSettings.blur, 0, 24, 1],
+          revealSpread: [revealSettings.revealSpread, 2, 10, 0.1],
+        }, { id: "zine-demo-reveal" });
+        heroKit.subscribe((values) => {
+          heroSettings = values;
+          root.style.setProperty("--electric", values.blue);
+          root.style.setProperty("--invisible-blur", values.invisibleBlur);
+        });
+        revealKit.subscribe((values) => {
+          revealSettings = values;
+          root.style.setProperty("--blur", values.blur);
+          root.style.setProperty("--scroll-spread", values.revealSpread);
+          requestAnimationFrame(() => {
+            setWordProgress(window.ScrollTrigger?.getAll()?.[0]?.progress || 0);
+          });
+        });
+      }
 
       document.querySelector("[data-copy]").addEventListener("click", async (event) => {
         const button = event.currentTarget;
         const clone = document.documentElement.cloneNode(true);
         clone.removeAttribute("style");
+        clone.dataset.heroSettings = JSON.stringify(heroSettings);
+        clone.dataset.revealSettings = JSON.stringify(revealSettings);
+        clone.querySelector(".hero-type").innerHTML = initialGlyphMarkup;
+        clone.querySelector(".hero-confetti").textContent = "";
+        clone.querySelector(".hero-label").classList.remove("is-washing");
         clone.querySelectorAll(".invisible-word, .layer.sharp, .layer.ghost").forEach((node) => {
           node.textContent = "";
         });
         clone.querySelectorAll("[style]").forEach((node) => {
           if (node.classList.contains("word")) node.removeAttribute("style");
         });
-        const html = "<!doctype html>\\n" + clone.outerHTML;
+        const html = "<!doctype html>\n" + clone.outerHTML;
         await navigator.clipboard.writeText(html);
         button.textContent = "Copied";
         setTimeout(() => (button.textContent = "Copy HTML"), 1200);
@@ -722,6 +682,182 @@
           word.append(span);
         });
       });
+
+      if (!reduced && window.Matter) {
+        const { Engine, Bodies, Body, Composite, Constraint } = Matter;
+        let engine;
+        let pointerBody;
+        let pointerRadius = heroSettings.pointerRadius;
+        let glyphs = [];
+        let wordIndex = 0;
+        let phase = "inflate";
+        let phaseAt = 0;
+        let popAt = [];
+        let washTimer;
+        const pointer = { x: -1000, y: -1000 };
+
+        hero.addEventListener("pointermove", (event) => {
+          const rect = hero.getBoundingClientRect();
+          pointer.x = event.clientX - rect.left;
+          pointer.y = event.clientY - rect.top;
+        });
+        hero.addEventListener("pointerleave", () => {
+          pointer.x = -1000;
+          pointer.y = -1000;
+        });
+
+        function setName(index) {
+          if (index === 0) {
+            heroType.innerHTML = initialGlyphMarkup;
+          } else {
+            heroType.textContent = "";
+            const name = names[index];
+            const split = Math.ceil(name.length / 2);
+            [...name].forEach((letter, i) => {
+              const node = document.createElement("span");
+              node.className = "glyph";
+              node.textContent = letter;
+              const row = i < split ? 0 : 1;
+              const rowIndex = row ? i - split : i;
+              const count = row ? name.length - split : split;
+              const slot = innerWidth / count;
+              node.style.left = `${rowIndex * slot + slot * 0.08}px`;
+              node.style.top = row ? "61vh" : "17vh";
+              node.style.fontSize = `${Math.min(innerHeight * 0.33, slot * 1.34)}px`;
+              heroType.append(node);
+            });
+          }
+        }
+
+        function startWord(now) {
+          if (engine) Composite.clear(engine.world, false);
+          engine = Engine.create({ gravity: { x: 0, y: 0, scale: 0 } });
+          pointerBody = Bodies.circle(-1000, -1000, heroSettings.pointerRadius, {
+            isStatic: true,
+            friction: 0,
+            collisionFilter: { category: 2, mask: 1 },
+          });
+          pointerRadius = heroSettings.pointerRadius;
+          const width = hero.clientWidth;
+          const height = hero.clientHeight;
+          const walls = [
+            Bodies.rectangle(width / 2, -90, width + 200, 180, { isStatic: true }),
+            Bodies.rectangle(width / 2, height + 90, width + 200, 180, { isStatic: true }),
+            Bodies.rectangle(-90, height / 2, 180, height + 200, { isStatic: true }),
+            Bodies.rectangle(width + 90, height / 2, 180, height + 200, { isStatic: true }),
+          ];
+          Composite.add(engine.world, [pointerBody, ...walls]);
+          setName(wordIndex);
+          const heroRect = hero.getBoundingClientRect();
+          glyphs = [...heroType.querySelectorAll(".glyph")].map((node, i) => {
+            const rect = node.getBoundingClientRect();
+            const home = {
+              x: rect.left - heroRect.left + rect.width / 2,
+              y: rect.top - heroRect.top + rect.height / 2,
+            };
+            const body = Bodies.rectangle(home.x, home.y, rect.width * 0.68, rect.height * 0.72, {
+              frictionAir: 0.16,
+              restitution: 0.15,
+              collisionFilter: { category: 1, mask: 3 },
+            });
+            const tether = Constraint.create({
+              pointA: home,
+              bodyB: body,
+              stiffness: 0.035,
+              damping: 0.2,
+            });
+            Composite.add(engine.world, [body, tether]);
+            return { node, body, tether, home, popped: false };
+          });
+          phase = "inflate";
+          phaseAt = now;
+          popAt = [];
+        }
+
+        function popGlyph(glyph) {
+          glyph.popped = true;
+          glyph.node.classList.add("is-popping");
+          Composite.remove(engine.world, [glyph.body, glyph.tether]);
+          const { x, y } = glyph.body.position;
+          for (let i = 0; i < 10; i++) {
+            const particle = document.createElement("span");
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 90 + Math.random() * 240;
+            particle.className = "particle";
+            particle.style.left = `${x + (Math.random() - 0.5) * 45}px`;
+            particle.style.top = `${y + (Math.random() - 0.5) * 45}px`;
+            particle.style.setProperty("--size", `${3 + Math.random() * 8}px`);
+            particle.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+            particle.style.setProperty("--ty", `${Math.sin(angle) * distance + 250}px`);
+            particle.style.setProperty("--rot", `${(Math.random() - 0.5) * 900}deg`);
+            confetti.append(particle);
+            particle.addEventListener("animationend", () => particle.remove(), { once: true });
+          }
+        }
+
+        function tick(now) {
+          if (phase === "inflate" && now - phaseAt >= 700 + glyphs.length * 40) {
+            phase = "live";
+            phaseAt = now;
+          } else if (phase === "live" && now - phaseAt >= heroSettings.cycleSeconds * 1000) {
+            phase = "explode";
+            phaseAt = now;
+            const order = glyphs.map((_, i) => i);
+            for (let i = order.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [order[i], order[j]] = [order[j], order[i]];
+            }
+            order.forEach((index, rank) => { popAt[index] = now + 170 + rank * heroSettings.popStagger; });
+            label.classList.remove("is-washing");
+            void label.offsetWidth;
+            label.classList.add("is-washing");
+            clearTimeout(washTimer);
+            washTimer = setTimeout(() => label.classList.remove("is-washing"), 2400);
+          }
+
+          if (pointerRadius !== heroSettings.pointerRadius) {
+            Body.scale(pointerBody, heroSettings.pointerRadius / pointerRadius,
+              heroSettings.pointerRadius / pointerRadius);
+            pointerRadius = heroSettings.pointerRadius;
+          }
+          Body.setPosition(pointerBody, pointer);
+          Engine.update(engine, 1000 / 60);
+          glyphs.forEach((glyph, i) => {
+            if (glyph.popped) return;
+            if (phase === "explode" && now >= popAt[i]) {
+              popGlyph(glyph);
+              return;
+            }
+            const { body, home, node } = glyph;
+            const dx = body.position.x - pointer.x;
+            const dy = body.position.y - pointer.y;
+            const proximity = Math.exp(-(dx * dx + dy * dy) / (2 * 140 * 140));
+            const enter = Math.min(1, Math.max(0.06, (now - phaseAt - i * 40) / 700));
+            const inflate = phase === "inflate" ? 1 - Math.pow(1 - enter, 3) : 1;
+            const scale = inflate * (1 + heroSettings.hoverPressure * proximity);
+            node.style.transform = `translate3d(${(body.position.x - home.x).toFixed(1)}px, ${(body.position.y - home.y).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+            node.style.filter = proximity > 0.15 ? `url(#hero-goo) blur(${(proximity * 1.1).toFixed(2)}px)` : "none";
+          });
+          if (phase === "explode" && glyphs.every((glyph) => glyph.popped) &&
+              now >= Math.max(...popAt) + 950) {
+            wordIndex = (wordIndex + 1) % names.length;
+            startWord(now);
+          }
+          requestAnimationFrame(tick);
+        }
+
+        restartHero = () => {
+          wordIndex = 0;
+          confetti.textContent = "";
+          label.classList.remove("is-washing");
+          startWord(performance.now());
+        };
+        document.fonts.ready.then(() => {
+          restartHero();
+          requestAnimationFrame(tick);
+        });
+        addEventListener("resize", () => startWord(performance.now()));
+      }
 
       const manifestoText =
         "Your customers ask ChatGPT, Claude, Gemini, and Perplexity, then take whatever answer appears. If you're not in it, you've disappeared. Zine puts agents on your site, blog, newsletter, and social, so you get a little more findable every week.";

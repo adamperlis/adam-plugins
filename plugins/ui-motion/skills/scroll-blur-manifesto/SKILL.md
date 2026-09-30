@@ -104,4 +104,4 @@ The section should feel like chaos turning into clarity: after the loud hero, th
 
 ## Contained Example
 
-If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use the manifesto section as a concrete model for layered sharp and ghost text, Lenis-smoothed scroll, GSAP ScrollTrigger progress, DialKit-style tuning controls, pre-blurred copy, highlighted pills, and reduced-motion fallback. In production work, preserve the same performance principle: pre-blur once, then animate opacity and transform.
+If available in the plugin package, inspect `../../examples/contained-ui-motion-demo.html` for a single-file HTML/CSS/JS implementation reference. Use the manifesto section as a concrete model for layered sharp and ghost text, Lenis-smoothed scroll, GSAP ScrollTrigger progress, its own Section reveal panel using the vanilla DialKit adapter, pre-blurred copy, highlighted pills, and reduced-motion fallback. In production work, preserve the same performance principle: pre-blur once, then animate opacity and transform.

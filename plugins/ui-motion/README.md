@@ -17,12 +17,13 @@ For a concrete implementation reference, see [`examples/contained-ui-motion-demo
 - a per-letter invisible-word blur/refocus effect
 - a warm editorial scroll section
 - sharp and pre-blurred text layers that crossfade on scroll
-- DialKit-style controls for pressure, blur, reveal spread, and accent color
+- real DialKit controls in separate Hero and Section reveal panels
+- Matter.js hover collision, timed letter pops, and a synchronized one-shot "invisible" wash
 - a `Copy HTML` button for pasting the whole standalone demo elsewhere
-- CDN-loaded Lenis, GSAP, and ScrollTrigger when available
+- CDN-loaded Matter.js, DialKit, Lenis, GSAP, and ScrollTrigger
 - a reduced-motion fallback
 
-The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo does not ship licensed/local font files or the full Matter/opentype OT2049 glyph deformation engine, so treat it as a portable code reference for layout, controls, layering, timing, and choreography rather than a pixel-perfect production clone.
+The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo loads the local OT2049 Bold file from a sibling `Zine` checkout for local preview. Before copying the HTML into another project, replace that `@font-face` URL with a licensed OT2049 asset you can serve there. The public repo does not distribute that font. The demo uses Matter bodies and hover scaling, while production Zine deforms actual font outlines through a particle lattice.
 
 ## Invoking These Skills
 
