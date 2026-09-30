@@ -37,12 +37,14 @@ The `ui-motion` plugin includes both portable OpenAI packaging and compatibility
 
 ## Invoking Skills
 
-You can usually ask for a skill by name in plain language, as the examples below do. Direct invocation syntax varies by host:
+Claude Code and Codex use different explicit skill syntax:
 
-- Claude Code commonly exposes plugin skills as slash commands, such as `/kinetic-inflated-hero`.
-- Codex uses dollar-prefixed skill invocation, such as `$kinetic-inflated-hero`.
+| Host | Kinetic hero | Scroll blur manifesto |
+|---|---|---|
+| Claude Code | `/kinetic-inflated-hero` | `/scroll-blur-manifesto` |
+| Codex | `$kinetic-inflated-hero` | `$scroll-blur-manifesto` |
 
-The examples use plain language so they work in either environment.
+Plain language also works in many clients, but the examples below show both explicit forms so people know what to type.
 
 ## UI Motion
 
@@ -54,15 +56,15 @@ Use this when you want a full-viewport hero built around living typography: infl
 
 ![Kinetic inflated hero reference](plugins/ui-motion/assets/zine-hero-reference.png)
 
-Good requests:
+Example prompts:
 
-```text
-Use the kinetic-inflated-hero skill to design a full-screen launch hero for an AI visibility product. Make the main visual inflated physical type, not a dashboard screenshot.
-```
+**Claude Code**
 
-```text
-Use the kinetic-inflated-hero skill to implement a hero where the word "invisible" blurs and disappears letter-by-letter, then resolves back into focus.
-```
+> /kinetic-inflated-hero design a full-screen launch hero for an AI visibility product. Make the main visual inflated physical type, not a dashboard screenshot.
+
+**Codex**
+
+> $kinetic-inflated-hero implement a hero where the word "invisible" blurs and disappears letter-by-letter, then resolves back into focus.
 
 ### `scroll-blur-manifesto`
 
@@ -70,15 +72,15 @@ Use this for the section immediately after a loud hero: a quiet editorial argume
 
 ![Scroll blur manifesto reference](plugins/ui-motion/assets/scroll-blur-manifesto-reference.png)
 
-Good requests:
+Example prompts:
 
-```text
-Use the scroll-blur-manifesto skill to build a Lightfield-style manifesto section where each word appears as a blurred ghost before sharpening on scroll.
-```
+**Claude Code**
 
-```text
-Use the scroll-blur-manifesto skill after the hero. Keep it warm, editorial, and restrained; use sharp and pre-blurred text layers instead of animating blur on every word.
-```
+> /scroll-blur-manifesto build a Lightfield-style manifesto section where each word appears as a blurred ghost before sharpening on scroll.
+
+**Codex**
+
+> $scroll-blur-manifesto use this after the hero. Keep it warm, editorial, and restrained; use sharp and pre-blurred text layers instead of animating blur on every word.
 
 ## Layout
 

@@ -11,12 +11,14 @@ It contains two skills:
 
 ## Invoking These Skills
 
-Ask for the skill by name in plain language, or use the host-specific shortcut if your client exposes one:
+Claude Code and Codex use different explicit skill syntax:
 
-- Claude Code: `/kinetic-inflated-hero` or `/scroll-blur-manifesto`
-- Codex: `$kinetic-inflated-hero` or `$scroll-blur-manifesto`
+| Host | Kinetic hero | Scroll blur manifesto |
+|---|---|---|
+| Claude Code | `/kinetic-inflated-hero` | `/scroll-blur-manifesto` |
+| Codex | `$kinetic-inflated-hero` | `$scroll-blur-manifesto` |
 
-The examples below use plain language because it travels better across clients.
+Plain language also works in many clients, but explicit examples are clearer when you know where the skill is installed.
 
 ## Kinetic Inflated Hero
 
@@ -33,11 +35,15 @@ It guides the agent to:
 - use a signature per-letter blur/disappear/refocus effect for important words such as “invisible”
 - avoid generic AI sparkles, dashboard mockups, and purple gradients
 
-Example prompt:
+Example prompts:
 
-```text
-Use the kinetic-inflated-hero skill to design and implement a launch hero for Zine. The phrase is “Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, Grok.” Make the word “invisible” defocus and vanish letter-by-letter, then resolve back into focus.
-```
+**Claude Code**
+
+> /kinetic-inflated-hero design and implement a launch hero for Zine. The phrase is “Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, Grok.” Make the word “invisible” defocus and vanish letter-by-letter, then resolve back into focus.
+
+**Codex**
+
+> $kinetic-inflated-hero design and implement a launch hero for Zine. The phrase is “Your site is invisible to ChatGPT, Claude, Gemini, Perplexity, Grok.” Make the word “invisible” defocus and vanish letter-by-letter, then resolve back into focus.
 
 ## Scroll Blur Manifesto
 
@@ -55,11 +61,15 @@ It guides the agent to:
 - animate opacity between layers instead of animating blur on many words
 - preserve readable static text for crawlers, screen readers, and reduced-motion users
 
-Example prompt:
+Example prompts:
 
-```text
-Use the scroll-blur-manifesto skill to build the section after my hero. The section should start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
-```
+**Claude Code**
+
+> /scroll-blur-manifesto build the section after my hero. Start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
+
+**Codex**
+
+> $scroll-blur-manifesto build the section after my hero. Start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
 
 ## Packaging
 
