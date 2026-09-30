@@ -57,6 +57,8 @@ Use this for substantial marketing sites, landing pages, product frontends, laun
 
 The `ui-motion` plugin is for front-end work where the motion idea is the product story, not decoration. It packages two reusable UI skills extracted from the Zine homepage direction.
 
+[Try the live UI Motion demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html) or [read its install guide](plugins/ui-motion/README.md). For the full frontend pack, install `frontend-design-director` before `ui-motion`; both are also usable independently.
+
 ### `kinetic-inflated-hero`
 
 Use this when you want a full-viewport hero built around living typography: inflated letters, soft-body motion, Matter.js-style collisions, Pretext-inspired kinetic type behavior, SVG goo/blur filters, and a signature word effect.

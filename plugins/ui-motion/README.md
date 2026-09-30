@@ -2,6 +2,28 @@
 
 `ui-motion` is a small cross-agent plugin for high-taste front-end motion patterns. It is packaged for Claude Code and for OpenAI/Codex-compatible plugin hosts.
 
+## Install The Pack
+
+For the full frontend pack, install `frontend-design-director` first for page-wide direction, then `ui-motion` for the two motion patterns below. `design-constraints` is an optional companion for tighter layouts. These plugins can also be used independently.
+
+**Claude Code**
+
+```bash
+claude plugin marketplace add adamperlis/adam-plugins
+claude plugin install frontend-design-director@adam-plugins
+claude plugin install ui-motion@adam-plugins
+```
+
+**Codex**
+
+```bash
+codex plugin marketplace add adamperlis/adam-plugins
+```
+
+Then install `frontend-design-director` and `ui-motion` from the Plugins Directory. Ask for both in the same task when you want the page-wide design direction and one of these specific effects.
+
+[Open the live UI Motion demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html) to try the hero, scroll reveal, and DialKit controls.
+
 It contains two skills:
 
 | Skill | Use it for | Primary tools |
@@ -23,7 +45,7 @@ For a concrete implementation reference, see [`examples/contained-ui-motion-demo
 - CDN-loaded Matter.js, DialKit, Lenis, GSAP, and ScrollTrigger
 - a reduced-motion fallback
 
-The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo loads the local OT2049 Bold file from a sibling `Zine` checkout for local preview. Before using the copied hero code in another project, replace that `@font-face` URL with a licensed OT2049 asset you can serve there. The public repo does not distribute that font. The demo uses Matter bodies, measured obstacle pockets, and hover scaling, while production Zine deforms actual font outlines through a particle lattice.
+The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo loads OT2049 Bold from a sibling `Zine` checkout for local preview. The hosted example uses the open-licensed Bricolage Grotesque fallback; it does not redistribute OT2049. Before using the copied hero code in another project, replace the `@font-face` URL with a licensed font asset you can serve there. The demo uses Matter bodies, measured obstacle pockets, and hover scaling, while production Zine deforms actual font outlines through a particle lattice.
 
 ## Invoking These Skills
 
