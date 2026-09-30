@@ -208,7 +208,7 @@
         letter-spacing: 0;
         text-transform: uppercase;
         transform-origin: 50% 50%;
-        will-change: transform, filter, opacity;
+        will-change: transform, opacity;
         text-shadow:
           0 0 1px rgba(255, 255, 255, 0.25),
           0 12px 22px rgba(0, 0, 0, 0.035);
@@ -227,6 +227,18 @@
         pointer-events: none;
       }
 
+      .hero-obstacle-masks {
+        position: absolute;
+        inset: 0;
+        z-index: 6;
+        pointer-events: none;
+      }
+
+      .hero-obstacle-masks span {
+        position: absolute;
+        background: var(--electric);
+      }
+
       .particle {
         position: absolute;
         width: var(--size);
@@ -238,70 +250,37 @@
       .g-c {
         --x: 6vw;
         --y: 15.5vh;
-        --sx: 1.08;
-        --sy: 1.13;
-        --delay: -0.4s;
         font-size: clamp(180px, 19vw, 300px);
       }
 
       .g-l {
         --x: 21.8vw;
         --y: 15.8vh;
-        --sx: 1.05;
-        --sy: 1.03;
-        --delay: -1.1s;
         font-size: clamp(180px, 19vw, 300px);
       }
 
       .g-a {
         --x: 75.5vw;
         --y: 16vh;
-        --sx: 1.08;
-        --sy: 1.05;
-        --delay: -2.2s;
         font-size: clamp(190px, 20vw, 312px);
       }
 
       .g-u {
         --x: 3vw;
         --y: 67vh;
-        --sx: 1;
-        --sy: 1;
-        --delay: -2.9s;
         font-size: clamp(132px, 13vw, 212px);
       }
 
       .g-d {
         --x: 12.5vw;
         --y: 67vh;
-        --sx: 1.03;
-        --sy: 1;
-        --delay: -1.8s;
         font-size: clamp(132px, 13vw, 212px);
       }
 
       .g-e {
         --x: 81vw;
         --y: 58vh;
-        --sx: 1.05;
-        --sy: 1.12;
-        --delay: -0.9s;
         font-size: clamp(220px, 23vw, 350px);
-      }
-
-      .copy-btn {
-        position: fixed;
-        z-index: 30;
-        left: 14px;
-        bottom: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.45);
-        border-radius: 5px;
-        padding: 8px 12px;
-        color: white;
-        background: #171717;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        cursor: pointer;
       }
 
       .manifesto {
@@ -514,19 +493,6 @@
   </head>
   <body>
     <section class="hero" aria-label="Zine inflated hero demo">
-      <svg aria-hidden="true" width="0" height="0">
-        <filter id="hero-goo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="blur" />
-          <feColorMatrix
-            in="blur"
-            mode="matrix"
-            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -6"
-            result="goo"
-          />
-          <feBlend in="SourceGraphic" in2="goo" />
-        </filter>
-      </svg>
-
       <nav class="topbar" aria-label="Demo navigation">
         <span class="wordmark">ZINE</span>
         <span class="navlinks" aria-hidden="true">
@@ -550,6 +516,7 @@
         <span class="glyph g-e">E</span>
       </div>
       <div class="hero-confetti" aria-hidden="true"></div>
+      <div class="hero-obstacle-masks" aria-hidden="true"></div>
 
       <p class="hero-label">
         Your site is <span class="invisible-word" data-word="invisible"></span> to
@@ -586,8 +553,6 @@
       </div>
     </section>
 
-    <button class="copy-btn" data-copy>Copy HTML</button>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/browser.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js"></script>
@@ -597,9 +562,10 @@
     <script>
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const root = document.documentElement;
+      const sourceDocument = root.cloneNode(true);
       const hero = document.querySelector(".hero");
       const heroType = document.querySelector(".hero-type");
-      const initialGlyphMarkup = heroType.innerHTML;
+      const initialGlyphMarkup = heroType?.innerHTML || "";
       const confetti = document.querySelector(".hero-confetti");
       const label = document.querySelector(".hero-label");
       const names = ["CLAUDE", "CHATGPT", "GEMINI", "PERPLEXITY", "GROK"];
@@ -615,64 +581,76 @@
       let heroSettings = { ...heroDefaults, ...JSON.parse(root.dataset.heroSettings || "{}") };
       let revealSettings = { ...revealDefaults, ...JSON.parse(root.dataset.revealSettings || "{}") };
       let restartHero = () => {};
+      let setWordProgress = () => {};
       root.style.setProperty("--electric", heroSettings.blue);
       root.style.setProperty("--invisible-blur", heroSettings.invisibleBlur);
       root.style.setProperty("--blur", revealSettings.blur);
       root.style.setProperty("--scroll-spread", revealSettings.revealSpread);
 
-      if (window.DialKit) {
-        DialKit.createDialRoot({ position: "bottom-right", theme: "dark", defaultOpen: false });
-        const heroKit = DialKit.createDialKit("Hero", {
-          hoverPressure: [heroSettings.hoverPressure, 0, 1.8, 0.05],
-          pointerRadius: [heroSettings.pointerRadius, 20, 100, 1],
-          cycleSeconds: [heroSettings.cycleSeconds, 2, 10, 0.1],
-          popStagger: [heroSettings.popStagger, 20, 150, 5],
-          invisibleBlur: [heroSettings.invisibleBlur, 0, 16, 1],
-          blue: heroSettings.blue,
-          replay: { type: "action" },
-        }, {
-          id: "zine-demo-hero",
-          onAction: (path) => { if (path === "replay") restartHero(); },
-        });
-        const revealKit = DialKit.createDialKit("Section reveal", {
-          blur: [revealSettings.blur, 0, 24, 1],
-          revealSpread: [revealSettings.revealSpread, 2, 10, 0.1],
-        }, { id: "zine-demo-reveal" });
-        heroKit.subscribe((values) => {
-          heroSettings = values;
-          root.style.setProperty("--electric", values.blue);
-          root.style.setProperty("--invisible-blur", values.invisibleBlur);
-        });
-        revealKit.subscribe((values) => {
-          revealSettings = values;
-          root.style.setProperty("--blur", values.blur);
-          root.style.setProperty("--scroll-spread", values.revealSpread);
-          requestAnimationFrame(() => {
-            setWordProgress(window.ScrollTrigger?.getAll()?.[0]?.progress || 0);
-          });
-        });
-      }
-
-      document.querySelector("[data-copy]").addEventListener("click", async (event) => {
-        const button = event.currentTarget;
-        const clone = document.documentElement.cloneNode(true);
+      async function copyComponent(component) {
+        const clone = sourceDocument.cloneNode(true);
         clone.removeAttribute("style");
         clone.dataset.heroSettings = JSON.stringify(heroSettings);
         clone.dataset.revealSettings = JSON.stringify(revealSettings);
-        clone.querySelector(".hero-type").innerHTML = initialGlyphMarkup;
-        clone.querySelector(".hero-confetti").textContent = "";
-        clone.querySelector(".hero-label").classList.remove("is-washing");
-        clone.querySelectorAll(".invisible-word, .layer.sharp, .layer.ghost").forEach((node) => {
-          node.textContent = "";
+        clone.dataset.dialkitId = `zine-${component}-${Date.now()}`;
+        if (component === "hero") clone.querySelector(".manifesto")?.remove();
+        else clone.querySelector(".hero")?.remove();
+        clone.querySelectorAll("script[src]").forEach((script) => {
+          const src = script.getAttribute("src");
+          if (component === "hero" && /lenis|gsap/i.test(src)) script.remove();
+          if (component === "reveal" && /matter-js/i.test(src)) script.remove();
         });
-        clone.querySelectorAll("[style]").forEach((node) => {
-          if (node.classList.contains("word")) node.removeAttribute("style");
-        });
-        const html = "<!doctype html>\n" + clone.outerHTML;
-        await navigator.clipboard.writeText(html);
-        button.textContent = "Copied";
-        setTimeout(() => (button.textContent = "Copy HTML"), 1200);
-      });
+        clone.querySelector("title").textContent = component === "hero"
+          ? "Inflated hero component" : "Scroll blur reveal component";
+        await navigator.clipboard.writeText("<!doctype html>\n" + clone.outerHTML);
+      }
+
+      if (window.DialKit) {
+        DialKit.createDialRoot({ position: "bottom-right", theme: "dark", defaultOpen: false });
+        if (hero) {
+          const heroKit = DialKit.createDialKit("Hero", {
+            hoverPressure: [heroSettings.hoverPressure, 0, 1.8, 0.05],
+            pointerRadius: [heroSettings.pointerRadius, 20, 100, 1],
+            cycleSeconds: [heroSettings.cycleSeconds, 2, 10, 0.1],
+            popStagger: [heroSettings.popStagger, 20, 150, 5],
+            invisibleBlur: [heroSettings.invisibleBlur, 0, 16, 1],
+            blue: heroSettings.blue,
+            replay: { type: "action" },
+            "Copy component": { type: "action" },
+          }, {
+            id: root.dataset.dialkitId || "zine-demo-hero",
+            persist: true,
+            onAction: (path) => {
+              if (path === "replay") restartHero();
+              if (path === "Copy component") copyComponent("hero");
+            },
+          });
+          heroKit.subscribe((values) => {
+            heroSettings = values;
+            root.style.setProperty("--electric", values.blue);
+            root.style.setProperty("--invisible-blur", values.invisibleBlur);
+          });
+        }
+        if (document.querySelector(".manifesto")) {
+          const revealKit = DialKit.createDialKit("Section reveal", {
+            blur: [revealSettings.blur, 0, 24, 1],
+            revealSpread: [revealSettings.revealSpread, 2, 10, 0.1],
+            "Copy component": { type: "action" },
+          }, {
+            id: root.dataset.dialkitId || "zine-demo-reveal",
+            persist: true,
+            onAction: (path) => { if (path === "Copy component") copyComponent("reveal"); },
+          });
+          revealKit.subscribe((values) => {
+            revealSettings = values;
+            root.style.setProperty("--blur", values.blur);
+            root.style.setProperty("--scroll-spread", values.revealSpread);
+            requestAnimationFrame(() => {
+              setWordProgress(window.ScrollTrigger?.getAll()?.[0]?.progress || 0);
+            });
+          });
+        }
+      }
 
       document.querySelectorAll(".invisible-word").forEach((word) => {
         word.dataset.word.split("").forEach((letter, index) => {
@@ -683,7 +661,116 @@
         });
       });
 
-      if (!reduced && window.Matter) {
+      function placeHeroWord(index) {
+        heroType.innerHTML = index === 0 ? initialGlyphMarkup : "";
+        if (index !== 0) {
+          [...names[index]].forEach((letter) => {
+            const node = document.createElement("span");
+            node.className = "glyph";
+            node.textContent = letter;
+            heroType.append(node);
+          });
+        }
+
+        const nodes = [...heroType.querySelectorAll(".glyph")];
+        nodes.forEach((node) => {
+          node.style.left = "0px";
+          node.style.top = "0px";
+          node.style.fontSize = "100px";
+          node.style.transform = "none";
+        });
+        const natural = nodes.map((node) => {
+          const rect = node.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        });
+        const heroRect = hero.getBoundingClientRect();
+        const toBox = (element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            left: rect.left - heroRect.left,
+            top: rect.top - heroRect.top,
+            right: rect.right - heroRect.left,
+            bottom: rect.bottom - heroRect.top,
+            width: rect.width,
+            height: rect.height,
+          };
+        };
+        const nav = toBox(hero.querySelector(".topbar"));
+        const statement = toBox(label);
+        const copy = toBox(hero.querySelector(".hero-copy"));
+        const margin = Math.min(28, Math.max(16, heroRect.width * 0.025));
+        const width = heroRect.width;
+        const height = heroRect.height;
+        const topY = nav.bottom + margin;
+        const bottomY = statement.bottom + margin;
+        let pockets;
+        let counts;
+
+        if (width < 1000) {
+          const rowGap = margin * 0.5;
+          const rowHeight = Math.max(1, (statement.top - margin - topY - rowGap) / 2);
+          pockets = [
+            { x: margin, y: topY, width: width - 2 * margin, height: rowHeight },
+            { x: margin, y: topY + rowHeight + rowGap, width: width - 2 * margin, height: rowHeight },
+          ];
+          counts = [Math.ceil(nodes.length / 2), Math.floor(nodes.length / 2)];
+        } else {
+          pockets = [
+            { x: margin, y: topY, width: statement.left - 2 * margin,
+              height: statement.top - topY - margin },
+            { x: statement.right + margin, y: topY,
+              width: width - statement.right - 2 * margin,
+              height: statement.top - topY - margin },
+            { x: margin, y: bottomY, width: copy.left - 2 * margin,
+              height: height - bottomY - margin },
+            { x: copy.right + margin, y: bottomY,
+              width: width - copy.right - 2 * margin,
+              height: height - bottomY - margin },
+          ];
+          const upperLeft = Math.max(1, Math.round(nodes.length / 3));
+          const upperRight = Math.max(1, Math.round(nodes.length / 6));
+          const lowerLeft = Math.max(1, Math.round(nodes.length / 3));
+          counts = [upperLeft, upperRight, lowerLeft,
+            nodes.length - upperLeft - upperRight - lowerLeft];
+        }
+
+        let offset = 0;
+        pockets.forEach((pocket, groupIndex) => {
+          const group = nodes.slice(offset, offset + counts[groupIndex]);
+          const metrics = natural.slice(offset, offset + counts[groupIndex]);
+          offset += counts[groupIndex];
+          if (!group.length) return;
+          const naturalWidth = metrics.reduce((sum, item) => sum + item.width, 0);
+          const maxHeight = Math.max(...metrics.map((item) => item.height));
+          const gap = naturalWidth / group.length * 0.12;
+          const scale = Math.max(0.05, Math.min(3.8,
+            Math.max(1, pocket.width) / (naturalWidth + gap * (group.length - 1)),
+            Math.max(1, pocket.height) / maxHeight) * 0.9);
+          const total = (naturalWidth + gap * (group.length - 1)) * scale;
+          let x = pocket.x + (pocket.width - total) / 2;
+          group.forEach((node, i) => {
+            node.style.fontSize = `${100 * scale}px`;
+            node.style.left = `${x}px`;
+            node.style.top = `${pocket.y + (pocket.height - metrics[i].height * scale) / 2}px`;
+            x += (metrics[i].width + gap) * scale;
+          });
+        });
+
+        const masks = hero.querySelector(".hero-obstacle-masks");
+        masks.textContent = "";
+        [nav, statement, copy].forEach((box) => {
+          const mask = document.createElement("span");
+          const inset = box === nav ? 4 : margin * 0.55;
+          mask.style.left = `${box.left - inset}px`;
+          mask.style.top = `${box.top - inset}px`;
+          mask.style.width = `${box.width + 2 * inset}px`;
+          mask.style.height = `${box.height + 2 * inset}px`;
+          masks.append(mask);
+        });
+        return [nav, statement, copy];
+      }
+
+      if (hero && !reduced && window.Matter) {
         const { Engine, Bodies, Body, Composite, Constraint } = Matter;
         let engine;
         let pointerBody;
@@ -706,29 +793,6 @@
           pointer.y = -1000;
         });
 
-        function setName(index) {
-          if (index === 0) {
-            heroType.innerHTML = initialGlyphMarkup;
-          } else {
-            heroType.textContent = "";
-            const name = names[index];
-            const split = Math.ceil(name.length / 2);
-            [...name].forEach((letter, i) => {
-              const node = document.createElement("span");
-              node.className = "glyph";
-              node.textContent = letter;
-              const row = i < split ? 0 : 1;
-              const rowIndex = row ? i - split : i;
-              const count = row ? name.length - split : split;
-              const slot = innerWidth / count;
-              node.style.left = `${rowIndex * slot + slot * 0.08}px`;
-              node.style.top = row ? "61vh" : "17vh";
-              node.style.fontSize = `${Math.min(innerHeight * 0.33, slot * 1.34)}px`;
-              heroType.append(node);
-            });
-          }
-        }
-
         function startWord(now) {
           if (engine) Composite.clear(engine.world, false);
           engine = Engine.create({ gravity: { x: 0, y: 0, scale: 0 } });
@@ -746,8 +810,15 @@
             Bodies.rectangle(-90, height / 2, 180, height + 200, { isStatic: true }),
             Bodies.rectangle(width + 90, height / 2, 180, height + 200, { isStatic: true }),
           ];
-          Composite.add(engine.world, [pointerBody, ...walls]);
-          setName(wordIndex);
+          const boxes = placeHeroWord(wordIndex);
+          const obstacles = boxes.map((box) => Bodies.rectangle(
+            box.left + box.width / 2,
+            box.top + box.height / 2,
+            box.width + 32,
+            box.height + 32,
+            { isStatic: true },
+          ));
+          Composite.add(engine.world, [pointerBody, ...walls, ...obstacles]);
           const heroRect = hero.getBoundingClientRect();
           glyphs = [...heroType.querySelectorAll(".glyph")].map((node, i) => {
             const rect = node.getBoundingClientRect();
@@ -836,7 +907,6 @@
             const inflate = phase === "inflate" ? 1 - Math.pow(1 - enter, 3) : 1;
             const scale = inflate * (1 + heroSettings.hoverPressure * proximity);
             node.style.transform = `translate3d(${(body.position.x - home.x).toFixed(1)}px, ${(body.position.y - home.y).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
-            node.style.filter = proximity > 0.15 ? `url(#hero-goo) blur(${(proximity * 1.1).toFixed(2)}px)` : "none";
           });
           if (phase === "explode" && glyphs.every((glyph) => glyph.popped) &&
               now >= Math.max(...popAt) + 950) {
@@ -856,9 +926,21 @@
           restartHero();
           requestAnimationFrame(tick);
         });
-        addEventListener("resize", () => startWord(performance.now()));
+        if (window.ResizeObserver) {
+          const observer = new ResizeObserver(() => {
+            if (engine) startWord(performance.now());
+          });
+          [hero, hero.querySelector(".topbar"), label, hero.querySelector(".hero-copy")]
+            .forEach((element) => observer.observe(element));
+        } else {
+          addEventListener("resize", () => startWord(performance.now()));
+        }
+      } else if (hero) {
+        document.fonts.ready.then(() => placeHeroWord(0));
+        addEventListener("resize", () => placeHeroWord(0));
       }
 
+      if (document.querySelector(".manifesto")) {
       const manifestoText =
         "Your customers ask ChatGPT, Claude, Gemini, and Perplexity, then take whatever answer appears. If you're not in it, you've disappeared. Zine puts agents on your site, blog, newsletter, and social, so you get a little more findable every week.";
       const highlight = new Set([
@@ -908,7 +990,7 @@
         return Math.max(min, Math.min(max, value));
       }
 
-      function setWordProgress(progress) {
+      setWordProgress = (progress) => {
         const spread = Number(getComputedStyle(root).getPropertyValue("--scroll-spread")) || 6.2;
         sharpWords.forEach((word, index) => {
           const start = (index / tokens.length) * 0.82;
@@ -918,7 +1000,7 @@
           word.style.setProperty("--sharp", local.toFixed(3));
           ghostWords[index].style.setProperty("--ghost", clamp(ghost, 0, 1).toFixed(3));
         });
-      }
+      };
 
       if (!reduced && window.gsap && window.ScrollTrigger) {
         gsap.registerPlugin(ScrollTrigger);
@@ -941,6 +1023,7 @@
       }
 
       setWordProgress(0);
+      }
     </script>
   </body>
 </html>

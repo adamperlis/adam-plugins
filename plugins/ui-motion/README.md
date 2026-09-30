@@ -13,17 +13,17 @@ It contains two skills:
 
 For a concrete implementation reference, see [`examples/contained-ui-motion-demo.html`](examples/contained-ui-motion-demo.html). It is a single-file HTML/CSS/JS demo that includes:
 
-- an electric-blue kinetic inflated hero
+- an electric-blue kinetic inflated hero whose letters fit measured space around the nav, statement, and bottom copy
 - a per-letter invisible-word blur/refocus effect
 - a warm editorial scroll section
 - sharp and pre-blurred text layers that crossfade on scroll
-- real DialKit controls in separate Hero and Section reveal panels
-- Matter.js hover collision, timed letter pops, and a synchronized one-shot "invisible" wash
-- a `Copy HTML` button for pasting the whole standalone demo elsewhere
+- separate Hero and Section reveal panels using real DialKit, with saved values and presets
+- Matter.js hover collision with sharp letters, timed letter pops, and a synchronized one-shot "invisible" wash
+- a `Copy component` action in each DialKit panel that copies a standalone example for that section with the current settings embedded
 - CDN-loaded Matter.js, DialKit, Lenis, GSAP, and ScrollTrigger
 - a reduced-motion fallback
 
-The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo loads the local OT2049 Bold file from a sibling `Zine` checkout for local preview. Before copying the HTML into another project, replace that `@font-face` URL with a licensed OT2049 asset you can serve there. The public repo does not distribute that font. The demo uses Matter bodies and hover scaling, while production Zine deforms actual font outlines through a particle lattice.
+The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Lenis, GSAP ScrollTrigger, and local fonts loaded with `next/font/local`: Geist, Fragment Mono, Inter, DM Mono, and OT2049 for the inflated hero glyphs. The contained demo loads the local OT2049 Bold file from a sibling `Zine` checkout for local preview. Before using the copied hero code in another project, replace that `@font-face` URL with a licensed OT2049 asset you can serve there. The public repo does not distribute that font. The demo uses Matter bodies, measured obstacle pockets, and hover scaling, while production Zine deforms actual font outlines through a particle lattice.
 
 ## Invoking These Skills
 
