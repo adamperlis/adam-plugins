@@ -1,6 +1,6 @@
 {
   "name": "ui-motion",
-  "version": "0.1.0",
-  "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
+  "version": "0.2.0",
+  "description": "High-taste UI motion skills: kinetic typography heroes, scroll-linked blur manifesto sections, and a thermal shader field you smear with a finger.",
   "skills": "./skills/"
 }

@@ -1,12 +1,14 @@
 # UI Motion
 
-Two reusable frontend skills for kinetic hero typography and scroll-driven text reveals, available for Claude Code and Codex.
+Three reusable frontend skills for kinetic hero typography, scroll-driven text reveals and a touch-reactive thermal shader, available for Claude Code and Codex.
 
-**[Try the live interactive demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html)** — explore both effects, adjust the DialKit controls, and copy a component with your settings.
+**[Try the live interactive demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html)** — explore the hero and the scroll reveal, adjust the DialKit controls, and copy a component with your settings.
+
+**[Try the thermal finger trail](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/thermal-finger-trail-demo.html)** — drag across the disc, press to ripple, tune every constant in DialKit, and copy it.
 
 ## Install The Pack
 
-For the full frontend pack, install `frontend-design-director` first for page-wide direction, then `ui-motion` for the two motion patterns below. `design-constraints` is an optional companion for tighter layouts. These plugins can also be used independently.
+For the full frontend pack, install `frontend-design-director` first for page-wide direction, then `ui-motion` for the motion patterns below. `design-constraints` is an optional companion for tighter layouts. These plugins can also be used independently.
 
 **Claude Code**
 
@@ -24,12 +26,13 @@ codex plugin marketplace add adamperlis/adam-plugins
 
 Then install `frontend-design-director` and `ui-motion` from the Plugins Directory. Ask for both in the same task when you want the page-wide design direction and one of these specific effects.
 
-It contains two skills:
+It contains three skills:
 
 | Skill | Use it for | Primary tools |
 |---|---|---|
 | `kinetic-inflated-hero` | Full-screen kinetic typography heroes with inflated physical letterforms. | React/Next.js, Matter.js-style physics, Pretext-inspired typography, SVG goo/blur filters, CSS keyframes |
 | `scroll-blur-manifesto` | Quiet editorial sections where text resolves from blur into clarity on scroll. | Lenis, GSAP ScrollTrigger, layered sharp + pre-blurred text, opacity crossfades |
+| `thermal-finger-trail` | A heat-camera field a finger smears like wet paint: a trackpad, a touch surface, a hero object to play with. | WebGL fragment shader, domain-warped fbm, pointer trail as uniforms, DialKit |
 
 ## Contained Code Example
 
@@ -51,10 +54,10 @@ The real Zine implementation uses Next.js, React, Matter.js, `opentype.js`, Leni
 
 Claude Code and Codex use different explicit skill syntax:
 
-| Host | Kinetic hero | Scroll blur manifesto |
-|---|---|---|
-| Claude Code | `/kinetic-inflated-hero` | `/scroll-blur-manifesto` |
-| Codex | `$kinetic-inflated-hero` | `$scroll-blur-manifesto` |
+| Host | Kinetic hero | Scroll blur manifesto | Thermal finger trail |
+|---|---|---|---|
+| Claude Code | `/kinetic-inflated-hero` | `/scroll-blur-manifesto` | `/thermal-finger-trail` |
+| Codex | `$kinetic-inflated-hero` | `$scroll-blur-manifesto` | `$thermal-finger-trail` |
 
 Plain language also works in many clients, but explicit examples are clearer when you know where the skill is installed.
 
@@ -109,6 +112,41 @@ Example prompts:
 
 > $scroll-blur-manifesto build the section after my hero. Start with “Introducing Zine,” then reveal a large manifesto paragraph word-by-word. Each word should appear blurred first, hold briefly, then sharpen as I scroll.
 
+## Thermal Finger Trail
+
+A heat-camera field you can touch. Drag a finger across it and the heat is dragged along with you, like a fingertip through wet paint, then it slowly heals. Press, and a ripple pushes the colour outward and briefly heats it. It's the trackpad disc from Clicker, [B150](https://b150.ai)'s app that turns an iPhone into a trackpad. On Clicker's site the disc *is* the product: the place your finger goes.
+
+![Thermal finger trail reference](assets/thermal-finger-trail-reference.png)
+
+**[Try it](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/thermal-finger-trail-demo.html)** · [view the source](examples/thermal-finger-trail-demo.html)
+
+### How we built it
+
+It's one fragment shader on one full-canvas triangle. There are no textures, no render targets and no simulation.
+
+1. **The field is noise, warped twice.** Fractal noise bends the coordinates, then a second layer of noise, fed by the first, bends them again. That "warp the warp" gives the slow, curling, fluid look. A six-second *melt* cycle swells the warp and lets the shape slump, then recovers.
+2. **A blob breathes in it.** In that warped space sits a soft blob whose edge wobbles on two slow sines. Heat comes from where you are relative to it. Outside is a warm, noisy background. Inside ramps from a cool core to a hot rim, with a hard contour cut where green meets yellow so the core reads crisp.
+3. **Heat becomes colour through a ramp.** A heat value from 0 to 1 runs through seven colours (cold teal, deep teal, green, yellow, orange, red, white) with smooth blends between them. It's capped at 0.75, so the hottest it gets is orange-red, never blown-out white. That one cap is most of why it looks like a thermal camera and not a lava lamp.
+4. **The finger is just a list of points.** JavaScript keeps the last 24 points of your path. Each one stores where it was, the direction and speed you were moving there, and an age that fades over 1.6 seconds. Every frame they go to the shader as uniforms, and each point within reach shifts the coordinates along its own velocity. So the field is drawn from *where your finger came from*, and the colour looks dragged. As the points age out, it relaxes back.
+5. **Smoothing makes it feel like paint, not glitch.** The trail follows a head that eases 30% of the way to your finger each frame. New points are laid by distance travelled, not by time. Without that, a fast flick becomes one giant jump that tears a hard-edged hole in the field.
+6. **The edge has a life of its own.** By default the blob's edge is razor-crisp. Every so often a soft blur front sweeps across the disc from a slowly turning direction, then recedes. On top sit a thin bright rim just inside the edge and a warm halo just outside.
+
+It's a heavy shader, about 30 noise lookups a pixel. So the demo renders to a fixed pixel budget and lets the browser scale it up, which doesn't show on a soft field. It drops resolution further if frames run long, and stops drawing when it's offscreen. With reduced motion, the field holds still and only your finger moves it.
+
+### Copy it
+
+The demo is a single HTML file with a [DialKit](https://github.com/joshpuckett/dialkit) panel (bottom right). Every constant from the original is a control: smudge strength, reach, follow, trail life, flow, melt, warp, blob size, the blur wash, the heat cap, the press ripple, the rim and halo, and all seven palette colours. Choose disc or full-bleed. **Copy component** puts a standalone file on your clipboard with your settings baked in.
+
+Example prompts:
+
+**Claude Code**
+
+> /thermal-finger-trail build a trackpad hero for my app: a thermal disc a visitor can drag across, with a press ripple. Use our brand's colours for the heat ramp.
+
+**Codex**
+
+> $thermal-finger-trail make the hero object a heat-camera field that reacts to touch, full-bleed on mobile, with reduced-motion support.
+
 ## Packaging
 
 - `plugin.json` is the portable Agent Plugins manifest for OpenAI/Codex-compatible hosts.
@@ -116,3 +154,4 @@ Example prompts:
 - `.claude-plugin/plugin.json` keeps the same plugin installable in Claude Code.
 - Skill files live in `skills/<skill>/SKILL.md`.
 - Reference images live in `assets/` and are also copied into skill-specific `assets/` folders when useful.
+- `skills/thermal-finger-trail/references/thermal-finger-trail.html` is a copy of `examples/thermal-finger-trail-demo.html`, so the skill works on its own once installed. Update both together.

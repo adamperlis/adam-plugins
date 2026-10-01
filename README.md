@@ -26,7 +26,7 @@ Then open the Plugins Directory and install the plugin bundles you want from the
 | Plugin | Skills | What it does |
 |---|---:|---|
 | `frontend-design-director` | 1 | Routes marketing/frontend work by site archetype, then applies evidence-backed composition, motion, typography, and quality gates. |
-| `ui-motion` | 2 | Kinetic typography heroes and scroll-linked blur manifesto transitions. |
+| `ui-motion` | 3 | Kinetic typography heroes, scroll-linked blur manifesto transitions, and a finger-smeared thermal shader field. |
 | `design-constraints` | 1 | Designs UI with explicit spatial and typographic constraints instead of letting the model guess. |
 | `awwwards-motion` | 1 | Awwwards-level motion: spring physics, GLSL, React Three Fiber, post-processing, particles, and interactive 3D. |
 | `fullstack-coding` | 1 | Systematic full-stack development guidance for architecture, debugging, code quality, security, testing, and deployment. |
@@ -55,7 +55,7 @@ Use this for substantial marketing sites, landing pages, product frontends, laun
 
 ## UI Motion
 
-The `ui-motion` plugin is for front-end work where the motion idea is the product story, not decoration. It packages two reusable UI skills extracted from the Zine homepage direction.
+The `ui-motion` plugin is for front-end work where the motion idea is the product story, not decoration. It packages three reusable UI skills: two extracted from the Zine homepage direction, and one from Clicker's trackpad disc.
 
 [Try the live UI Motion demo](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/contained-ui-motion-demo.html) or [read its install guide](plugins/ui-motion/README.md). For the full frontend pack, install `frontend-design-director` before `ui-motion`; both are also usable independently.
 
@@ -86,6 +86,20 @@ Use this for the section immediately after a loud hero: a quiet editorial argume
 **Codex**
 
 > $scroll-blur-manifesto use this after the hero. Keep it warm, editorial, and restrained; use sharp and pre-blurred text layers instead of animating blur on every word.
+
+### `thermal-finger-trail`
+
+Use this for a surface people should want to touch: a heat-camera field in one WebGL shader that a finger smears like wet paint, then slowly heals. From Clicker's trackpad disc. [Try it](https://adamperlis.github.io/adam-plugins/plugins/ui-motion/examples/thermal-finger-trail-demo.html).
+
+![Thermal finger trail reference](plugins/ui-motion/assets/thermal-finger-trail-reference.png)
+
+**Claude Code**
+
+> /thermal-finger-trail build a trackpad hero for my app: a thermal disc a visitor can drag across, with a press ripple. Use our brand's colours for the heat ramp.
+
+**Codex**
+
+> $thermal-finger-trail make the hero object a heat-camera field that reacts to touch, full-bleed on mobile, with reduced-motion support.
 
 ## Video Skills
 
