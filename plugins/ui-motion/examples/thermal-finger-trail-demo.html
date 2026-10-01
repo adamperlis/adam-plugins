@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thermal finger trail</title>
+    <style>
+      /*
+        Thermal finger trail — from Clicker's trackpad disc (clicker.b150.ai)
+
+        One WebGL fragment shader paints a heat-camera field: domain-warped
+        noise shaped into a wobbling blob, coloured through a seven-stop
+        thermal ramp. A finger dragged across it smears the colour like wet
+        paint: the last 24 points of its path, each carrying its own
+        velocity and a fade, push the shader's coordinates. A press sends an
+        outward ripple that briefly heats the field.
+
+        No dependencies beyond DialKit (the tuning panel, loaded from a CDN).
+        Every constant from the original is a control; "Copy component"
+        copies this file with your settings baked in.
+      */
+      :root {
+        --ground: #000;
+        --ink: #e9ecef;
+        --muted: #8a9096;
+        --accent: #ff750d;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink); }
+      body {
+        font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        display: grid; place-items: center; overflow: hidden;
+      }
+      .stage { position: relative; display: grid; place-items: center; gap: 22px; padding: 24px; }
+      .field {
+        position: relative; width: min(72vmin, 560px); aspect-ratio: 1;
+        border-radius: 50%; overflow: hidden; touch-action: none; cursor: none;
+        box-shadow: 0 40px 120px -40px rgba(255, 117, 13, 0.35);
+        -webkit-tap-highlight-color: transparent;
+      }
+      body.full .stage { position: fixed; inset: 0; padding: 0; }
+      body.full .field { width: 100vw; height: 100svh; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+      body.full .caption { position: absolute; left: 0; right: 0; bottom: 28px; }
+      canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      /* the pointer becomes a fingertip over the field */
+      .finger {
+        position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
+        border: 1.5px solid rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.14);
+        transform: translate(-50%, -50%); opacity: 0; pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+      .finger.on { opacity: 1; }
+      .caption {
+        text-align: center; color: var(--muted); font: 500 11px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+        letter-spacing: 0.08em; text-transform: uppercase; pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) { .finger { transition: none; } }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/dialkit@2.0.2/dist/vanilla/browser.global.js"></script>
+  </head>
+  <body>
+    <main class="stage">
+      <div class="field" aria-label="Thermal field: drag across it, press to ripple" role="img">
+        <canvas></canvas>
+        <div class="finger" aria-hidden="true"></div>
+      </div>
+      <p class="caption">Drag across it · press to ripple</p>
+    </main>
+
+    <script>
+      const root = document.documentElement;
+      // the page as written, before the panel adds itself: what "Copy component" copies
+      const source = root.cloneNode(true);
+      const field = document.querySelector(".field");
+      const canvas = field.querySelector("canvas");
+      const finger = field.querySelector(".finger");
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Every constant from Clicker's shader, as a setting. Values are the original's.
+      const defaults = {
+        Finger: {
+          smudge: [9, 0, 20, 0.5],         // how far the trail drags the field (disp * 9.0)
+          radius: [0.17, 0.04, 0.4, 0.01], // reach of each trail point, in field units
+          follow: [0.3, 0.05, 1, 0.01],    // how fast the trail head eases toward the finger, per frame
+          spacing: [0.01, 0.002, 0.05, 0.001], // distance before a new trail point is laid
+          life: [1.6, 0.3, 4, 0.1],        // seconds a trail point keeps pulling
+          points: [24, 4, 24, 1],          // trail length (the shader holds 24)
+          fingertip: true,                 // draw a fingertip ring under the pointer
+        },
+        Field: {
+          flow: [0.26, 0, 1, 0.01],        // speed the noise flows
+          meltSeconds: [6, 2, 16, 0.5],    // one melt cycle: the blob slumps and recovers
+          warp: [1, 0, 2.5, 0.05],         // strength of the warp-the-warp curl
+          blob: [0.37, 0.15, 0.6, 0.01],   // the hot blob's radius
+          blurWash: true,                  // a soft blur front sweeps across, then the edge goes razor-crisp
+          heatCap: [0.75, 0.5, 1, 0.01],   // hottest the field gets: 0.75 tops out at orange/red, never white
+        },
+        Press: {
+          ripple: [0.18, 0, 0.5, 0.01],    // outward shove of the ring
+          bloom: [0.55, 0, 1.2, 0.05],     // how much the ring heats the field
+          duration: [0.9, 0.3, 2, 0.05],   // seconds the ring lives
+        },
+        Edge: {
+          rim: [0.6, 0, 1.5, 0.05],        // the crisp specular rim inside the silhouette
+          halo: [0.45, 0, 1.2, 0.05],      // the warm fringe outside it
+        },
+        Palette: {
+          // the thermal() ramp: cold → hot, at heat 0, .12, .30, .45, .60, .78, 1
+          cold: "#081f29", deep: "#0d3d52", green: "#38cc52", yellow: "#f2db29",
+          orange: "#ff750d", red: "#e61f12", white: "#fffffa",
+        },
+        Layout: {
+          shape: { type: "select", options: ["disc", "full-bleed"] },
+        },
+      };
+      // flat values (what the shader and loop read), from the config above or a copied file
+      const flatten = (cfg) => Object.fromEntries(Object.entries(cfg).map(([k, v]) => [
+        k,
+        Array.isArray(v) ? v[0] : v && v.type === "select" ? v.options[0] : v && typeof v === "object" ? flatten(v) : v,
+      ]));
+      let S = flatten(defaults);
+      const embedded = root.dataset.thermalSettings ? JSON.parse(root.dataset.thermalSettings) : null;
+      if (embedded) S = merge(S, embedded);
+      function merge(a, b) {
+        const out = { ...a };
+        for (const k in b) out[k] = a[k] && typeof a[k] === "object" && !Array.isArray(a[k]) ? merge(a[k], b[k]) : b[k];
+        return out;
+      }
+
+      // ---- the shader: Clicker's, with its constants as uniforms ----
+      const FS = `
+        precision highp float;
+        uniform float uTime; uniform vec2 uRes;
+        uniform vec4 uTrail[24]; uniform float uTrailA[24];
+        uniform vec3 uClick;
+        uniform float uSmudge, uRadius, uFlow, uMelt, uWarp, uBlob, uWash, uCap;
+        uniform float uRipple, uBloom, uRippleLife, uRim, uHalo;
+        uniform vec3 uPal[7];
+
+        float hash(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
+        float noise(vec2 p){ vec2 i=floor(p),f=fract(p);
+          float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));
+          vec2 u=f*f*(3.0-2.0*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }
+        float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.02; a*=0.5; } return v; }
+
+        // the heat ramp: cold teal → green → yellow → orange → red → white-hot
+        vec3 thermal(float t){ t=clamp(t,0.0,1.0); vec3 c=uPal[0];
+          c=mix(c,uPal[1],smoothstep(0.00,0.12,t));
+          c=mix(c,uPal[2],smoothstep(0.12,0.30,t));
+          c=mix(c,uPal[3],smoothstep(0.30,0.45,t));
+          c=mix(c,uPal[4],smoothstep(0.45,0.60,t));
+          c=mix(c,uPal[5],smoothstep(0.60,0.78,t));
+          c=mix(c,uPal[6],smoothstep(0.78,1.00,t)); return c; }
+
+        void main(){
+          vec2 uv=gl_FragCoord.xy/uRes-0.5; uv.x*=uRes.x/uRes.y;
+          float T=uTime; float ph=fract(T/uMelt); float melt=pow(sin(ph*3.14159265),1.3);
+
+          // the finger: each recent trail point drags nearby colour along its own
+          // velocity, fading with age, like a fingertip through wet paint
+          vec2 disp=vec2(0.0);
+          for(int i=0;i<24;i++){
+            float age=uTrailA[i];
+            if(age<=0.001) continue;
+            disp += uTrail[i].zw * smoothstep(uRadius,0.0,length(uv-uTrail[i].xy)) * age;
+          }
+          // the press: an expanding ring that shoves points outward, locally
+          vec2 clickD=vec2(0.0);
+          float cAge=uTime-uClick.z;
+          bool pressing = uClick.z>0.0 && cAge>=0.0 && cAge<uRippleLife;
+          if(pressing){
+            vec2 cd=uv-uClick.xy; float cl=length(cd)+1e-4;
+            float ring=smoothstep(0.18,0.0,abs(cl-cAge*0.45))*(1.0-cAge/uRippleLife);
+            clickD=(cd/cl)*ring*uRipple;
+          }
+          vec2 fuv=uv + disp*uSmudge + clickD;
+
+          // warp the warp: noise bends the coordinates, more noise bends that bend
+          float fy=T*uFlow;
+          vec2 w1=vec2(fbm(fuv*1.25+vec2(11.0,fy))-0.5, fbm(fuv*1.25+vec2(-7.0,fy*1.2))-0.5);
+          vec2 w2=vec2(fbm(fuv*2.7+w1*1.6+vec2(3.0,-fy*0.8))-0.5, fbm(fuv*2.7+w1*1.6+vec2(-9.0,fy))-0.5);
+          vec2 q=fuv + (w1*(0.05+0.13*melt) + w2*(0.025+0.07*melt))*uWarp;
+          q.y-=melt*0.14*smoothstep(-0.55,0.55,fuv.y);
+
+          // a soft blob that breathes between round and a touch tall or wide
+          vec2 cc=q-vec2(sin(T*0.23)*0.03, sin(T*0.19+1.3)*0.03);
+          float a=atan(cc.x, cc.y);
+          float reach=length(cc*vec2(1.0, 0.92+0.20*sin(T*0.34)));
+          float wob=(0.18*sin(a*2.0+T*0.55)+0.12*sin(a+T*0.27))*smoothstep(0.0,0.07,reach);
+          float d=reach-(uBlob+wob*0.08);
+
+          // sharpness: razor-crisp by default; a soft blur front washes across now and then
+          float topBias=mix(0.9,1.0,smoothstep(-0.5,0.45,uv.y));
+          float ev=0.5+0.42*sin(T*0.40)+0.30*sin(T*0.233+1.7);
+          ev=smoothstep(0.05,0.95,ev*0.62+0.30);
+          float ang=T*0.06;
+          float proj=dot(uv, vec2(cos(ang),sin(ang)))/0.72;
+          float front=mix(-1.7,1.7,ev);
+          float blur=smoothstep(front+0.7, front-0.7, proj)*uWash;
+          float sharp=clamp((1.0-blur)*topBias*(1.0-0.25*melt),0.0,1.0);
+          float edgeW=mix(0.34,0.0028,sharp);
+
+          float mask=smoothstep(edgeW,-edgeW*0.5,d);
+          float inside=smoothstep(-0.34,edgeW,d);
+          // a hard contour where green meets yellow, softened only by the wash
+          float gy=0.40, kk=mix(1.0,9.0,1.0-blur);
+          inside=mix(inside, clamp((inside-gy)*kk+gy,0.0,1.0), smoothstep(0.26,0.0,abs(inside-gy)));
+          float bg=mix(0.34,0.66,smoothstep(0.35,0.95,melt))+(fbm(fuv*1.2+vec2(0.0,T*0.15))-0.5)*0.10;
+          float temp=mix(bg, mix(0.20,0.64,inside), mask);
+
+          // the press heats the field toward its own warm colours
+          if(pressing){
+            float dd=length(uv-uClick.xy), rad=cAge*0.5, k=1.0-cAge/uRippleLife;
+            temp += (smoothstep(0.17,0.0,abs(dd-rad))*0.9 + smoothstep(rad+0.12,0.0,dd)*0.55)*k*uBloom;
+          }
+          temp=min(temp,uCap);
+          vec3 col=thermal(temp);
+          col+=vec3(1.0,0.95,0.9)*smoothstep(0.86,1.0,temp)*0.32;
+          col+=vec3(1.0,0.97,0.88)*smoothstep(edgeW*1.3,0.0,abs(d+edgeW*0.6))*sharp*uRim;
+          col+=thermal(0.66)*smoothstep(0.16,0.0,d)*smoothstep(-0.04,0.02,d)*(0.20+uHalo*sharp);
+          col+=vec3(0.85,1.0,0.6)*smoothstep(0.10,0.0,abs(uv.x))*mask*sharp*0.10;
+          gl_FragColor=vec4(col,1.0);
+        }`;
+
+      const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+      if (!gl) {
+        field.style.background = "radial-gradient(circle at 50% 45%, #f2db29, #ff750d 30%, #e61f12 45%, #0d3d52 75%)";
+      }
+      const U = {};
+      if (gl) {
+        const compile = (type, src) => {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src);
+          gl.compileShader(s);
+          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+          return s;
+        };
+        const prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, "attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}"));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+        // one triangle that covers the whole canvas
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, "p");
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        for (const n of ["uTime", "uRes", "uTrail", "uTrailA", "uClick", "uSmudge", "uRadius", "uFlow", "uMelt", "uWarp",
+          "uBlob", "uWash", "uCap", "uRipple", "uBloom", "uRippleLife", "uRim", "uHalo", "uPal"]) {
+          U[n] = gl.getUniformLocation(prog, n);
+        }
+      }
+
+      // any CSS colour DialKit hands back (hex, rgb, hsl, oklch…) → 0..1 RGB
+      const swatch = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+      const rgb = (css) => {
+        swatch.clearRect(0, 0, 1, 1);
+        swatch.fillStyle = "#000";
+        swatch.fillStyle = css;
+        swatch.fillRect(0, 0, 1, 1);
+        const [r, g, b] = swatch.getImageData(0, 0, 1, 1).data;
+        return [r / 255, g / 255, b / 255];
+      };
+      let palette = new Float32Array(21);
+      let lastPalette = "", lastShape = "";
+      // only redo the expensive parts when what they depend on changed: dragging
+      // a slider shouldn't re-parse seven colours or reallocate the canvas
+      function apply() {
+        const p = S.Palette;
+        const key = JSON.stringify(p);
+        if (key !== lastPalette) {
+          lastPalette = key;
+          palette = new Float32Array([p.cold, p.deep, p.green, p.yellow, p.orange, p.red, p.white].flatMap(rgb));
+          root.style.setProperty("--accent", p.orange);
+        }
+        if (S.Layout.shape !== lastShape) {
+          lastShape = S.Layout.shape;
+          document.body.classList.toggle("full", lastShape === "full-bleed");
+          scale = 1;
+          resize();
+        }
+      }
+
+      // ---- size: it's a heavy shader (about 30 noise lookups a pixel), so it
+      // renders to a fixed pixel budget and the browser scales it up. The field is
+      // soft, so the difference doesn't show; the frame rate does. If frames still
+      // run long, the resolution steps down until they don't. ----
+      const BUDGET = 520000;          // pixels rendered per frame, at most
+      let W = 1, H = 1, scale = 1;    // scale: the adaptive step, 0.5..1
+      function resize() {
+        const r = field.getBoundingClientRect();
+        W = Math.max(2, r.width);
+        H = Math.max(2, r.height);
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const fit = Math.min(1, Math.sqrt(BUDGET / (W * H * dpr * dpr)));
+        canvas.width = Math.max(2, Math.round(W * dpr * fit * scale));
+        canvas.height = Math.max(2, Math.round(H * dpr * fit * scale));
+      }
+      addEventListener("resize", resize);
+      // average 30 frames; step down 20% when they run long, back up 10% when there's room
+      let lastFrame = 0, frameSum = 0, frameCount = 0;
+      function pace(t) {
+        if (lastFrame) { frameSum += t - lastFrame; frameCount++; }
+        lastFrame = t;
+        if (frameCount < 30) return;
+        const avg = frameSum / frameCount;
+        frameSum = frameCount = 0;
+        if (avg > 21 && scale > 0.5) { scale = Math.max(0.5, scale * 0.8); resize(); }
+        else if (avg < 17.5 && scale < 1) { scale = Math.min(1, scale * 1.1); resize(); }
+      }
+
+      // ---- the finger: a smoothed head, sampled into a short trail ----
+      const N = 24;
+      const trailVec = new Float32Array(N * 4);
+      const trailAge = new Float32Array(N);
+      let trail = [];
+      let target = null, head = null;
+      let click = [0, 0, -10];
+      const start = performance.now();
+      // field coordinates: centred, y up, x scaled by the aspect ratio so a
+      // circle of influence stays a circle on a wide field
+      const toField = (x, y) => [(x / W - 0.5) * (W / H), 0.5 - y / H];
+
+      field.addEventListener("pointermove", (e) => {
+        const r = field.getBoundingClientRect();
+        target = { x: e.clientX - r.left, y: e.clientY - r.top };
+        finger.style.left = target.x + "px";
+        finger.style.top = target.y + "px";
+        finger.classList.toggle("on", S.Finger.fingertip);
+        wake();
+      });
+      field.addEventListener("pointerdown", (e) => {
+        const r = field.getBoundingClientRect();
+        const [x, y] = toField(e.clientX - r.left, e.clientY - r.top);
+        click = [x, y, clock()];
+        wake();
+      });
+      field.addEventListener("pointerleave", () => { target = null; head = null; finger.classList.remove("on"); });
+
+      // reduced motion: the field holds still (at a good-looking moment) and only the finger moves it
+      const clock = () => (reduced ? 12 : (performance.now() - start) / 1000);
+
+      function step() {
+        const t = clock();
+        if (target) {
+          if (!head) head = { ...target };
+          head.x += (target.x - head.x) * S.Finger.follow;
+          head.y += (target.y - head.y) * S.Finger.follow;
+          const [gx, gy] = toField(head.x, head.y);
+          const last = trail[trail.length - 1];
+          if (!last || Math.hypot(gx - last.x, gy - last.y) > S.Finger.spacing) {
+            trail.push({ x: gx, y: gy, vx: last ? gx - last.x : 0, vy: last ? gy - last.y : 0, born: t });
+          }
+        }
+        while (trail.length && t - trail[0].born > S.Finger.life) trail.shift();
+        if (trail.length > S.Finger.points) trail.splice(0, trail.length - S.Finger.points);
+        for (let i = 0; i < N; i++) {
+          const p = trail[i];
+          if (p) {
+            trailVec.set([p.x, p.y, p.vx, p.vy], i * 4);
+            trailAge[i] = Math.max(0, 1 - (t - p.born) / S.Finger.life);
+          } else trailAge[i] = 0;
+        }
+        return t;
+      }
+
+      function draw() {
+        const t = step();
+        if (!gl) return;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform1f(U.uTime, t);
+        gl.uniform2f(U.uRes, canvas.width, canvas.height);
+        gl.uniform4fv(U.uTrail, trailVec);
+        gl.uniform1fv(U.uTrailA, trailAge);
+        gl.uniform3f(U.uClick, click[0], click[1], click[2]);
+        gl.uniform1f(U.uSmudge, S.Finger.smudge);
+        gl.uniform1f(U.uRadius, S.Finger.radius);
+        gl.uniform1f(U.uFlow, S.Field.flow);
+        gl.uniform1f(U.uMelt, S.Field.meltSeconds);
+        gl.uniform1f(U.uWarp, S.Field.warp);
+        gl.uniform1f(U.uBlob, S.Field.blob);
+        gl.uniform1f(U.uWash, S.Field.blurWash ? 1 : 0);
+        gl.uniform1f(U.uCap, S.Field.heatCap);
+        gl.uniform1f(U.uRipple, S.Press.ripple);
+        gl.uniform1f(U.uBloom, S.Press.bloom);
+        gl.uniform1f(U.uRippleLife, S.Press.duration);
+        gl.uniform1f(U.uRim, S.Edge.rim);
+        gl.uniform1f(U.uHalo, S.Edge.halo);
+        gl.uniform3fv(U.uPal, palette);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+
+      // ---- run only while it can be seen; with reduced motion, only while touched ----
+      let raf = 0, visible = true, idleUntil = 0;
+      function loop(t) {
+        raf = 0;
+        pace(t);
+        draw();
+        const busy = !reduced || target || performance.now() < idleUntil;
+        if (visible && !document.hidden && busy) raf = requestAnimationFrame(loop);
+      }
+      function wake() {
+        idleUntil = performance.now() + (S.Finger.life + S.Press.duration) * 1000;
+        if (!raf) { lastFrame = 0; raf = requestAnimationFrame(loop); }
+      }
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(field);
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) wake(); });
+
+      // ---- the tuning panel ----
+      async function copyComponent() {
+        const clone = source.cloneNode(true);
+        clone.dataset.thermalSettings = JSON.stringify(S);
+        await navigator.clipboard.writeText("<!doctype html>\n" + clone.outerHTML);
+      }
+      if (window.DialKit) {
+        DialKit.createDialRoot({ position: "bottom-right", theme: "dark", defaultOpen: false });
+        const withValues = (cfg, vals) => Object.fromEntries(Object.entries(cfg).map(([k, v]) => {
+          if (Array.isArray(v)) return [k, [vals[k], ...v.slice(1)]];
+          if (v && v.type === "select") return [k, { ...v, default: vals[k] }];
+          if (v && typeof v === "object") return [k, withValues(v, vals[k])];
+          return [k, vals[k]];
+        }));
+        const kit = DialKit.createDialKit("Thermal trail", {
+          ...withValues(defaults, S),
+          poke: { type: "action" },
+          "Copy component": { type: "action" },
+        }, {
+          id: "thermal-finger-trail",
+          persist: !embedded,
+          onAction: (path) => {
+            if (path === "poke") { click = [0, 0, clock()]; wake(); }
+            if (path === "Copy component") copyComponent();
+          },
+        });
+        kit.subscribe((values) => { S = merge(S, values); apply(); wake(); });
+      }
+
+      apply();
+      wake();
+    </script>
+  </body>
+</html>

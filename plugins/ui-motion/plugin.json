@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "ui-motion",
-  "version": "0.1.0",
-  "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
+  "version": "0.2.0",
+  "description": "High-taste UI motion skills: kinetic typography heroes, scroll-linked blur manifesto sections, and a thermal shader field you smear with a finger.",
   "author": {
     "name": "Adam Perlis",
     "url": "https://github.com/adamperlis"
@@ -18,14 +18,18 @@
     "gsap",
     "matter-js",
     "pretext",
-    "frontend"
+    "frontend",
+    "webgl",
+    "glsl",
+    "shader",
+    "dialkit"
   ],
   "extensions": {
     "com.openai": {
       "interface": {
         "displayName": "UI Motion",
-        "shortDescription": "Kinetic typography heroes and scroll-blur manifesto sections.",
-        "longDescription": "Two reusable UI motion skills extracted from the Zine homepage direction: an electric inflated-type hero and a quiet Lenis/GSAP blur-to-sharp manifesto transition.",
+        "shortDescription": "Kinetic type heroes, scroll-blur manifestos, and a finger-smeared thermal field.",
+        "longDescription": "Three reusable UI motion skills: an electric inflated-type hero and a quiet Lenis/GSAP blur-to-sharp manifesto from the Zine homepage, and Clicker's thermal finger trail, a WebGL heat-camera field you drag like wet paint.",
         "developerName": "Adam Perlis",
         "category": "Design",
         "capabilities": [

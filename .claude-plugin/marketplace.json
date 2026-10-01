@@ -15,7 +15,7 @@
     },
     {
       "name": "ui-motion",
-      "description": "High-taste UI motion skills for kinetic typography heroes and scroll-linked blur manifesto sections.",
+      "description": "High-taste UI motion skills: kinetic typography heroes, scroll-linked blur manifesto sections, and a thermal shader field you smear with a finger.",
       "source": "./plugins/ui-motion",
       "category": "design"
     },
