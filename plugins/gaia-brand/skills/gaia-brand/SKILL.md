@@ -15,7 +15,8 @@ Identify the deliverable: native UI, website, copy, illustration, or campaign. R
 | --- | --- |
 | Native screens, forms, navigation, charts | [App UI](references/app-ui.md) |
 | Websites, landing pages, social, store assets | [Web and marketing](references/web-and-marketing.md) |
-| Drawings, icon compositions, animation | [Illustration and motion](references/illustration-and-motion.md) |
+| Drawings and icon compositions | [Illustration and motion](references/illustration-and-motion.md) |
+| Animated social/campaign assets, expressive character motion, loops, brand video | [Illustration and motion](references/illustration-and-motion.md) and [Gaia animation principles](references/animation-principles.md) |
 | Headlines, microcopy, onboarding, localization | [Voice](references/voice.md) |
 | Asset origin, reuse rights, source refresh | [Provenance](references/provenance.md) and [license](LICENSE.md) |
 
@@ -28,6 +29,7 @@ Identify the deliverable: native UI, website, copy, illustration, or campaign. R
 - The native grid uses 16pt gutters, 24pt card padding and radius, 16pt card gaps, and 32pt group gaps. Pills remain pills.
 - The hand-drawn wordmark is an asset, not the word “Gaia” typed in Figtree. Keep its geometry and aspect ratio.
 - Motion communicates touch, change, or a meaningful celebration; it cannot delay access to the log, introduce blinking, or get in the way of scrolling.
+- Expressive character motion is internally articulated: independently pose the action-driving body part and a delayed follower. A whole-asset transform is supporting motion, never the performance.
 - Show accurate product UI and modest, verifiable claims. Demo data is labeled synthetic. Never invent testimonials, clinical outcomes, privacy certifications, or platform availability.
 
 ## Resources

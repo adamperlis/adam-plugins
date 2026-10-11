@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "gaia-brand",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gaia Baby Tracker's visual and verbal brand system for native UI, websites, illustrations, motion, and marketing. MIT instructions; reserved brand assets.",
   "author": { "name": "Adam Perlis", "url": "https://github.com/adamperlis" },
   "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/gaia-brand",

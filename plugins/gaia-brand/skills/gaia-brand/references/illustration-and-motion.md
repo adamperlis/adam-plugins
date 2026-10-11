@@ -28,6 +28,8 @@ The app icon has a dense drawing collage and custom wordmark on warm yellow, wit
 
 Native duration roles: instant 90ms, fast 150ms, normal 220ms, slow 320ms, deliberate 480ms. Usual enter curve `(0.16, 1, 0.3, 1)`; exit `(0.7, 0, 0.84, 0)`; settle `(0.22, 1, 0.36, 1)`. Detailed configs are in the token snapshot.
 
+For expressive characters, “prefer transform” means transforms on articulated groups with joint-correct origins—not one transform on the whole SVG. The root carries weight; the action-driving part and at least one follower are keyed independently. Apply the character articulation gate in [Gaia animation principles](animation-principles.md).
+
 - Touch-following motion is interruptible physics; discrete number/icon/error changes use the named timed transitions. Sheets may use the dedicated sheet spring with their contents following slightly behind. Do not give every tap a bouncy celebration.
 - Press scales: small controls 0.94, standard buttons 0.97, large cards 0.985. Preserve layout dimensions.
 - Drawn selected-nav ring is a deliberate 620ms pen gesture, not a spinner.
