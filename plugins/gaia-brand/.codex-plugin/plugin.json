@@ -1,6 +1,6 @@
 {
   "name": "gaia-brand",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Gaia's actual visual system, artwork, motion, and voice. MIT instructions; reserved brand assets.",
   "skills": "./skills/"
 }
