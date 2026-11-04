@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "webflow-to-astro",
+  "version": "1.2.0",
+  "description": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page: same URLs and head tags, with forms, CMS, redirects, DNS and email moved too.",
+  "author": {
+    "name": "Adam Perlis",
+    "url": "https://github.com/adamperlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/webflow-to-astro",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "webflow",
+    "astro",
+    "cloudflare-pages",
+    "migration",
+    "tailwind",
+    "seo"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Webflow to Astro",
+        "shortDescription": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page.",
+        "longDescription": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page: same URLs and head tags, with forms, CMS, redirects, DNS and email moved too.",
+        "developerName": "Adam Perlis",
+        "category": "Development",
+        "capabilities": [
+          "Generate"
+        ]
+      }
+    }
+  }
+}

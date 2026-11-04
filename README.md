@@ -35,6 +35,7 @@ Then open the Plugins Directory and install the plugin bundles you want from the
 | `video-skills` | 11 | Complete video production bundle for creator videos, product demos, component loops, tutorials, brand films, thumbnails, and social hooks. |
 | `social-video` | 1 | Legacy standalone social-video hooks skill, kept for backward compatibility. Prefer `video-skills` for the complete bundle. |
 | `seo-aeo-geo` | 1 | SEO/AEO/GEO audits and implementation for websites and Ghost themes, including schema and AI visibility guidance. |
+| [`webflow-to-astro`](plugins/webflow-to-astro/README.md) | 1 | Moves a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page, with forms, CMS, video and the domain, so the Webflow plan can be cancelled. |
 
 ## Invoking Skills
 

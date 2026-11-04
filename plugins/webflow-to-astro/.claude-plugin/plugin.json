@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "webflow-to-astro",
+  "description": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page: same URLs and head tags, with forms, CMS, redirects, DNS and email moved too.",
+  "version": "1.2.0",
+  "author": {
+    "name": "Adam Perlis"
+  },
+  "homepage": "https://github.com/adamperlis/adam-plugins/tree/master/plugins/webflow-to-astro",
+  "repository": "https://github.com/adamperlis/adam-plugins",
+  "license": "MIT",
+  "keywords": [
+    "webflow",
+    "astro",
+    "cloudflare-pages",
+    "migration",
+    "tailwind",
+    "seo"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "webflow-to-astro",
+  "version": "1.2.0",
+  "description": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page: same URLs and head tags, with forms, CMS, redirects, DNS and email moved too.",
+  "skills": "./skills/"
+}

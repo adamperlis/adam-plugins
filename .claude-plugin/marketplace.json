@@ -60,6 +60,12 @@
       "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
       "source": "./plugins/seo-aeo-geo",
       "category": "marketing"
+    },
+    {
+      "name": "webflow-to-astro",
+      "description": "Move a Webflow site to Astro + Tailwind on Cloudflare Pages, page for page: same URLs and head tags, with forms, CMS, redirects, DNS and email moved too.",
+      "source": "./plugins/webflow-to-astro",
+      "category": "development"
     }
   ]
 }

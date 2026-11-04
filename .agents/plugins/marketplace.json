@@ -111,6 +111,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Marketing"
+    },
+    {
+      "name": "webflow-to-astro",
+      "source": {
+        "source": "local",
+        "path": "./plugins/webflow-to-astro"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
     }
   ]
 }
