@@ -10,6 +10,10 @@ description: >
   Also trigger when the user asks about entity authority, speakable content, query
   fan-out, or how AI search engines decide what to cite. Trigger proactively when
   reviewing a theme, CMS, or site — even if the user doesn't explicitly say "SEO".
+  Also use for Is It Agent Ready, agent-readiness scores, and testing whether an
+  AI agent can discover a website capability and complete a real task.
+metadata:
+  version: "1.1.0"
 ---
 
 # SEO / AEO / GEO Skill
@@ -204,6 +208,19 @@ The citation fingerprint is **vertical-specific** — always check which sources
 
 ---
 
+## Agent readiness and real agent workflows
+
+For Is It Agent Ready, multi-site scans, or production agent workflows, open
+[the agent-readiness playbook](references/agent-readiness.md). Record the canonical
+URL, date, scanner profile and failed checks. Report Content Site and All Checks
+separately when available. Keep scanner results, AI search citations and completed
+agent tasks as separate evidence.
+
+Fix public crawl and retrieval first. Add discovery only for a capability the site
+actually supports. Test the real task through a supported client, including
+authorization and the expected result when access is denied. Verify the production
+release with the same scanner settings and direct checks.
+
 ## Ghost-Specific Implementation Notes
 
 Ghost's Handlebars helpers for conditional schema:
@@ -243,6 +260,7 @@ Based on the citation study, name the 2–3 highest-leverage external channels f
 
 ## References
 
+- [Agent readiness](references/agent-readiness.md) covers scanner baselines, public discovery, authenticated workflows and release verification.
 - `references/schema-patterns.md` — Ready-to-use JSON-LD patterns for Ghost/HBS themes
 - `references/audit-checklist.md` — Systematic checklist for a full SEO/AEO/GEO audit
 - `references/feed-insights.md` — Bundled snapshot of distilled insights (offline fallback; the live copy is fetched in Step 1)
