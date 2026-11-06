@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "seo-aeo-geo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
   "author": {
     "name": "Adam Perlis",
