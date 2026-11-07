@@ -892,7 +892,9 @@ function frame(now) {
   if (document.hidden) return;
   // About 30 frames a second is plenty, except while a bot turns to a new angle: then every frame.
   if (now - lastDraw < 32 && ![...live].some(turning)) return schedule();
-  const t = now / 1000, dt = Math.min(1.5, (now - last) / 1000);
+  // Never below zero: a frame's timestamp can be earlier than the clock read when the loop started
+  // (seen by 1.3 s in a lazily loaded iframe), and a negative step makes the eases overshoot wildly.
+  const t = now / 1000, dt = Math.max(0, Math.min(1.5, (now - last) / 1000));
   last = lastDraw = now;
   clockT = t % 1000;
   let focal = null;

@@ -576,7 +576,9 @@
     if (reduce.matches) return restart();
     if (document.hidden) return;
     if (now - lastDraw < 32) return schedule();  // about 30 frames a second is plenty
-    const t = now / 1000, dt = Math.min(1.5, (now - last) / 1000);  // real elapsed time, even when frames are throttled
+    // real elapsed time, even when frames are throttled; never below zero (a frame's timestamp can be
+    // earlier than the clock read when the loop started, and a negative step makes the eases overshoot)
+    const t = now / 1000, dt = Math.max(0, Math.min(1.5, (now - last) / 1000));
     last = lastDraw = now;
     clockT = t % 1000;
     let focal = null;
