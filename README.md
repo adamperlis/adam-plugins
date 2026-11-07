@@ -11,6 +11,7 @@ claude plugin marketplace add adamperlis/adam-plugins
 claude plugin install frontend-design-director@adam-plugins
 claude plugin install video-skills@adam-plugins
 claude plugin install ui-motion@adam-plugins
+claude plugin install companion-bot@adam-plugins
 claude plugin install gaia-brand@adam-plugins
 ```
 
@@ -29,6 +30,7 @@ Then open the Plugins Directory and install the plugin bundles you want from the
 | [`gaia-brand`](plugins/gaia-brand/README.md) | 1 | Gaia Baby Tracker's actual themes, typography, illustrations, motion, and voice. MIT instructions; reserved brand assets. |
 | `frontend-design-director` | 1 | Routes marketing/frontend work by site archetype, then applies evidence-backed composition, motion, typography, and quality gates. |
 | `ui-motion` | 3 | Kinetic typography heroes, scroll-linked blur manifesto transitions, and a finger-smeared thermal shader field. |
+| [`companion-bot`](plugins/companion-bot/README.md) | 1 | A furry 3D companion for your web app: a drop-in `<companion-bot>` element with moods and expressions, plus a customizer users can restyle it with. [Live demo](https://adamperlis.github.io/adam-plugins/plugins/companion-bot/examples/companion-bot-demo.html). |
 | `design-constraints` | 1 | Designs UI with explicit spatial and typographic constraints instead of letting the model guess. |
 | `awwwards-motion` | 1 | Awwwards-level motion: spring physics, GLSL, React Three Fiber, post-processing, particles, and interactive 3D. |
 | `fullstack-coding` | 1 | Systematic full-stack development guidance for architecture, debugging, code quality, security, testing, and deployment. |

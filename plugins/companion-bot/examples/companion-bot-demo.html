@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Companion Bot</title>
+<meta name="description" content="A furry 3D companion for your web app: moods, expressions, and a full customizer. Three.js on WebGPU, with WebGL fallbacks.">
+<script>
+  // Remember the demo's theme choice; the bot follows <html data-theme>, then the system setting.
+  try { const t = localStorage.getItem('companion-demo.theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<script type="module" src="../skills/companion-bot/assets/companion-bot/companion-bot.js"></script>
+<style>
+  :root {
+    --bg: #F2EFE9; --card: #FBFAF7; --ink: #111; --muted: #6D6D6D; --line: #E2DED6; --hover: #E6E3DD;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #1C1B1A; --card: #262624; --ink: #FAF9F5; --muted: #A6A39A; --line: #3E3D39; --hover: #353532; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #1C1B1A; --card: #262624; --ink: #FAF9F5; --muted: #A6A39A; --line: #3E3D39; --hover: #353532; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px 64px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; }
+  .brand { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+  .brand companion-bot { margin: -6px 0 -6px -6px; }
+  .seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+  .seg button { border: 0; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer; min-height: 32px; }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 10%); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 32px; padding: 40px 0 48px; }
+  h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.02; letter-spacing: -.03em; font-weight: 500; margin: 0 0 16px; }
+  .lede { color: var(--muted); font-size: 17px; max-width: 34em; margin: 0 0 24px; }
+  .stage { display: grid; justify-items: center; gap: 16px; }
+  .stage p { margin: 0; color: var(--muted); font-size: 13px; }
+  pre { margin: 0; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; font: 13px/1.6 ui-monospace, Menlo, monospace; }
+  h2 { font-size: 22px; font-weight: 500; letter-spacing: -.01em; margin: 48px 0 12px; }
+  .note { color: var(--muted); margin: 0 0 16px; }
+  @media (max-width: 760px) { .hero { grid-template-columns: minmax(0, 1fr); padding-top: 16px; } .stage { order: -1; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><companion-bot size="36" name="header" aria-hidden="true"></companion-bot>Companion Bot</div>
+    <div class="seg" id="theme" role="group" aria-label="Theme">
+      <button type="button" data-theme-choice="light">Light</button>
+      <button type="button" data-theme-choice="system">System</button>
+      <button type="button" data-theme-choice="dark">Dark</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>A furry companion for your app.</h1>
+      <p class="lede">A 3D plush bot that glances at your pointer, blinks, fidgets and hops when you click it. It looks busy while your app works and dozes when it's idle. Your users can restyle its fur, face and glasses.</p>
+      <pre><code>&lt;script type="module" src="/companion-bot/companion-bot.js"&gt;&lt;/script&gt;
+&lt;companion-bot size="96"&gt;&lt;/companion-bot&gt;
+
+companionBot.mood('working');</code></pre>
+    </div>
+    <div class="stage">
+      <companion-bot size="220" name="hero" hop aria-label="The companion bot"></companion-bot>
+      <div class="seg" id="mood" role="group" aria-label="Mood">
+        <button type="button" data-mood="idle" aria-pressed="true">Idle</button>
+        <button type="button" data-mood="working" aria-pressed="false">Working</button>
+        <button type="button" data-mood="sleeping" aria-pressed="false">Sleeping</button>
+      </div>
+      <p id="renderer">Starting…</p>
+    </div>
+  </section>
+
+  <h2>Make it yours</h2>
+  <p class="note">This is the customizer your users get. Apply changes every bot on this page and saves the look in this browser.</p>
+  <div id="customizer"></div>
+</div>
+<script type="module">
+  import { mountCustomizer } from '../skills/companion-bot/assets/companion-bot/customizer.js';
+  mountCustomizer(document.querySelector('#customizer'));
+
+  const names = { webgpu: '3D, WebGPU', webgl: '3D, WebGL 2', flat: 'Flat, WebGL', still: 'Still picture' };
+  const showRenderer = () => { document.querySelector('#renderer').textContent = `Drawing with: ${names[window.companionBot?.renderer] || '…'}`; };
+  addEventListener('companionbotready', showRenderer);
+  showRenderer();
+
+  document.querySelector('#mood').addEventListener('click', event => {
+    const button = event.target.closest('[data-mood]');
+    if (!button) return;
+    window.companionBot.mood(button.dataset.mood);
+    document.querySelectorAll('[data-mood]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+  });
+
+  const root = document.documentElement;
+  const showTheme = () => {
+    const choice = root.dataset.theme || 'system';
+    document.querySelectorAll('[data-theme-choice]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeChoice === choice)));
+  };
+  document.querySelector('#theme').addEventListener('click', event => {
+    const button = event.target.closest('[data-theme-choice]');
+    if (!button) return;
+    const choice = button.dataset.themeChoice;
+    if (choice === 'system') delete root.dataset.theme; else root.dataset.theme = choice;
+    try { choice === 'system' ? localStorage.removeItem('companion-demo.theme') : localStorage.setItem('companion-demo.theme', choice); } catch {}
+    showTheme();
+  });
+  showTheme();
+</script>
+</body>
+</html>

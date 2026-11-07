@@ -1,0 +1,4 @@
+interface:
+  display_name: "Companion Bot"
+  short_description: "A furry 3D companion and customizer for your web app"
+  default_prompt: "Use $companion-bot to add the companion bot to this app: copy its folder into the static files, place bots where they help, drive its mood from the app's state, and mount the customizer in settings."
