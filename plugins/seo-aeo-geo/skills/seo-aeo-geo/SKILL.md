@@ -11,9 +11,12 @@ description: >
   fan-out, or how AI search engines decide what to cite. Trigger proactively when
   reviewing a theme, CMS, or site — even if the user doesn't explicitly say "SEO".
   Also use for Is It Agent Ready, agent-readiness scores, and testing whether an
-  AI agent can discover a website capability and complete a real task.
+  AI agent can discover a website capability and complete a real task. Also use for
+  website keyword research, question research, search intent, keyword clustering,
+  content gaps, "what should we write about", and query-to-page mapping (App Store
+  keywords belong to the keyword-research skill).
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # SEO / AEO / GEO Skill
@@ -162,8 +165,23 @@ Diagnose every site through these three lenses. Miss one and the others can't co
 
 ## Audit Framework — Run in This Order
 
+### 0. Keyword and question research — decides which pages to build or fix
+Build a **query map**: real queries clustered by intent, the evidence for each, and the one page
+that should answer each cluster. Method and output table: `references/keyword-research.md`.
+Sources, best first: Google Search Console (striking-distance, low-CTR and question queries),
+assistant prompts (sub-questions and cited rivals), Google autocomplete, competitor
+sitemaps and headings, community phrasing. Use paid volume APIs only if a key is already set up.
+**Never invent search volumes**: write "no volume data" and rank by the evidence you have.
+Skip this step only when the user asked for a narrow technical fix.
+
 ### 1. Technical Foundation
-Check that AI crawlers can access content:
+**Start with the agent-readiness scan.** Run Is It Agent Ready through its API on every canonical
+URL, All Checks and Content Site profiles, and keep the JSON as the baseline
+(commands: `references/agent-readiness.md` → "Run the scanner"). Triage every failing check
+before fixing anything, then apply and verify the fixes and rescan with the same profile
+("Apply the results" in the same file).
+
+Then check that AI crawlers can access content:
 - `robots.txt` — nothing accidentally blocking GPTBot, Googlebot, PerplexityBot, ClaudeBot
 - Pages are server-rendered (not client-only JS) — critical for GEO; AI crawlers have lower tolerance for JS-heavy pages than Googlebot
 - Canonical URLs are correct — no duplicate content confusing the crawler
@@ -210,7 +228,8 @@ The citation fingerprint is **vertical-specific** — always check which sources
 
 ## Agent readiness and real agent workflows
 
-For Is It Agent Ready, multi-site scans, or production agent workflows, open
+Every audit runs the Is It Agent Ready scan in Step 1. For the scanner commands, applying its
+results, multi-site scans, or production agent workflows, open
 [the agent-readiness playbook](references/agent-readiness.md). Record the canonical
 URL, date, scanner profile and failed checks. Report Content Site and All Checks
 separately when available. Keep scanner results, AI search citations and completed
@@ -242,6 +261,13 @@ After editing CSS, run `node node_modules/.bin/gulp build` in the theme director
 
 After completing any implementation, structure your report as:
 
+**Agent-readiness score:** level before and after for each profile (All Checks, Content Site),
+the checks that changed, and the checks still failing with the reason (not applicable, needs DNS
+access, no real capability to describe).
+
+**Query map:** the top clusters from Step 0 with their evidence, target page and action. Give the
+data source and date for every number.
+
 **What was implemented (theme/code level):**
 List each schema/structural change and which research insight or Google guide principle it addresses.
 
@@ -260,7 +286,8 @@ Based on the citation study, name the 2–3 highest-leverage external channels f
 
 ## References
 
-- [Agent readiness](references/agent-readiness.md) covers scanner baselines, public discovery, authenticated workflows and release verification.
+- [Agent readiness](references/agent-readiness.md) covers running the Is It Agent Ready API, triaging and applying its results, public discovery, authenticated workflows and release verification.
+- [Keyword research](references/keyword-research.md) covers Search Console, agent fan-out, autocomplete and competitor sources, intent clustering, the query map and measurement.
 - `references/schema-patterns.md` — Ready-to-use JSON-LD patterns for Ghost/HBS themes
 - `references/audit-checklist.md` — Systematic checklist for a full SEO/AEO/GEO audit
 - `references/feed-insights.md` — Bundled snapshot of distilled insights (offline fallback; the live copy is fetched in Step 1)

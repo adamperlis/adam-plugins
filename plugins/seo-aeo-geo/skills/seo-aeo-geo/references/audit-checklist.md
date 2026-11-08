@@ -8,6 +8,12 @@ content advice makes sense.
 
 ---
 
+## Layer 0: Research
+
+- [ ] Query map built (`keyword-research.md`): clusters, intent, evidence with source and date, one target page each, no invented volumes
+- [ ] Is It Agent Ready scanned through the API, All Checks and Content Site, JSON kept as the baseline (`agent-readiness.md`)
+- [ ] Every failing check triaged (fix now, fix only if real, out of scope) before any change; rescanned with the same profile after release
+
 ## Layer 1: Technical Foundation
 
 ### Crawl Access
