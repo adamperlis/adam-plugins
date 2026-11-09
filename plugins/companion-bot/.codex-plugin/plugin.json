@@ -1,0 +1,6 @@
+{
+  "name": "companion-bot",
+  "version": "0.1.0",
+  "description": "A furry 3D companion for your web app: a drop-in <companion-bot> element with moods and expressions, plus a customizer users can restyle it with.",
+  "skills": "./skills/"
+}

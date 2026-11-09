@@ -1,0 +1,11 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "companion-bot",
+  "description": "A furry 3D companion for your web app: a drop-in <companion-bot> element with moods and expressions, plus a customizer users can restyle it with.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Perlis"
+  },
+  "license": "MIT",
+  "keywords": ["mascot", "companion", "character", "web-component", "three.js", "webgpu", "webgl", "shader", "fur", "customizer", "dialkit", "frontend"]
+}

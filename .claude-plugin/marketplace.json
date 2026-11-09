@@ -26,6 +26,12 @@
       "category": "design"
     },
     {
+      "name": "companion-bot",
+      "description": "A furry 3D companion for your web app: a drop-in <companion-bot> element with moods and expressions, plus a customizer users can restyle it with.",
+      "source": "./plugins/companion-bot",
+      "category": "design"
+    },
+    {
       "name": "design-constraints",
       "description": "Design UI with explicit spatial and typographic constraints instead of letting the model guess.",
       "source": "./plugins/design-constraints",
