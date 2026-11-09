@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "seo-aeo-geo",
   "description": "Audit and implement SEO, AEO, and GEO for websites and Ghost themes so content can rank and get cited by AI answers.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Adam Perlis"
   },

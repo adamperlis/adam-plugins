@@ -5,8 +5,48 @@ Use this playbook when auditing with Is It Agent Ready, improving a site's machi
 ## Establish the baseline
 
 1. Inventory the requested domains and resolve redirects. Score canonical public production sites. Track staging, intentionally private or noindex sites, retired domains, redirect-only aliases, and unreachable hosts separately so the portfolio totals are interpretable.
-2. Run the scanner on each canonical URL. Record the date, scanner or rules version when available, selected profile, final URL, raw results, and exact check names. Report Content Site and All Checks separately when both exist. Compare like-for-like runs and inspect failures at the underlying endpoint before changing code. Record checks that are inapplicable or outside your control.
+2. Run the scanner on each canonical URL (see "Run the scanner" below). Record the date, scanner or rules version when available, selected profile, final URL, raw results, and exact check names. Report Content Site and All Checks separately when both exist. Compare like-for-like runs and inspect failures at the underlying endpoint before changing code. Record checks that are inapplicable or outside your control.
 3. Measure search visibility separately. Test representative branded and unbranded questions. Record the engine, question, date, claims, source URLs and whether those sources actually support the answer. For category benchmarks, use the same checks and outcome criteria against comparable products. A scanner percentage measures the checks in that run. Category leadership and AI citation visibility require their own evidence. [Scanner](https://isitagentready.com/) · [Cloudflare scoring methodology](https://blog.cloudflare.com/agent-readiness/) · [Google's guide to generative AI search](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
+
+## Run the scanner
+
+Get the score from the API, not by reading the web page. No key is needed. Behavior below was observed on 2026-11-08; if a call fails or the shape changed, read `https://isitagentready.com/llms.txt` and adapt.
+
+```bash
+OUT=<scratchpad>/agent-ready; mkdir -p "$OUT"
+SITE=https://www.example.com
+# All Checks, structured JSON (the score of record)
+curl -sS -m 90 -X POST https://isitagentready.com/api/scan \
+  -H 'content-type: application/json' -d "{\"url\":\"$SITE\"}" -o "$OUT/all.json"
+# Content Site profile (fewer checks; a content site often scores higher here)
+curl -sS -m 90 -X POST https://isitagentready.com/api/scan \
+  -H 'content-type: application/json' -d "{\"url\":\"$SITE\",\"profile\":\"content\"}" -o "$OUT/content.json"
+# The same failures as one markdown fix list, with a guide link per check
+curl -sS -m 90 -X POST https://isitagentready.com/api/scan \
+  -H 'content-type: application/json' -d "{\"url\":\"$SITE\",\"format\":\"agent\"}" -o "$OUT/fixes.md"
+
+jq '{level, levelName, scannedAt, url}' "$OUT/all.json"
+jq -r '.checks | to_entries[] | .key as $c | .value | to_entries[] | "\($c).\(.key)\t\(.value.status)\t\(.value.message)"' "$OUT/all.json"
+jq '.nextLevel' "$OUT/all.json"   # what the next level requires, with a short prompt per check
+```
+
+- **Response:** `level` (0 to 5), `levelName`, `nextLevel` (target, requirements with `check`, `description`, `shortPrompt`, `specUrls`), and `checks` grouped as `discoverability`, `contentAccessibility`, `botAccessControl`, `discovery`, `commerce`. Each check has `status` (`pass`, `fail` or `neutral`), `message`, `details` and `evidence` (the exact requests the scanner made and what came back). Commerce checks do not count toward the score.
+- **Profiles:** `"profile":"content"` matched the Content Site profile in testing (academyux.com scored 4 on All Checks and 5 on content). The API profile name for "API / Application" is undocumented; record which profile each number came from.
+- **MCP alternative:** the same scan is the `scan_site` tool (argument `url`) on the Streamable HTTP server `https://isitagentready.com/mcp`.
+- **Per-check guides:** each failure in `fixes.md` links an implementation guide at `https://isitagentready.com/.well-known/agent-skills/<check>/SKILL.md`. The scanner says its fix text is AI-generated and provided as-is.
+
+## Apply the results
+
+Treat the scan as a to-do list to triage, not a script to execute.
+
+1. **Read the evidence first.** For each `fail`, look at `evidence` and fetch the endpoint yourself. A failure can be a firewall challenge, a redirect, an HTML fallback served with a 200, or a cached old response, and the fix for those is not the file the scanner asked for.
+2. **Sort every failure into one of three buckets** and show the table to the user before changing anything:
+   - **Fix now:** public crawl and retrieval (robots, sitemap, Link headers, AI bot rules, Content Signals, Markdown negotiation, llms.txt). These help every site.
+   - **Fix only if real:** discovery files (API catalog, OAuth metadata, MCP Server Card, A2A card, Agent Skills, Auth.md, WebMCP, DNS-AID). Publish one only when it describes a capability the site actually runs. A card for a service that does not exist raises the score and misleads every agent that reads it.
+   - **Out of scope:** checks that need DNS, registrar or account changes the user has not authorized, and checks that do not fit the site (OAuth on a brochure site). Record them with the reason.
+3. **Implement from the guide and the spec**, not only from the scanner's short prompt. Follow the linked SKILL.md and the spec URL, and match the project's own framework and hosting.
+4. **Verify each fix directly** (status, media type, body, headers) in preview, then on production after an authorized deploy.
+5. **Rescan with the same profile** and report before and after: level, the checks that changed, and any that still fail with the reason.
 
 ## Make useful public content easy to retrieve
 
