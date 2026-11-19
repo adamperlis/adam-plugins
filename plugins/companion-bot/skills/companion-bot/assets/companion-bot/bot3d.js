@@ -86,6 +86,8 @@ const U = {
   beardStrength: uniform(1), goatee: uniform(0), jaw: uniform(0), crown: uniform(1), noseWidth: uniform(1), noseLength: uniform(1), noseOffset: uniform(0.2),
   frameDark: uniform(new THREE.Color(0x391c15)), frameLight: uniform(new THREE.Color(0xa56232)), transmission: uniform(1),
   frameFinish: uniform(1),
+  mohawk: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
+  chainColor: uniform(new THREE.Color(0xd8aa3a)),
 };
 const NOSE_BASE_DEPTH = 0.07;
 const noseY = (n) => n.y.add(U.noseOffset).sub(U.face.x).div(U.noseLength);
@@ -140,6 +142,12 @@ const upperLipMask = Fn(([n]) => {
   return max(whiskers, join).mul(smoothstep(0.55, 0.88, n.z)).mul(U.beardStrength);
 });
 const facialHair = (n) => max(beardMask(n), upperLipMask(n));
+// Mohawk: a narrow ridge on the midline from the hairline, over the crown, down to the nape.
+const mohawkMask = Fn(([n]) => {
+  const ridge = float(1).sub(smoothstep(0.15, 0.25, n.x.abs()));
+  const along = smoothstep(0.32, 0.52, n.y.add(max(n.z.negate(), 0).mul(0.6)));
+  return ridge.mul(along).mul(U.mohawk);
+});
 // The crown tips to one side, and the forehead and chin taper away from the cheeks.
 const surface = Fn(([n]) => {
   const width = float(0.975).sub(n.y.mul(0.075)).sub(n.y.mul(n.y).mul(0.24))
@@ -212,9 +220,15 @@ furMat.positionNode = Fn(() => {
   const h = shellH, h2 = shellH.mul(shellH);
   const breeze = mx_noise_vec3(n.mul(2.4).add(vec3(0, U.time.mul(0.35), U.time.mul(0.2)))).mul(0.045).mul(h2);
   const beard = beardMask(n);
+  const mohawk = mohawkMask(n);
   const down = mix(vec3(-0.08, -1, 0), vec3(n.x.mul(-0.3), -1, 0.035), beard);
-  const groom = down.sub(n.mul(dot(n, down))).mul(mix(0.19, 0.3, beard)).mul(h2);
-  const furLength = U.furLen.add(beard.mul(0.055)).sub(upperLipMask(n).mul(0.02));
+  // A mohawk stands up and sweeps a little back instead of being combed down.
+  const groom = down.sub(n.mul(dot(n, down))).mul(mix(0.19, 0.3, beard)).mul(float(1).sub(mohawk))
+    .add(vec3(0, 0.03, -0.12).mul(mohawk)).mul(h2);
+  // With a mohawk, everything off the ridge and outside the beard is clipped to stubble.
+  const clipped = U.mohawk.mul(float(1).sub(beard)).mul(float(1).sub(mohawk));
+  const scalp = mix(U.furLen, float(0.045), clipped).add(mohawk.mul(float(0.56).sub(U.furLen)));
+  const furLength = scalp.add(beard.mul(0.055)).sub(upperLipMask(n).mul(0.02));
   return surface(n).add(n.mul(h.mul(furLength))).add(groom).add(hairAt.mul(h2).mul(U.motion)).add(breeze);
 })();
 const vH = varying(shellH);
@@ -247,7 +261,7 @@ furMat.colorNode = Fn(() => {
   c.assign(mix(c, tip, smoothstep(0.4, 1, u).mul(mix(0.65, 0.46, soft))));
   const grain = mx_noise_float(n.mul(vec3(74, 8, 27))).mul(0.08).add(1);
   c.assign(mix(c, mix(C.root, C.mid, 0.74).mul(grain), mix(0.22, 0.55, soft)));
-  c.assign(mix(c, mix(C.beardRoot, C.beardTip, u), facialHair(n).mul(0.95)));
+  c.assign(mix(c, mix(C.beardRoot, C.beardTip, u), max(facialHair(n), mohawkMask(n)).mul(0.95)));
   c.assign(mix(c, C.muzzle, nose.mul(0.36)));
   c.assign(mix(c, C.mouth, mouth.mul(mix(0.82, 0.95, U.face.z)).mul(mouthOpenness)));
   return vec4(c.mul(mix(0.96, 1.04, r2)).mul(noseLight(n, nose)), opacity);
@@ -255,12 +269,12 @@ furMat.colorNode = Fn(() => {
 // Fur scatters light: a soft amber glow where it turns away from you, strongest at the tips.
 furMat.emissiveNode = Fn(() => {
   const facing = abs(dot(normalize(normalView), normalize(positionView).negate()));
-  const beard = facialHair(normalLocal);
+  const beard = max(facialHair(normalLocal), mohawkMask(normalLocal));
   const rim = mix(C.fuzz, C.beardTip, beard.mul(0.65)).mul(pow(float(1).sub(facing), 2.2).mul(vH).mul(mix(0.19, 0.28, U.dark)));
   const fill = mix(0.15, 0.025, beard);
   return rim.add(C.mid.mul(fill).mul(float(1).sub(mouthMask(normalLocal).mul(0.72).mul(mouthOpenness))));
 })();
-furMat.sheenNode = mix(C.fuzz, C.beardTip, facialHair(normalLocal).mul(0.58));
+furMat.sheenNode = mix(C.fuzz, C.beardTip, max(facialHair(normalLocal), mohawkMask(normalLocal)).mul(0.58));
 const fur = new THREE.InstancedMesh(sphere, furMat, SHELLS);
 fur.frustumCulled = false;
 body.add(fur);
@@ -514,6 +528,38 @@ glasses.scale.y = 1.075;
 glasses.position.set(0, -0.016, 1.124);
 eyewear.add(glasses);
 const frameGeometries = new Map([['keyhole', frameGeo]]);
+
+// Tinted lenses: a thin pane cut to each frame's openings.
+// Every frame style records its openings in lensOutlines as its geometry is built.
+const lensOutlines = new Map([['keyhole', frameOutline.holes]]);
+const lensGeometries = new Map();
+function lensGeometry(style) {
+  if (lensGeometries.has(style)) return lensGeometries.get(style);
+  const outlines = lensOutlines.get(style) || [];
+  const geometry = new THREE.ShapeGeometry(outlines.map(path => new THREE.Shape(path.getPoints(24))), 12);
+  const positions = geometry.attributes.position;
+  // On the frame's front face (the eyes reach past its middle), with the frame's bend.
+  for (let i = 0; i < positions.count; i++) positions.setZ(i, 0.058 - positions.getX(i) ** 2 * 0.047);
+  geometry.computeVertexNormals();
+  lensGeometries.set(style, geometry);
+  return geometry;
+}
+// Unlit tinted glass: a lit lens picks up the studio reflections and turns milky. Darker at the
+// top, like a gradient aviator lens. Front side only: a double-sided transparent pane takes
+// WebGPURenderer's two-pass path and doesn't draw here.
+// The lens filters what's behind it (multiplies it) rather than painting over it: the scene is
+// HDR until tone mapping, and the eye whites are bright enough to shine through an alpha-blended
+// pane even at 0.85. Light let through falls off as (1 - tint)³, so the slider reads evenly from
+// clear to sunglasses, and what isn't let through takes the lens's color.
+const lensMat = new THREE.MeshBasicNodeMaterial({ transparent: true, depthWrite: false,
+  blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor,
+  blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
+const lensFade = smoothstep(-0.1, 0.45, positionLocal.y);
+lensMat.colorNode = mix(U.lensColor.mul(mix(1, 0.55, lensFade)), vec3(1),
+  pow(float(1).sub(U.lensTint.mul(mix(0.78, 1, lensFade))), 3));
+const lenses = new THREE.Mesh(lensGeometry('keyhole'), lensMat);
+lenses.visible = false;
+glasses.add(lenses);
 const legacyTemples = temples.map(temple => temple.geometry);
 const catalogTemples = new Map();
 function contourPath(path, frame, side, inset = 0) {
@@ -524,12 +570,15 @@ function contourPath(path, frame, side, inset = 0) {
   path.closePath();
 }
 function catalogFrameGeometry(frame) {
+  const openings = [];
   const shapes = [-1, 1].map(side => {
     const rim = new THREE.Shape(), opening = new THREE.Path();
     contourPath(rim, frame, side); contourPath(opening, frame, side, frame.rim);
     rim.holes.push(opening);
+    openings.push(opening);
     return rim;
   });
+  lensOutlines.set(frame.id, openings);
   const gap = .43 - frame.rx + frame.rim * .6, y = .35, thick = Math.max(.032, frame.rim);
   const bridge = new THREE.Shape();
   bridge.moveTo(-gap, y);
@@ -615,12 +664,78 @@ function glassesGeometry(style) {
     }
     shape.holes.push(hole);
   }
+  lensOutlines.set(style, shape.holes);
   const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.047, bevelThickness: 0.013, bevelSize: 0.009, bevelSegments: 3, curveSegments: 12 });
   const positions = geometry.attributes.position;
   for (let i = 0; i < positions.count; i++) positions.setZ(i, positions.getZ(i) - positions.getX(i) ** 2 * 0.047);
   geometry.computeVertexNormals();
   frameGeometries.set(style, geometry);
   return geometry;
+}
+
+// Gold rope chains, stacked around the lower head and resting on the fur. They hang from the
+// squash group, not the head, so they stay put when the head turns to look at something.
+const chainMat = new THREE.MeshPhysicalNodeMaterial({ metalness: 1, roughness: 0.3, clearcoat: 0.4, clearcoatRoughness: 0.2 });
+chainMat.colorNode = Fn(() => {
+  // uv.x runs along the strand (rescaled to length), uv.y around it: diagonal bands read as twisted rope.
+  const band = abs(fract(uv().x.add(uv().y)).sub(0.5)).mul(2);
+  return U.chainColor.mul(mix(0.5, 1.12, smoothstep(0.12, 0.88, band)));
+})();
+const chains = new THREE.Group();
+chains.position.y = R;
+squashG.add(chains);
+function surfaceRadius(y) {  // matches surface(): the head narrows toward the chin
+  return Math.sqrt(Math.max(0.02, 1 - y * y)) * (0.975 - y * 0.075 - y * y * 0.24);
+}
+// Built once and then shown or hidden: a customizer preview and the applied bot can wear different
+// counts, and draw() reconfigures between them every frame.
+const strands = [], pendants = new Map();
+function strand(i) {
+  if (strands[i]) return strands[i];
+  // The top strand clears the mouth at the front; each lower one hangs a little further.
+  const y0 = -0.3 - i * 0.05, droop = 0.21 + i * 0.045, thickness = 0.034 - i * 0.002;
+  const points = [];
+  for (let k = 0; k < 72; k++) {
+    const a = k / 72 * Math.PI * 2, front = (1 + Math.cos(a)) / 2;
+    const y = y0 - droop * front ** 1.6;
+    const r = surfaceRadius(y) + 0.2 + 0.11 * front;  // over the fur, and over the beard in front
+    points.push(new THREE.Vector3(r * Math.sin(a), y, r * Math.cos(a)));
+  }
+  const curve = new THREE.CatmullRomCurve3(points, true, 'centripetal');
+  const geometry = new THREE.TubeGeometry(curve, 260, thickness, 8, true);
+  const uvs = geometry.attributes.uv, twists = curve.getLength() / (thickness * 1.7);
+  for (let j = 0; j < uvs.count; j++) uvs.setX(j, uvs.getX(j) * twists);
+  const mesh = new THREE.Mesh(geometry, chainMat);
+  mesh.userData.front = curve.getPoint(0);
+  chains.add(mesh);
+  return strands[i] = mesh;
+}
+const plateGeometry = (() => {  // a soft-cornered plate
+  const plate = new THREE.Shape(), w = 0.11, h = 0.14, c = 0.03;
+  plate.moveTo(-w + c, -h); plate.lineTo(w - c, -h); plate.quadraticCurveTo(w, -h, w, -h + c);
+  plate.lineTo(w, h - c); plate.quadraticCurveTo(w, h, w - c, h); plate.lineTo(-w + c, h);
+  plate.quadraticCurveTo(-w, h, -w, h - c); plate.lineTo(-w, -h + c); plate.quadraticCurveTo(-w, -h, -w + c, -h);
+  return new THREE.ExtrudeGeometry(plate, { depth: 0.03, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 2 });
+})();
+const ringGeometry = new THREE.TorusGeometry(0.035, 0.011, 8, 20);
+function pendant(count) {  // hung from the lowest strand by a ring
+  if (pendants.has(count)) return pendants.get(count);
+  const lowest = strand(count - 1).userData.front, group = new THREE.Group();
+  const plate = new THREE.Mesh(plateGeometry, chainMat);
+  plate.position.set(0, lowest.y - 0.14 - 0.05, lowest.z + 0.01);
+  plate.rotation.x = -0.35;  // lies against the curve of the chin
+  const ring = new THREE.Mesh(ringGeometry, chainMat);
+  ring.position.set(0, lowest.y - 0.035, lowest.z + 0.02);
+  group.add(plate, ring);
+  chains.add(group);
+  pendants.set(count, group);
+  return group;
+}
+function showChains(count) {
+  for (let i = 0; i < count; i++) strand(i);
+  if (count > 0) pendant(count);
+  strands.forEach((mesh, i) => { mesh.visible = i < count; });
+  for (const [n, group] of pendants) group.visible = n === count;
 }
 
 // A soft contact shadow on the floor, smaller and fainter while it's in the air.
@@ -1009,6 +1124,8 @@ function configureAppearance(values) {
     recolor(C[name].value, PALETTE[name], 0xfa4900, appearance.fur.color);
   for (const name of ['irisIn', 'irisOut', 'ring'])
     recolor(C[name].value, PALETTE[name], 0x995a2f, appearance.face.eyeColor);
+  for (const name of ['beardRoot', 'beardTip'])
+    recolor(C[name].value, PALETTE[name], 0x884423, appearance.fur.hairColor);
   U.furLen.value = appearance.fur.length;
   U.beardStrength.value = appearance.fur.beard * ({ none: 0, stubble: 0.35, full: 1, goatee: 1 }[appearance.fur.beardStyle]);
   U.goatee.value = appearance.fur.beardStyle === 'goatee' ? 1 : 0;
@@ -1032,11 +1149,23 @@ function configureAppearance(values) {
   }
   recolor(U.frameDark.value, 0x391c15, 0xa56232, appearance.glasses.frameColor);
   U.frameLight.value.set(appearance.glasses.frameColor);
-  U.frameFinish.value = { solid: 0, tortoise: 1, crystal: 2, paradox: 3 }[appearance.glasses.finish];
-  const crystal = appearance.glasses.finish === 'crystal';
-  U.transmission.value = appearance.glasses.finish === 'solid' ? 0 : appearance.glasses.transparency + (crystal ? .4 : 0);
-  tortoiseFront.roughness = clampN(0.49 - appearance.glasses.shine * 0.12 - (crystal ? .1 : 0), 0.18, 0.6);
+  U.frameFinish.value = { solid: 0, tortoise: 1, crystal: 2, paradox: 3, metal: 4 }[appearance.glasses.finish];
+  const crystal = appearance.glasses.finish === 'crystal', metal = appearance.glasses.finish === 'metal';
+  U.transmission.value = appearance.glasses.finish === 'solid' || metal ? 0 : appearance.glasses.transparency + (crystal ? .4 : 0);
+  tortoiseFront.metalness = tortoiseArm.metalness = metal ? 1 : 0;
+  tortoiseFront.roughness = metal ? clampN(0.34 - appearance.glasses.shine * 0.1, 0.12, 0.4)
+    : clampN(0.49 - appearance.glasses.shine * 0.12 - (crystal ? .1 : 0), 0.18, 0.6);
+  tortoiseArm.roughness = metal ? tortoiseFront.roughness : 0.88;
   tortoiseFront.clearcoat = appearance.glasses.shine * 0.18 + (crystal ? .12 : 0);
+
+  U.lensTint.value = appearance.glasses.tint;
+  U.lensColor.value.set(appearance.glasses.lensColor);
+  lenses.visible = eyewear.visible && appearance.glasses.tint > 0.01;
+  if (lenses.visible) lenses.geometry = lensGeometry(appearance.glasses.style);
+
+  U.mohawk.value = appearance.fur.hairStyle === 'mohawk' ? 1 : 0;
+  U.chainColor.value.set(appearance.jewelry.chainColor);
+  showChains(Math.round(appearance.jewelry.chains));  // a config default may not be a whole number
 }
 function refreshAppearance(previewOnly = false) {
   for (const b of live) if (shown(b) && (!previewOnly || b.host.hasAttribute('preview'))) draw(b, 0);
