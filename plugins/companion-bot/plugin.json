@@ -16,7 +16,7 @@
       "interface": {
         "displayName": "Companion Bot",
         "shortDescription": "A furry 3D companion and customizer for your web app.",
-        "longDescription": "A drop-in <companion-bot> web component: a plush 3D bot that blinks, follows the pointer, hops when clicked and mirrors your app's mood, with a customizer for fur, hair, face, eyes, nose, 14 glasses frames, tinted lenses, chains and a grumpy temper. Three.js on WebGPU with WebGL fallbacks; plain ES modules, no build step.",
+        "longDescription": "A drop-in <companion-bot> web component: a plush 3D bot that blinks, follows the pointer, hops when clicked and mirrors your app's mood, with a customizer for fur, hair, brows, face, eyes, nose, 14 glasses frames, tinted lenses, chains and a grumpy temper. Three.js on WebGPU with WebGL fallbacks; plain ES modules, no build step.",
         "developerName": "Adam Perlis",
         "category": "Design",
         "capabilities": ["Generate"]

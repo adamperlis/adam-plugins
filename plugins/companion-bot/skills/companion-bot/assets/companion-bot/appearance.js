@@ -78,7 +78,8 @@ const schema = {
       { value: 'roman', label: 'Roman (hooked)' }, { value: 'straight', label: 'Straight' },
       { value: 'button', label: 'Button' }, { value: 'rounded', label: 'Rounded' }] },
     eyeType: { type: 'select', default: 'round', options: ['round', 'almond', 'sleepy'] },
-    eyeSize: [1, 0.85, 1.15, 0.025], eyeColor: '#995a2f' },
+    eyeSize: [1, 0.85, 1.15, 0.025], eyeColor: '#995a2f',
+    eyebrows: false },  // dark fur brows in the hair color, which move with every expression
   glasses: { style: { type: 'select', default: 'keyhole', options: [
     { value: 'keyhole', label: 'Keyhole' }, { value: 'round', label: 'Round' },
     { value: 'square', label: 'Square' }, { value: 'catEye', label: 'Cat-eye' },
