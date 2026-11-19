@@ -47,6 +47,8 @@
     uniform vec2 frameContour[32];
     uniform vec4 frameMetrics;
     uniform float frameBrow, frameFinish;
+    uniform float lensTint;
+    uniform vec3 lensColor;
 
     float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
     float noise(vec2 p) {
@@ -344,6 +346,12 @@
       vec2 glint = vec2(sign(eyewear.x) * frame.x, frame.y) - vec2(.075, .13);
       float reflection = 1. - smoothstep(.026, .083, length(glint));
       float visible = step(-.5, glassesStyle);
+      // Tinted lenses filter what's behind each opening, darker toward the top like a gradient
+      // lens; the same curve as the 3D bot: (1 - tint)³ of the light gets through.
+      float lensFade = smoothstep(-.05, .1, frameY - .081);
+      float lens = (1. - smoothstep(-px, px, opening)) * visible;
+      vec3 lensFilter = mix(lensColor * mix(1., .55, lensFade), vec3(1.), pow(1. - lensTint * mix(.78, 1., lensFade), 3.));
+      acc.rgb *= mix(vec3(1.), lensFilter, lens);
       acc = over(vec4(frameColor * .4, 1.) * arm * mix(1., .65, crystal) * visible, acc);
       acc = over(vec4(frameColor * mix(.26, .62, crystal), 1.) * (.9 * (edge - front)) * visible, acc);
       acc = over(vec4(acetate, 1.) * (frontOpacity * front) * visible, acc);
@@ -367,7 +375,7 @@
       gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
       U = Object.fromEntries(['R', 'look', 'blink', 'sleep', 'hop', 'squash', 'dark', 'time', 'swing', 'lean', 'joy', 'inspect', 'glassesDown', 'wink', 'wide', 'brush', 'lidTop', 'lidSlant', 'pupil', 'face',
         'furColor', 'eyeColor', 'frameColor', 'headShape', 'furLength', 'beardStrength', 'goatee', 'noseBridge', 'noseTip', 'noseWing', 'noseNostril',
-        'eyeSize', 'eyeType', 'styling', 'glassesStyle', 'glassesSize', 'transparency', 'shine', 'frameMetrics', 'frameBrow', 'frameFinish']
+        'eyeSize', 'eyeType', 'styling', 'glassesStyle', 'glassesSize', 'transparency', 'shine', 'frameMetrics', 'frameBrow', 'frameFinish', 'lensTint', 'lensColor']
         .map((k) => [k, gl.getUniformLocation(prog, k)]));
       U.frameContour = gl.getUniformLocation(prog, 'frameContour[0]');
     }
@@ -403,7 +411,9 @@
       gl.uniform4f(U.frameMetrics, frame.rx * .455, frame.ry * .455, frame.rim * .455, (frame.bridge - .2) * .455 + .081);
       gl.uniform1f(U.frameBrow, frame.brow ? 1 : 0);
     }
-    gl.uniform1f(U.frameFinish, { solid: 0, tortoise: 1, crystal: 2, paradox: 3 }[appearance.glasses.finish]);
+    // Metal draws as a solid frame here: this view has no reflections for it to pick up.
+    gl.uniform1f(U.frameFinish, { solid: 0, tortoise: 1, crystal: 2, paradox: 3, metal: 0 }[appearance.glasses.finish]);
+    gl.uniform1f(U.lensTint, appearance.glasses.tint); gl.uniform3fv(U.lensColor, rgb(appearance.glasses.lensColor));
     gl.uniform1f(U.glassesSize, appearance.glasses.size); gl.uniform1f(U.transparency, appearance.glasses.transparency);
     gl.uniform1f(U.shine, appearance.glasses.shine);
     gl.uniform1f(U.blink, Math.max(s.blink, s.squint)); gl.uniform1f(U.sleep, s.sleep);

@@ -69,21 +69,30 @@ const schema = {
   fur: { headShape: { type: 'select', default: 'almond', options: ['almond', 'round', 'pear', 'tall'] },
     color: '#fa4900', length: [0.3, 0.12, 0.42, 0.01],
     beardStyle: { type: 'select', default: 'full', options: ['none', 'stubble', 'full', 'goatee'] },
-    beard: [1, 0, 1, 0.05] },
+    beard: [1, 0, 1, 0.05],
+    // 'mohawk': a tall ridge front to back over the crown, sides clipped to stubble, in the beard's color
+    hairStyle: { type: 'select', default: 'full', options: ['full', 'mohawk'] },
+    hairColor: '#884423' },  // beard, moustache and mohawk
   face: { styling: { type: 'select', default: 'neutral', options: ['neutral', 'feminine', 'masculine'] },
     noseType: { type: 'select', default: 'roman', options: [
       { value: 'roman', label: 'Roman (hooked)' }, { value: 'straight', label: 'Straight' },
       { value: 'button', label: 'Button' }, { value: 'rounded', label: 'Rounded' }] },
     eyeType: { type: 'select', default: 'round', options: ['round', 'almond', 'sleepy'] },
-    eyeSize: [1, 0.85, 1.15, 0.025], eyeColor: '#995a2f' },
+    eyeSize: [1, 0.85, 1.15, 0.025], eyeColor: '#995a2f',
+    eyebrows: false },  // dark fur brows in the hair color, which move with every expression
   glasses: { style: { type: 'select', default: 'keyhole', options: [
     { value: 'keyhole', label: 'Keyhole' }, { value: 'round', label: 'Round' },
     { value: 'square', label: 'Square' }, { value: 'catEye', label: 'Cat-eye' },
     ...frameCatalog.map(frame => ({ value: frame.id, label: frame.name })), { value: 'none', label: 'None' }] },
-    finish: { type: 'select', default: 'tortoise', options: ['tortoise', 'solid', 'crystal', 'paradox'] },
+    finish: { type: 'select', default: 'tortoise', options: ['tortoise', 'solid', 'crystal', 'paradox', 'metal'] },
     frameColor: '#a56232', size: [1, 0.9, 1.12, 0.01],
-    transparency: [1, 0, 1.5, 0.05], shine: [1, 0, 2, 0.05] },
-  personality: { idleGestures: true, blinkRate: [1, 0.5, 2, 0.1], mouthMovement: [1, 0, 1.5, 0.1] },
+    transparency: [1, 0, 1.5, 0.05], shine: [1, 0, 2, 0.05],
+    // tinted lenses: 0 is clear (no lens drawn), 0.9 is nearly opaque sunglasses
+    tint: [0, 0, 0.9, 0.05], lensColor: '#5a3a1e' },
+  jewelry: { chains: [0, 0, 6, 1], chainColor: '#d8aa3a' },
+  personality: { idleGestures: true, blinkRate: [1, 0.5, 2, 0.1], mouthMovement: [1, 0, 1.5, 0.1],
+    // its resting face: 'soft' (a little pleading) or 'grumpy' (lowered, slanted lids and a slight frown)
+    temper: { type: 'select', default: 'soft', options: ['soft', 'grumpy'] } },
 };
 const schemaDefaults = Object.fromEntries(Object.entries(schema).map(([group, controls]) => [group,
   Object.fromEntries(Object.entries(controls).map(([name, spec]) => [name,

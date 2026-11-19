@@ -1,11 +1,11 @@
 ---
 name: companion-bot
-description: Add a furry 3D companion bot to a web app — a drop-in <companion-bot> web component that blinks, glances at the pointer, fidgets, hops when clicked, and shows the app's mood (idle, working, sleeping), plus a full customizer (presets, fur, face, nose, eyes, 14 glasses frames, saved presets) for a settings page. Three.js on WebGPU, falling back to WebGL 2, then a flat WebGL 1 shader, then a still picture. Use when someone wants a mascot, companion, buddy, avatar or character in their UI — in a header, empty states, loading or "all done" states, onboarding — or wants users to customize one. Works in plain HTML, React, Next.js, Vue, Svelte and Astro with no build step.
+description: Add a furry 3D companion bot to a web app — a drop-in <companion-bot> web component that blinks, glances at the pointer, fidgets, hops when clicked, and shows the app's mood (idle, working, sleeping), plus a full customizer (presets, fur, hair, face, nose, eyes, 14 glasses frames with metal finishes and tinted lenses, chains, saved presets) for a settings page. Three.js on WebGPU, falling back to WebGL 2, then a flat WebGL 1 shader, then a still picture. Use when someone wants a mascot, companion, buddy, avatar or character in their UI — in a header, empty states, loading or "all done" states, onboarding — or wants users to customize one. Works in plain HTML, React, Next.js, Vue, Svelte and Astro with no build step.
 ---
 
 # Companion Bot
 
-A small plush bot that lives in an app's interface. It glances at the pointer, blinks, fidgets and hops when clicked. It looks busy while the app works and dozes while it sleeps. Users can restyle it: fur color and length, head shape, beard, nose, eyes, and glasses, with presets they can save.
+A small plush bot that lives in an app's interface. It glances at the pointer, blinks, fidgets and hops when clicked. It looks busy while the app works and dozes while it sleeps. Users can restyle it: fur color and length, head shape, beard and hair (a mohawk, if they like), nose, eyes, glasses (metal frames, tinted lenses) and gold chains, with presets they can save.
 
 It came from a support desk, where it sits in the header, keeps the empty states company and naps when the autopilot is paused. The whole thing is plain ES modules in one folder, with Three.js and DialKit vendored inside it.
 
@@ -81,6 +81,7 @@ Mood is page-wide: every bot shares it. Calling it before the bot has loaded is 
 Also on `window.companionBot` once `companionbotready` fires on `window`:
 
 - `express(element, 'wink' | 'examine' | 'neutral')`: a wink, or peering down over its glasses.
+- `express(element, 'angry' | 'scary' | 'sideEye' | 'disapprove' | 'lecture')` (3D only): a face held for two or three seconds, then eased out. `angry` snarls through gritted teeth, `scary` roars with a head shake, `sideEye` cuts its eyes to one side, `disapprove` shakes its head slowly, `lecture` tells you off with its mouth working. Each pulls its glasses down its nose to glare over them, and the angry ones tip the head down to glare from under the brow (with `face.eyebrows`, the brows knit too). The flat fallback returns `false` for these.
 - `setView(element, view, { animate })`: turns on a spring (3D only).
 - `renderer`: `'webgpu'`, `'webgl'`, `'flat'` or `'still'`.
 
@@ -114,6 +115,34 @@ Set this before the script tag, or before the module first loads:
 
 `defaults` is partial and is the look a new visitor sees, and what Reset returns to. The keys are in `schema` in `appearance.js`; each value is checked and clamped there, so a bad value falls back instead of breaking the bot. To change the built-in presets, edit `presets` in `appearance.js`. Each needs a 384 × 384 PNG in `presets/`; the simplest way is to dial the look in the customizer, save it, and screenshot the preview.
 
+### Hair, brows, sunglasses, chains and temper
+
+Every one of these defaults to off, so a look that doesn't set them is unchanged.
+
+| Key | Values | What it does |
+|---|---|---|
+| `fur.hairStyle` | `'full'` (default), `'mohawk'` | A mohawk is a strip of dense, blunt bristles from the hairline over the crown to the nape, with the rest of the scalp clipped to stubble. The beard stays as `beardStyle` sets it. |
+| `face.eyebrows` | `true` / `false` (default) | Dark fur brows above the eyes, in `hairColor`. They move with every expression: a V when angry, one side raised for `sideEye`, and creases between them in a scowl. |
+| `fur.hairColor` | color, default `#884423` | Colors the beard, moustache, brows and mohawk. The default is the beard's own brown, so `fur.color` alone still recolors the whole head. |
+| `glasses.finish` | adds `'metal'` | Polished metal frames and arms in `frameColor` (try `#d8aa3a` for gold). `shine` sets how glossy; `transparency` is ignored. |
+| `glasses.tint` | `0`–`0.9`, default `0` | Tinted lenses: `0` is clear (no lens is drawn), about `0.3` is a light tint, `0.6` sunglasses, `0.9` nearly black. Darker toward the top, like a gradient lens. Works with every frame. |
+| `glasses.lensColor` | color, default `#5a3a1e` | The lens's color. Dark colors read as sunglasses; light ones (yellow, rose) as colored glass. |
+| `jewelry.chains` | `0`–`6`, default `0` | Rope chains hung round the neck under the face, each a little lower, with a pendant on the top one. They hang from the body, so they stay put when the head turns, and swing on springs when it hops or leans. While chains are on, the beard stops at a neckline above them. |
+| `jewelry.chainColor` | color, default `#d8aa3a` | Gold by default; `#c0c0c8` reads as silver. |
+| `personality.temper` | `'soft'` (default), `'grumpy'` | Its resting face. Grumpy has lowered, slanted lids and a slight frown, and works the faces above (`angry`, `lecture`, `sideEye`, `scary`, `disapprove`) into its idle fidgets between readings and winks. Reduced motion holds the grumpy resting face. 3D only. |
+
+```js
+window.companionBotConfig = { defaults: {
+  fur: { hairStyle: 'mohawk', hairColor: '#241914' },
+  glasses: { style: 'aviator', finish: 'metal', frameColor: '#d8aa3a', tint: 0.55 },
+  jewelry: { chains: 3 },
+} };
+```
+
+The customizer shows them with everything else, chains under **Jewelry**. Chains are an accessory, like `personality`: picking a built-in preset keeps whatever chains the bot wears, and Reset returns them to your `defaults`. A saved preset remembers them.
+
+The flat fallback (`bot2d.js`) draws tinted lenses and draws metal as a solid frame. It has no mohawk, brows, chains, temper or timed faces: its fur is a single front-view shader, and those would need geometry it doesn't have. The look still keeps them, so they appear wherever the 3D bot runs.
+
 Light and dark: the bot's lighting follows `<html data-theme="dark|light">`, then `class="dark|light"` on `<html>` (Tailwind, shadcn), then the system setting, and switches live.
 
 ## 6. Keep the look on a server (optional)
@@ -129,7 +158,7 @@ addEventListener('companionbotappearancechange', e =>
 // Saved presets, if you keep them too: bot.loadPresets(list) and the companionbotpresetschange event.
 ```
 
-Validate on the server too: the client clamps values, but a server should only store an object with the four groups (`fur`, `face`, `glasses`, `personality`) of short strings, numbers and booleans, and cap the size. A saved preset's thumbnail is a PNG data URL of up to about 180 KB.
+Validate on the server too: the client clamps values, but a server should only store an object with the five groups (`fur`, `face`, `glasses`, `jewelry`, `personality`) of short strings, numbers and booleans, and cap the size. A saved preset's thumbnail is a PNG data URL of up to about 180 KB.
 
 If the same user can change the look on two devices, decide what happens when one was offline: the newer edit wins, or the server always wins. Keep the browser copy (`persist: true`) and use the server as the source of truth if the bot should appear before your API answers, for example on a sign-in page.
 
@@ -137,7 +166,8 @@ If the same user can change the look on two devices, decide what happens when on
 
 - `companion-bot.js` imports `appearance.js`, then tries `bot3d.js`. If that throws (no WebGPU or WebGL 2, or a module failed to load), it imports `bot2d.js`.
 - `bot3d.js`: one shared Three.js renderer poses the model for each `<companion-bot>` in turn and copies the frame onto that bot's own canvas. The fur is shell fur, up to 44 layers. On WebGPU, each hair root is a spring simulated in a compute pass, so hair lags behind hops and turns and parts under the pointer. On WebGL 2 the whole pelt swings on one spring. A bot inside a hidden view (`display: none`) isn't drawn.
-- `bot2d.js`: the same character in a single WebGL 1 fragment shader, front view only.
+- `bot2d.js`: the same character in a single WebGL 1 fragment shader, front view only, without the mohawk, brows, chains, temper or timed faces.
+- Tinted lenses multiply what's behind them rather than painting over it. The 3D scene is HDR until tone mapping, and the eye whites are bright enough to shine through an ordinary transparent pane.
 - `prefers-reduced-motion` is honored: bots hold a still pose, and expressions show a still pose instead of animating.
 - Events on `window`: `companionbotready`, `companionbotappearancechange`, `companionbotpreviewchange`, `companionbotpresetschange`, `companionbotthemechange`.
 
@@ -152,8 +182,9 @@ Open the page and confirm:
 3. `companionBot.mood('sleeping')` closes its eyes, and `'idle'` wakes it.
 4. Switch the page to dark: the rim light gets stronger and the customizer follows.
 5. In the customizer: pick a preset, Apply, reload — the look stays. Save a preset and reload — it's listed under Your presets.
-6. With reduced motion on (DevTools → Rendering), the bots hold still.
-7. At 375 px wide, the customizer is one column with no sideways scroll.
+6. Set Hair Style to Mohawk, Finish to Metal, Tint to about 0.6 and Chains to 3: the preview shows each, and the eyes darken behind the lenses.
+7. With reduced motion on (DevTools → Rendering), the bots hold still.
+8. At 375 px wide, the customizer is one column with no sideways scroll.
 
 ## License
 

@@ -86,6 +86,9 @@ const U = {
   beardStrength: uniform(1), goatee: uniform(0), jaw: uniform(0), crown: uniform(1), noseWidth: uniform(1), noseLength: uniform(1), noseOffset: uniform(0.2),
   frameDark: uniform(new THREE.Color(0x391c15)), frameLight: uniform(new THREE.Color(0xa56232)), transmission: uniform(1),
   frameFinish: uniform(1),
+  mohawk: uniform(0), neckline: uniform(0), teeth: uniform(0),
+  brows: uniform(0), browTilt: uniform(0), browLift: uniform(0), browAsym: uniform(0), furrow: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
+  chainColor: uniform(new THREE.Color(0xd8aa3a)),
 };
 const NOSE_BASE_DEPTH = 0.07;
 const noseY = (n) => n.y.add(U.noseOffset).sub(U.face.x).div(U.noseLength);
@@ -105,16 +108,21 @@ const noseLight = Fn(([n, nose]) => {
 const mouthOpenness = smoothstep(0.035, 0.25, U.face.z);
 const mouthShape = Fn(([p]) => {
   const x = p.x.add(0.01);
-  const halfWidth = mix(0.175, 0.218, U.face.z).add(U.face.y.mul(0.15));
+  // Baring teeth pulls the lips back: a wider mouth.
+  const halfWidth = mix(0.175, 0.218, U.face.z).add(U.face.y.mul(0.15)).add(U.teeth.mul(0.07));
   const side = smoothstep(-0.16, 0.15, x);
   const lift = mix(0.012, 0.025, side).add(U.face.y.mul(mix(0.47, 0.84, side)));
   const corners = smoothstep(0.028, 0.19, x.abs()).mul(lift);
-  const center = float(-0.432).add(U.face.x.mul(0.34)).add(corners);
+  // A snarl hitches the upper lip up on one side.
+  const snarl = U.teeth.mul(0.03).mul(smoothstep(-0.02, 0.16, x));
+  const center = float(-0.432).add(U.face.x.mul(0.34)).add(corners).add(snarl);
   const y = p.y.sub(center).div(mix(0.025, 0.105, U.face.z));
   return vec2(x.div(halfWidth), y.mul(mix(0.83, 1.36, smoothstep(-0.1, 0.18, y))));
 });
+// Distance from the mouth's middle, 1 at the lips: an oval, squaring off as the teeth bare.
+const mouthRadius = (p) => mix(length(p), pow(pow(abs(p.x), 4).add(pow(abs(p.y), 4)), 0.25), U.teeth.mul(0.75));
 const mouthMask = Fn(([n]) => {
-  return float(1).sub(smoothstep(0.57, 1.18, length(mouthShape(n))))
+  return float(1).sub(smoothstep(0.57, 1.18, mouthRadius(mouthShape(n))))
     .mul(smoothstep(0.7, 0.94, n.z));
 });
 const beardMask = Fn(([n]) => {
@@ -124,7 +132,9 @@ const beardMask = Fn(([n]) => {
   return smoothstep(-0.28, 0.18, n.z)
     .mul(float(1).sub(smoothstep(cheekLine.sub(0.085), cheekLine.add(0.039), n.y)))
     .mul(taper).mul(U.beardStrength)
-    .mul(mix(1, float(1).sub(smoothstep(0.25, 0.45, side)), U.goatee));
+    .mul(mix(1, float(1).sub(smoothstep(0.25, 0.45, side)), U.goatee))
+    // With chains on, the beard stops at a neckline so they hang on the chest below it.
+    .mul(mix(1, smoothstep(-0.9, -0.8, n.y), U.neckline));
 });
 const upperLipMask = Fn(([n]) => {
   const x = n.x.abs();
@@ -140,6 +150,38 @@ const upperLipMask = Fn(([n]) => {
   return max(whiskers, join).mul(smoothstep(0.55, 0.88, n.z)).mul(U.beardStrength);
 });
 const facialHair = (n) => max(beardMask(n), upperLipMask(n));
+// Mohawk: a dense strip on the midline from the hairline, over the crown, down to the nape.
+const mohawkMask = Fn(([n]) => {
+  const ridge = float(1).sub(smoothstep(0.19, 0.29, n.x.abs()));
+  const along = smoothstep(0.62, 0.76, n.y.add(max(n.z.negate(), 0).mul(0.6)));  // hairline above the brows
+  return ridge.mul(along).mul(U.mohawk);
+});
+// Eyebrows: a band of dark fur above each eye, heavier at the inner end. `browTilt` above 0 drops
+// the inner ends into a V (anger), below 0 lifts them (worry); `browLift` raises or lowers both;
+// `browAsym` raises one and lowers the other (skepticism).
+// They sit just above the eyes, which bulge well out of the head (their tops reach about y 0.6).
+const BROW_DIRS = EYE_DIRS.map(d => d.clone().add(new THREE.Vector3(0, 0.5, -0.2)).normalize());
+const browMask = Fn(([n]) => {
+  const brow = (c, side) => {
+    const d = n.sub(vec3(c.x, c.y, c.z));
+    const u = d.x.mul(side);  // 0 above the pupil, + toward the outer end
+    const line = U.browLift.add(U.browAsym.mul(side)).add(u.mul(U.browTilt));
+    const half = mix(0.078, 0.045, smoothstep(-0.17, 0.17, u));  // heavy, thickest at the inner end
+    const across = float(1).sub(smoothstep(half, half.add(0.018), d.y.sub(line).abs()));
+    return across.mul(float(1).sub(smoothstep(0.17, 0.22, u.abs())));
+  };
+  return max(brow(BROW_DIRS[0], -1), brow(BROW_DIRS[1], 1)).mul(smoothstep(0.4, 0.6, n.z)).mul(U.brows);
+});
+// Creases that come with a scowl: furrows between the brows and lines across the bridge of the nose.
+const furrowMask = Fn(([n]) => {
+  const x = n.x.abs();
+  const between = float(1).sub(smoothstep(0.008, 0.018, x.sub(0.04).abs()))
+    .mul(smoothstep(0.52, 0.57, n.y)).mul(float(1).sub(smoothstep(0.66, 0.71, n.y)));
+  const lines = float(1).sub(smoothstep(0.12, 0.34, fract(n.y.mul(26)).sub(0.5).abs().mul(2)));
+  const bridge = lines.mul(float(1).sub(smoothstep(0.05, 0.09, x)))
+    .mul(smoothstep(0.27, 0.3, n.y)).mul(float(1).sub(smoothstep(0.37, 0.4, n.y)));
+  return max(between, bridge).mul(smoothstep(0.6, 0.8, n.z)).mul(U.furrow);
+});
 // The crown tips to one side, and the forehead and chin taper away from the cheeks.
 const surface = Fn(([n]) => {
   const width = float(0.975).sub(n.y.mul(0.075)).sub(n.y.mul(n.y).mul(0.24))
@@ -190,8 +232,9 @@ skinMat.colorNode = Fn(() => {
   const n = normalLocal;
   const nose = noseMask(n);
   const skin = mix(C.skin, C.muzzle, nose.mul(0.55));
-  const facialFur = mix(skin, C.beardRoot, facialHair(n).mul(0.8));
-  return mix(facialFur, C.mouth, mouthMask(n).mul(0.9).mul(mouthOpenness)).mul(noseLight(n, nose));
+  const facialFur = mix(skin, C.beardRoot, max(facialHair(n), browMask(n)).mul(0.8));
+  return mix(facialFur, C.mouth, mouthMask(n).mul(0.9).mul(mouthOpenness)).mul(noseLight(n, nose))
+    .mul(float(1).sub(furrowMask(n).mul(0.6)));
 })();
 skinMat.emissiveNode = C.skin.mul(mix(0.12, 0.018, facialHair(normalLocal)));
 skinMat.positionNode = surface(normalLocal);
@@ -212,9 +255,15 @@ furMat.positionNode = Fn(() => {
   const h = shellH, h2 = shellH.mul(shellH);
   const breeze = mx_noise_vec3(n.mul(2.4).add(vec3(0, U.time.mul(0.35), U.time.mul(0.2)))).mul(0.045).mul(h2);
   const beard = beardMask(n);
+  const mohawk = mohawkMask(n);
   const down = mix(vec3(-0.08, -1, 0), vec3(n.x.mul(-0.3), -1, 0.035), beard);
-  const groom = down.sub(n.mul(dot(n, down))).mul(mix(0.19, 0.3, beard)).mul(h2);
-  const furLength = U.furLen.add(beard.mul(0.055)).sub(upperLipMask(n).mul(0.02));
+  // A mohawk stands up and sweeps a little back instead of being combed down.
+  const groom = down.sub(n.mul(dot(n, down))).mul(mix(0.19, 0.3, beard)).mul(float(1).sub(mohawk))
+    .add(vec3(0, 0.03, -0.12).mul(mohawk)).mul(h2);
+  // With a mohawk, everything off the ridge and outside the beard is clipped to stubble.
+  const clipped = U.mohawk.mul(float(1).sub(beard)).mul(float(1).sub(mohawk));
+  const scalp = mix(U.furLen, float(0.045), clipped).add(mohawk.mul(float(0.44).sub(U.furLen)));
+  const furLength = scalp.add(beard.mul(0.055)).sub(upperLipMask(n).mul(0.02)).add(browMask(n).mul(0.13));
   return surface(n).add(n.mul(h.mul(furLength))).add(groom).add(hairAt.mul(h2).mul(U.motion)).add(breeze);
 })();
 const vH = varying(shellH);
@@ -235,9 +284,11 @@ furMat.colorNode = Fn(() => {
   const u = clamp(vH.div(len), 0, 1);
   const off = vec3(r2, r3, r4).sub(0.5).mul(0.32);
   // Let the edges of the strand soften across the crown and temples, keeping the nose and eyes crisp.
-  const soft = max(smoothstep(0.19, 0.75, n.y), smoothstep(0.42, 0.88, n.x.abs()));
+  // Mohawk and brows stay dense: crisp, blunt bristles rather than wisps.
+  const bristle = max(mohawkMask(n), browMask(n));
+  const soft = max(smoothstep(0.19, 0.75, n.y), smoothstep(0.42, 0.88, n.x.abs())).mul(float(1).sub(bristle.mul(0.85)));
   const feather = mix(0.023, 0.085, soft);
-  const edge = min(mix(0.49, 0.09, u).sub(length(f.sub(off))), len.sub(vH));
+  const edge = min(mix(0.49, mix(0.09, 0.3, bristle), u).sub(length(f.sub(off))), len.sub(vH));
   const coverage = smoothstep(feather.negate(), feather, edge);
   const opaqueCore = smoothstep(0.11, 0.32, coverage);
   const opacity = mix(opaqueCore, coverage, soft);
@@ -247,20 +298,22 @@ furMat.colorNode = Fn(() => {
   c.assign(mix(c, tip, smoothstep(0.4, 1, u).mul(mix(0.65, 0.46, soft))));
   const grain = mx_noise_float(n.mul(vec3(74, 8, 27))).mul(0.08).add(1);
   c.assign(mix(c, mix(C.root, C.mid, 0.74).mul(grain), mix(0.22, 0.55, soft)));
-  c.assign(mix(c, mix(C.beardRoot, C.beardTip, u), facialHair(n).mul(0.95)));
+  c.assign(mix(c, mix(C.beardRoot, C.beardTip, u), max(max(facialHair(n), mohawkMask(n)), browMask(n)).mul(0.95)));
+  c.assign(mix(c, C.beardRoot.mul(0.8), browMask(n).mul(0.6)));  // brows a shade darker than the beard
   c.assign(mix(c, C.muzzle, nose.mul(0.36)));
   c.assign(mix(c, C.mouth, mouth.mul(mix(0.82, 0.95, U.face.z)).mul(mouthOpenness)));
-  return vec4(c.mul(mix(0.96, 1.04, r2)).mul(noseLight(n, nose)), opacity);
+  const creases = float(1).sub(furrowMask(n).mul(0.6));
+  return vec4(c.mul(mix(0.96, 1.04, r2)).mul(noseLight(n, nose)).mul(creases), opacity);
 })();
 // Fur scatters light: a soft amber glow where it turns away from you, strongest at the tips.
 furMat.emissiveNode = Fn(() => {
   const facing = abs(dot(normalize(normalView), normalize(positionView).negate()));
-  const beard = facialHair(normalLocal);
+  const beard = max(max(facialHair(normalLocal), mohawkMask(normalLocal)), browMask(normalLocal));
   const rim = mix(C.fuzz, C.beardTip, beard.mul(0.65)).mul(pow(float(1).sub(facing), 2.2).mul(vH).mul(mix(0.19, 0.28, U.dark)));
   const fill = mix(0.15, 0.025, beard);
   return rim.add(C.mid.mul(fill).mul(float(1).sub(mouthMask(normalLocal).mul(0.72).mul(mouthOpenness))));
 })();
-furMat.sheenNode = mix(C.fuzz, C.beardTip, facialHair(normalLocal).mul(0.58));
+furMat.sheenNode = mix(C.fuzz, C.beardTip, max(max(facialHair(normalLocal), mohawkMask(normalLocal)), browMask(normalLocal)).mul(0.58));
 const fur = new THREE.InstancedMesh(sphere, furMat, SHELLS);
 fur.frustumCulled = false;
 body.add(fur);
@@ -348,18 +401,27 @@ noseFur.position.copy(noseSkin.position);
 noseRig.add(noseFur);
 
 // Closed lips and the open cavity share a contour so the smile can close smoothly.
-const mouthGeo = new THREE.PlaneGeometry(0.52, 0.35, 12, 8).translate(0, -0.43, 0);
+const mouthGeo = new THREE.PlaneGeometry(0.66, 0.38, 14, 8).translate(0, -0.43, 0);  // room for a full snarl
 const mouthMat = new THREE.MeshBasicNodeMaterial({ transparent: true, depthWrite: false });
 mouthMat.colorNode = Fn(() => {
   const p = mouthShape(positionLocal);
-  const radius = length(p);
+  const radius = mouthRadius(p);
   const lower = float(1).sub(smoothstep(-0.76, 0.13, p.y));
   const inner = mix(color(0x713a24), color(0x9b5431), lower.mul(0.72));
   const tongue = float(1).sub(smoothstep(0.27, 0.76, length(p.sub(vec2(0.08, -0.54)).mul(vec2(1, 1.65)))));
   const lip = smoothstep(0.65, 1, radius).mul(lower);
   const closed = mix(color(0x743923), color(0xa15833), lower);
   const open = mix(mix(inner, color(0x975243), tongue.mul(U.face.z).mul(0.48)), color(0x9f4927), lip.mul(0.68));
-  return mix(closed, open, mouthOpenness);
+  // Teeth: an upper row under the top lip and a lower row over the bottom one, split into teeth
+  // by dark gaps. With the mouth only a little open the rows meet: gritted teeth.
+  const insideLips = float(1).sub(smoothstep(0.78, 0.95, radius));
+  const rows = max(smoothstep(-0.05, 0.12, p.y), float(1).sub(smoothstep(-0.62, -0.45, p.y)));
+  const gaps = smoothstep(0.03, 0.09, abs(fract(p.x.mul(3.6).add(0.5)).sub(0.5)));
+  const enamel = mix(color(0xf3ecdc), color(0xb9ad97), smoothstep(0.25, 1, abs(p.y)));  // bright at the bite, darker at the gums
+  const teeth = insideLips.mul(rows).mul(gaps).mul(U.teeth).mul(mouthOpenness);
+  // A strip of gum shows above the top teeth when the lip pulls back.
+  const gum = insideLips.mul(smoothstep(0.62, 0.74, p.y)).mul(U.teeth).mul(mouthOpenness);
+  return mix(mix(mix(closed, open, mouthOpenness), enamel, teeth), color(0x8a3536), gum.mul(0.9));
 })();
 mouthMat.positionNode = Fn(() => {
   const p = positionLocal;
@@ -367,7 +429,7 @@ mouthMat.positionNode = Fn(() => {
   return vec3(p.x, p.y, z);
 })();
 mouthMat.opacityNode = Fn(() => {
-  const radius = length(mouthShape(positionLocal));
+  const radius = mouthRadius(mouthShape(positionLocal));
   return float(1).sub(smoothstep(0.65, 1.12, radius)).mul(mix(0.78, 0.94, mouthOpenness));
 })();
 const mouthOpening = new THREE.Mesh(mouthGeo, mouthMat);
@@ -514,6 +576,38 @@ glasses.scale.y = 1.075;
 glasses.position.set(0, -0.016, 1.124);
 eyewear.add(glasses);
 const frameGeometries = new Map([['keyhole', frameGeo]]);
+
+// Tinted lenses: a thin pane cut to each frame's openings.
+// Every frame style records its openings in lensOutlines as its geometry is built.
+const lensOutlines = new Map([['keyhole', frameOutline.holes]]);
+const lensGeometries = new Map();
+function lensGeometry(style) {
+  if (lensGeometries.has(style)) return lensGeometries.get(style);
+  const outlines = lensOutlines.get(style) || [];
+  const geometry = new THREE.ShapeGeometry(outlines.map(path => new THREE.Shape(path.getPoints(24))), 12);
+  const positions = geometry.attributes.position;
+  // On the frame's front face (the eyes reach past its middle), with the frame's bend.
+  for (let i = 0; i < positions.count; i++) positions.setZ(i, 0.058 - positions.getX(i) ** 2 * 0.047);
+  geometry.computeVertexNormals();
+  lensGeometries.set(style, geometry);
+  return geometry;
+}
+// Unlit tinted glass: a lit lens picks up the studio reflections and turns milky. Darker at the
+// top, like a gradient aviator lens. Front side only: a double-sided transparent pane takes
+// WebGPURenderer's two-pass path and doesn't draw here.
+// The lens filters what's behind it (multiplies it) rather than painting over it: the scene is
+// HDR until tone mapping, and the eye whites are bright enough to shine through an alpha-blended
+// pane even at 0.85. Light let through falls off as (1 - tint)³, so the slider reads evenly from
+// clear to sunglasses, and what isn't let through takes the lens's color.
+const lensMat = new THREE.MeshBasicNodeMaterial({ transparent: true, depthWrite: false,
+  blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor,
+  blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
+const lensFade = smoothstep(-0.1, 0.45, positionLocal.y);
+lensMat.colorNode = mix(U.lensColor.mul(mix(1, 0.55, lensFade)), vec3(1),
+  pow(float(1).sub(U.lensTint.mul(mix(0.78, 1, lensFade))), 3));
+const lenses = new THREE.Mesh(lensGeometry('keyhole'), lensMat);
+lenses.visible = false;
+glasses.add(lenses);
 const legacyTemples = temples.map(temple => temple.geometry);
 const catalogTemples = new Map();
 function contourPath(path, frame, side, inset = 0) {
@@ -524,12 +618,15 @@ function contourPath(path, frame, side, inset = 0) {
   path.closePath();
 }
 function catalogFrameGeometry(frame) {
+  const openings = [];
   const shapes = [-1, 1].map(side => {
     const rim = new THREE.Shape(), opening = new THREE.Path();
     contourPath(rim, frame, side); contourPath(opening, frame, side, frame.rim);
     rim.holes.push(opening);
+    openings.push(opening);
     return rim;
   });
+  lensOutlines.set(frame.id, openings);
   const gap = .43 - frame.rx + frame.rim * .6, y = .35, thick = Math.max(.032, frame.rim);
   const bridge = new THREE.Shape();
   bridge.moveTo(-gap, y);
@@ -615,12 +712,134 @@ function glassesGeometry(style) {
     }
     shape.holes.push(hole);
   }
+  lensOutlines.set(style, shape.holes);
   const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.047, bevelThickness: 0.013, bevelSize: 0.009, bevelSegments: 3, curveSegments: 12 });
   const positions = geometry.attributes.position;
   for (let i = 0; i < positions.count; i++) positions.setZ(i, positions.getZ(i) - positions.getX(i) ** 2 * 0.047);
   geometry.computeVertexNormals();
   frameGeometries.set(style, geometry);
   return geometry;
+}
+
+// Gold rope chains, stacked around the lower head and resting on the fur. They hang from the
+// squash group, not the head, so they stay put when the head turns to look at something.
+const chainMat = new THREE.MeshPhysicalNodeMaterial({ metalness: 1, roughness: 0.3, clearcoat: 0.4, clearcoatRoughness: 0.2 });
+chainMat.colorNode = Fn(() => {
+  // uv.x runs along the strand (rescaled to length), uv.y around it: diagonal bands read as twisted rope.
+  const band = abs(fract(uv().x.add(uv().y)).sub(0.5)).mul(2);
+  return U.chainColor.mul(mix(0.5, 1.12, smoothstep(0.12, 0.88, band)));
+})();
+const chains = new THREE.Group();
+chains.position.y = R;
+squashG.add(chains);
+function surfaceRadius(y) {  // matches surface(): the head narrows toward the chin
+  return Math.sqrt(Math.max(0.02, 1 - y * y)) * (0.975 - y * 0.075 - y * y * 0.24);
+}
+// Each strand is a group that swings on its own spring (see stepChains); the pendant swings again
+// on its ring. A set is built per chain count and fur depth and kept: a customizer preview and the
+// applied bot can wear different chains or fur, and draw() reconfigures between them every frame.
+let strands = [], pendantPivot = null;
+const chainSets = new Map();  // `${count}:${furDepth}` → { group, strands, pendantPivot }, newest last
+// `furDepth`: how far the chains sit off the skin (short with clipped hair, further over full fur).
+function buildChainSet(count, furDepth) {
+  const group = new THREE.Group(), set = { group, strands: [], pendantPivot: null };
+  let top = null;
+  for (let i = 0; i < count; i++) {
+    // A neck ring under the face: close round the back of the head, then swinging down and forward
+    // under the chin, clear of the beard's hanging tips. Each strand hangs a little lower.
+    const y0 = -0.6 - i * 0.04, droop = 0.32 + i * 0.07, thickness = 0.034 - i * 0.002;
+    const points = [];
+    for (let k = 0; k < 72; k++) {
+      const a = k / 72 * Math.PI * 2, front = (1 + Math.cos(a)) / 2;
+      const y = y0 - droop * front ** 1.6;
+      const r = surfaceRadius(y) + furDepth + 0.52 * front ** 2;
+      points.push(new THREE.Vector3(r * Math.sin(a), y, r * Math.cos(a)));
+    }
+    const curve = new THREE.CatmullRomCurve3(points, true, 'centripetal');
+    const geometry = new THREE.TubeGeometry(curve, 260, thickness, 8, true);
+    const uvs = geometry.attributes.uv, twists = curve.getLength() / (thickness * 1.7);
+    for (let j = 0; j < uvs.count; j++) uvs.setX(j, uvs.getX(j) * twists);
+    const strand = new THREE.Group();
+    strand.add(new THREE.Mesh(geometry, chainMat));
+    group.add(strand);
+    set.strands.push(strand);
+    if (i === 0) top = curve.getPoint(0);
+  }
+  if (!top) return set;
+  // A pendant with a soft-cornered plate, hung from the top strand by a ring it pivots on, in
+  // front of the strands below (hung from the lowest, it would reach the floor).
+  const plate = new THREE.Shape(), w = 0.08, h = 0.1, c = 0.025;
+  plate.moveTo(-w + c, -h); plate.lineTo(w - c, -h); plate.quadraticCurveTo(w, -h, w, -h + c);
+  plate.lineTo(w, h - c); plate.quadraticCurveTo(w, h, w - c, h); plate.lineTo(-w + c, h);
+  plate.quadraticCurveTo(-w, h, -w, h - c); plate.lineTo(-w, -h + c); plate.quadraticCurveTo(-w, -h, -w + c, -h);
+  const pendant = new THREE.Mesh(new THREE.ExtrudeGeometry(plate, { depth: 0.03, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 2 }), chainMat);
+  pendant.position.set(0, -h - 0.035, -0.01);
+  pendant.rotation.x = -0.3;  // rests against the curve of the chest
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.01, 8, 20), chainMat);
+  ring.position.set(0, -0.012, 0.01);
+  set.pendantPivot = new THREE.Group();  // at the point where it hangs from the strand
+  set.pendantPivot.position.set(0, top.y - 0.02, top.z + 0.05);
+  set.pendantPivot.add(pendant, ring);
+  set.strands[0].add(set.pendantPivot);
+  return set;
+}
+function showChains(count, furDepth) {
+  if (count === 0) {
+    for (const set of chainSets.values()) set.group.visible = false;
+    strands = []; pendantPivot = null;
+    return;
+  }
+  const key = `${count}:${furDepth}`;
+  let set = chainSets.get(key);
+  if (set) chainSets.delete(key);  // re-added below as the newest
+  else {
+    set = buildChainSet(count, furDepth);
+    chains.add(set.group);
+    if (chainSets.size >= 4) {  // keep a few: dragging the fur length would otherwise pile them up
+      const [oldest, old] = chainSets.entries().next().value;
+      old.group.traverse(child => child.geometry?.dispose());
+      chains.remove(old.group);
+      chainSets.delete(oldest);
+    }
+  }
+  chainSets.set(key, set);
+  for (const other of chainSets.values()) other.group.visible = other === set;
+  ({ strands, pendantPivot } = set);
+}
+
+// Chain swing, per bot: one damped spring per strand (sideways tilt, fore-aft tilt, drop) driven by
+// the body's acceleration, and a looser one for the pendant. Lower strands are heavier and looser.
+// Sized from the bot's own look, not the set drawn last: bots on a page can wear different counts.
+function stepChains(b, dt, count) {
+  if (!count) { b.chains = null; return; }
+  if (!b.chains || b.chains.length !== count + 1)
+    b.chains = Array.from({ length: count + 1 }, () => ({ z: 0, vz: 0, x: 0, vx: 0, y: 0, vy: 0 }));
+  for (let left = dt; left > 0; left -= 1 / 60) {
+    const h = Math.min(left, 1 / 60);
+    b.chains.forEach((c, i) => {
+      const pendant = i === count;
+      const k = pendant ? 24 : 52 - i * 8, damp = pendant ? 2.4 : 3.6 - i * 0.3;
+      // Accelerating one way leaves the chain behind; going up leaves it low, landing throws it up.
+      c.vz += (-k * c.z - damp * c.vz + b.ax * (pendant ? 0.45 : 0.28)) * h;
+      c.vx += (-k * c.x - damp * c.vx + b.ay * (pendant ? 0.35 : 0.1)) * h;
+      c.vy += (-k * c.y - damp * c.vy - b.ay * 0.18) * h;
+      c.z = clampN(c.z + c.vz * h, -0.4, 0.4);
+      c.x = clampN(c.x + c.vx * h, -0.45, 0.45);
+      c.y = clampN(c.y + c.vy * h, -0.16, 0.12);
+    });
+  }
+}
+function poseChains(b) {
+  const state = b.chains && b.chains.length === strands.length + 1 ? b.chains : null;
+  strands.forEach((strand, i) => {
+    const c = state ? state[i] : null;
+    strand.rotation.set(c ? c.x : 0, 0, c ? c.z : 0);
+    strand.position.y = c ? c.y : 0;
+  });
+  if (pendantPivot) {
+    const p = state ? state[strands.length] : null;
+    pendantPivot.rotation.set(p ? p.x : 0, 0, p ? p.z : 0);
+  }
 }
 
 // A soft contact shadow on the floor, smaller and fainter while it's in the air.
@@ -655,14 +874,14 @@ function pose(b) {
   const nod = Math.abs(s.inspect);
   const view = b.host.getAttribute('view');
   const yaw = view ? viewYaw(b) + s.lean * 0.2 : s.lean * 3.2;
-  body.rotation.set(-s.ly * 0.12 + nod * 0.10, yaw, 0);
+  body.rotation.set(-s.ly * 0.12 + nod * 0.10 + (s.chin || 0) * 0.16, yaw, 0);
   // The frame follows the head through squash and tilt, then slides forward down the nose.
   eyewear.position.set(0, (body.position.y - (body.position.y + 0.21) * sq) * headHeight - s.glassesDown * 0.25, s.glassesDown * 0.17);
   eyewear.scale.set(headWidth * appearance.glasses.size, appearance.glasses.size, appearance.glasses.size);
   eyewear.rotation.copy(body.rotation);
   eyewear.rotateX(s.glassesDown * 0.08);
   for (const e of eyes) {
-    e.ball.rotation.set(0.06 - s.ly * 0.42 - nod * 0.16, e.yaw + s.lx * 0.5, 0);
+    e.ball.rotation.set(0.06 - s.ly * 0.42 - nod * 0.16 - (s.chin || 0) * 0.22, e.yaw + s.lx * 0.5, 0);  // eyes stay up when the chin drops
     const wink = Math.max(0, e.side * s.wink);
     const shut = Math.max(s.blink, s.squint, s.sleep);
     const styling = appearance.face.styling === 'feminine' ? 0.08 : appearance.face.styling === 'masculine' ? -0.07 : 0;
@@ -676,6 +895,7 @@ function pose(b) {
     e.slant.rotation.z = -e.side * s.lidSlant * 0.55 * (1 - Math.max(shut, wink));
   }
   U.pupil.value = s.pupil;
+  poseChains(b);
   shadow.scale.setScalar(1 - s.hop * 0.9);
   U.shadow.value = Math.max(0, 0.34 * (1 - s.hop * 2.4)) * (isDark() ? 0.8 : 1);
   rig.updateMatrixWorld(true);
@@ -704,6 +924,9 @@ function draw(b, dt) {
   U.motion.value = reduce.matches ? 0 : 1;
   U.dark.value = isDark() ? 1 : 0;
   U.face.value.set(b.s.nose, b.s.smile, b.s.mouth * appearance.personality.mouthMovement);
+  U.teeth.value = b.s.teeth || 0;
+  U.browTilt.value = b.s.browTilt || 0; U.browLift.value = b.s.browLift || 0; U.browAsym.value = b.s.browAsym || 0;
+  U.furrow.value = b.s.furrow || 0;
   U.density.value = clampN(N * 0.2, 14, 52);  // hair about a pixel and a half wide at any size
   U.shells.value = N < 100 ? 24 : N < 170 ? 34 : SHELLS;
   fur.count = U.shells.value;
@@ -742,7 +965,8 @@ function makeBot() {
     lean: 0, leanV: 0, leanAll: 0, fx: 0, fy: 0, fvx: 0, fvy: 0, squint: 0, wide: 0, joy: 0,
     inspect: 0, glassesDown: 0, wink: 0,
     nose: 0, smile: 0, mouth: 0, brx: 0, bry: 0, brvx: 0, brvy: 0,
-    lidTop: 0.72, lidSlant: 0.18, pupil: 0.40 },
+    lidTop: 0.72, lidSlant: 0.18, pupil: 0.40,
+    teeth: 0, browTilt: 0, browLift: 0, browAsym: 0, furrow: 0, chin: 0 },
   nextLook: 0, nextBlink: rand(0.8, 3), blinkAt: -9, hopAt: -1, attnUntil: 0, prevHop: 0, hopDir: 1, poke: false, joyAt: -9,
   nextFidget: performance.now() / 1000 + rand(5, 9), fidget: null, fidgetAt: -9, fidgetSide: 1,
   bx: 9, by: 9, bt: -Infinity, brushOn: false,
@@ -768,12 +992,54 @@ function fidgetEase(t, start, end) {
   return u * u * (3 - 2 * u);
 }
 
+// Timed faces (express(host, 'angry' | 'scary')): where the lids, pupils, mouth and nose go, how
+// long it's held, and how hard the head shakes. Lid slant below 0 slopes the lids into a V (a brow).
+// `gaze` is where it looks ([x, y], x mirrored to a random side); without one it glares at you.
+// `shades`: how far it pulls its glasses down the nose to glare over them (0 to 1), so the brow
+// shows past the frame's top bar.
+const FACES = {
+  // angry: the snarl. Eyes squeezed to slits under a crushed brow, nose scrunched, gritted teeth
+  // in a wide grimace (`teeth` 0 to 1 shows them).
+  // `brow`: [tilt, lift, one-side raise] (see browMask); `furrow`: creases 0 to 1; `chin`: head
+  // pitched down while the eyes stay on you (a glare from under the brow).
+  angry: { duration: 2.6, lid: 0.12, slant: -1.35, pupil: 0.26, smile: -0.08, nose: -0.13, mouth: 0.5, teeth: 1, shake: 0.006, shakeHz: 38, shades: 0.75,
+    brow: [1.1, -0.06, 0], furrow: 1, chin: 0.6 },
+  // scary: a roar baring both rows, under a hard scowl (wide-open lids would read as surprise), pupils pinned
+  scary: { duration: 1.9, lid: 0.6, slant: -1.3, pupil: 0.14, smile: -0.06, nose: -0.1, mouth: 1.1, teeth: 1, shake: 0.03, shakeHz: 26, shades: 0.85,
+    brow: [1.2, -0.04, 0], furrow: 1, chin: 0.35 },
+  // skeptical: narrowed eyes cut hard to one side, mouth flat
+  sideEye: { duration: 2.2, lid: 0.4, slant: -0.3, pupil: 0.32, smile: -0.02, nose: -0.03, mouth: 0, shake: 0, shakeHz: 0, gaze: [0.95, 0.12], shades: 0.35,
+    brow: [0.35, -0.01, 0.055], furrow: 0.3, chin: 0.15 },
+  // lecture: telling you off. A hard stare at you, mouth working as it talks (`talk`), and the head
+  // jabbing forward on the emphasis.
+  lecture: { duration: 2.8, lid: 0.45, slant: -0.95, pupil: 0.3, smile: -0.03, nose: -0.06, mouth: 0.12, talk: 0.3, shake: 0, shakeHz: 0, shades: 0.5,
+    brow: [0.85, -0.04, 0], furrow: 0.7, chin: 0.3 },
+  // disapproving: a slow head shake with a frown, eyes down and heavy-lidded
+  disapprove: { duration: 2.4, lid: 0.3, slant: -0.6, pupil: 0.34, smile: -0.07, nose: -0.05, mouth: 0.05, shake: 0.06, shakeHz: 7, gaze: [0, -0.1], shades: 0.55,
+    brow: [0.6, -0.035, 0], furrow: 0.5, chin: 0.45 },
+};
+// Resting faces (personality.temper): [lid, slant, pupil, smile, nose], brows [tilt, lift], creases.
+const TEMPERS = { soft: [0.72, 0.22, 0.40, 0, 0], grumpy: [0.42, -0.8, 0.34, -0.04, -0.03] };
+// At rest the brows sit high enough to clear the top bar of most frames.
+const REST_BROWS = { soft: [-0.3, 0.045, 0], grumpy: [0.55, 0.03, 0.35] };
+// What a bot does now and then while idle, in turn. A grumpy one works the tough faces in.
+const FIDGETS = { soft: ['examine', 'wink'], grumpy: ['examine', 'angry', 'lecture', 'wink', 'sideEye', 'scary', 'disapprove'] };
+function activeFace(b, t) {
+  if (!b.face) return null;
+  const F = FACES[b.face.kind], e = t - b.face.at;
+  if (e > F.duration) { b.face = null; return null; }
+  return { F, e, side: b.face.side, w: Math.min(1, e / 0.12) * Math.min(1, (F.duration - e) / 0.35) };  // quick in, eased out
+}
+
 function tick(b, t, dt, focal) {
   const appearance = window.companionBotAppearance.forHost(b.host);
   const botMood = b.host.hasAttribute('preview') ? 'idle' : mood;
   const s = b.s, asleep = botMood === 'sleeping';
+  const face = asleep ? null : activeFace(b, t);
+  const rest = TEMPERS[appearance.personality.temper] || TEMPERS.soft;
   s.sleep += ((asleep ? 1 : 0) - s.sleep) * ease(4, dt);
   if (asleep) { s.tx = 0; s.ty = -0.4; }
+  else if (face) [s.tx, s.ty] = face.F.gaze ? [face.F.gaze[0] * face.side, face.F.gaze[1]] : [0, 0.22];  // default: glares at you
   else if (t > b.nextLook && t > b.attnUntil) {
     const glance = Math.random() < 0.3;
     if (botMood === 'working') [s.tx, s.ty] = glance ? [rand(-1, 1), rand(-0.2, 0.4)] : [rand(-0.3, 0.3), -0.45];
@@ -782,12 +1048,21 @@ function tick(b, t, dt, focal) {
     b.nextLook = t + rand(1.2, 3.6);
   }
   // Only the main visible mascot fidgets. The gaze leads, then the head and glasses follow.
-  if (appearance.personality.idleGestures && botMood === 'idle' && focal && b.hopAt < 0 && t - b.joyAt > 0.3 && t > b.nextFidget && t - b.blinkAt > 0.16) {
-    b.fidget = b.fidget === 'examine' ? 'wink' : 'examine';
-    b.fidgetAt = t;
+  if (appearance.personality.idleGestures && botMood === 'idle' && !face && focal && b.hopAt < 0 && t - b.joyAt > 0.3 && t > b.nextFidget && t - b.blinkAt > 0.16) {
+    const turns = FIDGETS[appearance.personality.temper] || FIDGETS.soft;
+    b.fidgetTurn = ((b.fidgetTurn ?? -1) + 1) % turns.length;
+    const next = turns[b.fidgetTurn];
     b.fidgetSide = Math.random() < 0.5 ? -1 : 1;
     b.nextFidget = t + rand(9, 16);
-    b.nextBlink = Math.max(b.nextBlink, t + (b.fidget === 'wink' ? 0.36 : 1.55));
+    if (FACES[next]) {
+      b.face = { kind: next, at: t, side: b.fidgetSide };
+      b.fidget = null;
+      b.nextBlink = Math.max(b.nextBlink, t + 0.8);
+    } else {
+      b.fidget = next;
+      b.fidgetAt = t;
+      b.nextBlink = Math.max(b.nextBlink, t + (b.fidget === 'wink' ? 0.36 : 1.55));
+    }
   }
   const fidgetTime = botMood === 'idle' && b.hopAt < 0 ? t - b.fidgetAt : Infinity;
   const exam = b.fidget === 'examine' ? fidgetTime : Infinity;
@@ -796,7 +1071,7 @@ function tick(b, t, dt, focal) {
   const slide = fidgetEase(exam, 0.14, 0.46) * (1 - fidgetEase(exam, 1.17, 1.58));
   const readingX = lerp(-0.26, 0.26, fidgetEase(exam, 0.4, 0.97));
   s.inspect += (b.fidgetSide * tilt - s.inspect) * ease(24, dt);
-  s.glassesDown += (slide - s.glassesDown) * ease(20, dt);
+  s.glassesDown += (Math.max(slide, face ? face.F.shades * face.w : 0) - s.glassesDown) * ease(20, dt);
   s.wink = b.fidget === 'wink' && fidgetTime < 0.28
     ? b.fidgetSide * fidgetEase(fidgetTime, 0, 0.09) * (1 - fidgetEase(fidgetTime, 0.09, 0.28)) : 0;
   const previousLookY = s.ly;
@@ -805,10 +1080,30 @@ function tick(b, t, dt, focal) {
   // Its expression: soft and a little pleading at rest, wide-eyed with big pupils when your pointer
   // has its interest, and intent while it works.
   const interested = t < b.attnUntil;
-  const [lidTo, slantTo, pupilTo] = botMood === 'working' ? [0.55, -0.15, 0.34] : interested ? [0.9, 0.08, 0.46] : [0.72, 0.22, 0.40];
-  s.lidTop += (lidTo - s.lidTop) * ease(5, dt);
-  s.lidSlant += (slantTo - s.lidSlant) * ease(5, dt);
-  s.pupil += (pupilTo - s.pupil) * ease(4, dt);
+  let [lidTo, slantTo, pupilTo] = botMood === 'working' ? [0.55, -0.15, 0.34] : interested ? [0.9, 0.08, 0.46] : rest;
+  if (face) {
+    lidTo = lerp(lidTo, face.F.lid, face.w); slantTo = lerp(slantTo, face.F.slant, face.w); pupilTo = lerp(pupilTo, face.F.pupil, face.w);
+  }
+  const faceRate = face ? 3 : 1;  // a face snaps on; moods drift
+  s.lidTop += (lidTo - s.lidTop) * ease(5 * faceRate, dt);
+  s.lidSlant += (slantTo - s.lidSlant) * ease(5 * faceRate, dt);
+  s.pupil += (pupilTo - s.pupil) * ease(4 * faceRate, dt);
+  // Brows, creases and chin: from the face, else the mood, else the resting temper.
+  const restBrow = REST_BROWS[appearance.personality.temper] || REST_BROWS.soft;
+  let [tiltTo, liftTo] = botMood === 'working' ? [0.35, -0.01] : interested ? [-0.15, 0.025] : restBrow;
+  let asymTo = 0, furrowTo = botMood === 'working' ? 0.15 : restBrow[2], chinTo = 0;
+  liftTo += 0.035 * peek + 0.04 * s.wide;  // brows go up peering over the glasses, and in the air
+  if (face && face.F.brow) {
+    tiltTo = lerp(tiltTo, face.F.brow[0], face.w); liftTo = lerp(liftTo, face.F.brow[1], face.w);
+    asymTo = face.F.brow[2] * face.side * face.w;
+    furrowTo = lerp(furrowTo, face.F.furrow, face.w); chinTo = face.F.chin * face.w;
+  }
+  const browRate = ease(10 * faceRate, dt);
+  s.browTilt += (tiltTo - s.browTilt) * browRate;
+  s.browLift += (liftTo - s.browLift) * browRate;
+  s.browAsym += (asymTo - s.browAsym) * browRate;
+  s.furrow += (furrowTo - s.furrow) * browRate;
+  s.chin += (chinTo - s.chin) * ease(8, dt);
 
   if (!asleep && t > b.nextBlink) {
     b.blinkAt = t;
@@ -839,27 +1134,43 @@ function tick(b, t, dt, focal) {
   const vy = dt > 0 ? (hop - b.prevHop) / dt : 0;
   b.prevHop = hop;
   // The body leans and turns toward where the eyes look, a beat behind them.
-  const leanTo = asleep ? 0 : s.lx * 0.09 + hopLean;
+  let leanTo = asleep ? 0 : s.lx * 0.09 + hopLean;
+  if (face) {
+    // angry trembles; scary shakes its head hard, settling as the roar runs out
+    const decay = face.F === FACES.scary ? Math.max(0, 1 - face.e / 1.3) : 1;
+    leanTo += face.F.shake * face.w * decay * Math.sin(t * face.F.shakeHz);
+    if (face.F === FACES.scary) s.squash -= 0.05 * face.w;  // puffs itself up taller
+    if (face.F.talk) s.squash -= 0.03 * face.w * Math.abs(Math.sin(t * 4.3));  // jabs on each word
+  }
   for (let left = dt; left > 0; left -= 1 / 60) {
     const h = Math.min(left, 1 / 60);
     s.leanV += (-70 * (s.lean - leanTo) - 11 * s.leanV) * h;
     s.lean += s.leanV * h;
   }
   // The nose follows the crouch and lift, and the smile follows the landing.
-  s.nose += (0.055 * s.wide - 0.095 * s.squint + 0.031 * s.joy - 0.018 * peek - s.nose) * ease(17, dt);
-  s.smile += (0.09 * s.joy + 0.035 * Math.abs(s.wink) + 0.023 * peek - s.smile) * ease(13, dt);
+  s.nose += (0.055 * s.wide - 0.095 * s.squint + 0.031 * s.joy - 0.018 * peek + rest[4] - s.nose) * ease(17, dt);
+  s.smile += (0.09 * s.joy + 0.035 * Math.abs(s.wink) + 0.023 * peek + rest[3] - s.smile) * ease(13, dt);
   const allFrom = s.leanAll;
   s.leanAll = s.lean + s.inspect * 0.08;
   const vx = dt > 0 ? (s.leanAll - allFrom) / dt * 0.8 : 0;
   const pitchSpeed = dt > 0 ? (s.ly - previousLookY) * 0.12 / dt : 0;
   const turnOpening = asleep ? 0 : clampN((Math.hypot(vx * 4, pitchSpeed) - 0.1) * 0.32, 0, 0.4);
   s.mouth += (Math.max(0.65 * s.wide, turnOpening) - s.mouth) * ease(15, dt);
+  s.teeth = (s.teeth || 0) + ((face ? (face.F.teeth || 0) * face.w : 0) - (s.teeth || 0)) * ease(18, dt);
+  if (face) {
+    const roar = face.F === FACES.scary ? 0.85 + 0.15 * Math.sin(t * 30) : 1;  // the roar flutters
+    s.smile = lerp(s.smile, face.F.smile, face.w);
+    s.nose = lerp(s.nose, face.F.nose, face.w);
+    const talking = face.F.talk ? face.F.talk * Math.abs(Math.sin(t * 8.6)) : 0;  // syllables
+    s.mouth = lerp(s.mouth, face.F.mouth * roar + talking, face.w);
+  }
   // The body's acceleration drives the GPU hair; the WebGL swing follows its velocity.
   const px = s.leanAll * 1.5 * 2, py = hop * 2.4;  // where the head is, in model units
   const pvx = dt > 0 ? (px - b.ppx) / dt : 0, pvy = dt > 0 ? (py - b.ppy) / dt : 0;
   b.ax = clampN(dt > 0 ? (pvx - b.pvx) / dt : 0, -90, 90) * 0.5;
   b.ay = clampN(dt > 0 ? (pvy - b.pvy) / dt : 0, -90, 90) * 0.5;
   b.ppx = px; b.ppy = py; b.pvx = pvx; b.pvy = pvy;
+  stepChains(b, dt, Math.round(appearance.jewelry.chains));
   const fxTo = clampN(-vx * 0.08, -0.13, 0.13), fyTo = clampN(-vy * 0.08 - s.sleep * 0.02, -0.13, 0.13);
   for (let left = dt; left > 0; left -= 1 / 60) {
     const h = Math.min(left, 1 / 60);
@@ -879,8 +1190,20 @@ function still(b) {  // reduced motion: one pose per mood, no wandering
     lidSlant: mood === 'working' ? -0.15 : 0.22, pupil: 0.40 });
   b.brushOn = false;
   b.ax = b.ay = 0;
+  b.chains = null;  // chains hang at rest
   if (b.previewExpression === 'wink') Object.assign(b.s, { wink: 1, smile: 0.035 });
   if (b.previewExpression === 'examine') Object.assign(b.s, { lx: 0, ly: -0.78, inspect: 0.65, glassesDown: 0.85, nose: -0.018, smile: 0.023 });
+  const F = FACES[b.previewExpression];
+  b.s.teeth = F ? F.teeth || 0 : 0;
+  const restBrow = REST_BROWS[window.companionBotAppearance.forHost(b.host).personality.temper] || REST_BROWS.soft;
+  const browPose = F && F.brow ? F.brow : [restBrow[0], restBrow[1], 0];
+  Object.assign(b.s, { browTilt: browPose[0], browLift: browPose[1], browAsym: browPose[2], furrow: F ? F.furrow || 0 : restBrow[2], chin: F ? F.chin || 0 : 0 });
+  if (F) Object.assign(b.s, { lidTop: F.lid, lidSlant: F.slant, pupil: F.pupil, smile: F.smile, nose: F.nose, mouth: F.mouth, glassesDown: F.shades,
+    lx: F.gaze ? F.gaze[0] : 0, ly: F.gaze ? F.gaze[1] : 0.22 });
+  // reduced motion still shows its resting temper
+  const rest = TEMPERS[window.companionBotAppearance.forHost(b.host).personality.temper];
+  if (!F && !zz && mood !== 'working' && rest && !b.previewExpression)
+    Object.assign(b.s, { lidTop: rest[0], lidSlant: rest[1], pupil: rest[2], smile: rest[3], nose: rest[4] });
 }
 const shown = (b) => b.host.getClientRects().length > 0;  // false inside a hidden view
 
@@ -1009,6 +1332,8 @@ function configureAppearance(values) {
     recolor(C[name].value, PALETTE[name], 0xfa4900, appearance.fur.color);
   for (const name of ['irisIn', 'irisOut', 'ring'])
     recolor(C[name].value, PALETTE[name], 0x995a2f, appearance.face.eyeColor);
+  for (const name of ['beardRoot', 'beardTip'])
+    recolor(C[name].value, PALETTE[name], 0x884423, appearance.fur.hairColor);
   U.furLen.value = appearance.fur.length;
   U.beardStrength.value = appearance.fur.beard * ({ none: 0, stubble: 0.35, full: 1, goatee: 1 }[appearance.fur.beardStyle]);
   U.goatee.value = appearance.fur.beardStyle === 'goatee' ? 1 : 0;
@@ -1032,11 +1357,27 @@ function configureAppearance(values) {
   }
   recolor(U.frameDark.value, 0x391c15, 0xa56232, appearance.glasses.frameColor);
   U.frameLight.value.set(appearance.glasses.frameColor);
-  U.frameFinish.value = { solid: 0, tortoise: 1, crystal: 2, paradox: 3 }[appearance.glasses.finish];
-  const crystal = appearance.glasses.finish === 'crystal';
-  U.transmission.value = appearance.glasses.finish === 'solid' ? 0 : appearance.glasses.transparency + (crystal ? .4 : 0);
-  tortoiseFront.roughness = clampN(0.49 - appearance.glasses.shine * 0.12 - (crystal ? .1 : 0), 0.18, 0.6);
+  U.frameFinish.value = { solid: 0, tortoise: 1, crystal: 2, paradox: 3, metal: 4 }[appearance.glasses.finish];
+  const crystal = appearance.glasses.finish === 'crystal', metal = appearance.glasses.finish === 'metal';
+  U.transmission.value = appearance.glasses.finish === 'solid' || metal ? 0 : appearance.glasses.transparency + (crystal ? .4 : 0);
+  tortoiseFront.metalness = tortoiseArm.metalness = metal ? 1 : 0;
+  tortoiseFront.roughness = metal ? clampN(0.34 - appearance.glasses.shine * 0.1, 0.12, 0.4)
+    : clampN(0.49 - appearance.glasses.shine * 0.12 - (crystal ? .1 : 0), 0.18, 0.6);
+  tortoiseArm.roughness = metal ? tortoiseFront.roughness : 0.88;
   tortoiseFront.clearcoat = appearance.glasses.shine * 0.18 + (crystal ? .12 : 0);
+
+  U.lensTint.value = appearance.glasses.tint;
+  U.lensColor.value.set(appearance.glasses.lensColor);
+  lenses.visible = eyewear.visible && appearance.glasses.tint > 0.01;
+  if (lenses.visible) lenses.geometry = lensGeometry(appearance.glasses.style);
+
+  U.mohawk.value = appearance.fur.hairStyle === 'mohawk' ? 1 : 0;
+  U.brows.value = appearance.face.eyebrows ? 1 : 0;
+  U.chainColor.value.set(appearance.jewelry.chainColor);
+  const chainCount = Math.round(appearance.jewelry.chains);  // a config default may not be a whole number
+  U.neckline.value = chainCount > 0 ? 1 : 0;
+  const furDepth = appearance.fur.hairStyle === 'mohawk' ? 0.1 : Math.round((appearance.fur.length * 0.7 + 0.02) * 100) / 100;
+  showChains(chainCount, furDepth);
 }
 function refreshAppearance(previewOnly = false) {
   for (const b of live) if (shown(b) && (!previewOnly || b.host.hasAttribute('preview'))) draw(b, 0);
@@ -1062,13 +1403,21 @@ window.companionBot = {
   },
   express(host, expression) {
     const b = host?.bot;
-    if (!b || !['wink', 'examine', 'neutral'].includes(expression)) return false;
+    if (!b || !['wink', 'examine', 'neutral', ...Object.keys(FACES)].includes(expression)) return false;
     b.previewExpression = reduce.matches && expression !== 'neutral' ? expression : null;
     if (reduce.matches || expression === 'neutral') {
       b.fidget = null;
+      b.face = null;
       still(b);
+    } else if (FACES[expression]) {
+      const t = performance.now() / 1000;
+      b.face = { kind: expression, at: t, side: Math.random() < 0.5 ? -1 : 1 };
+      b.fidget = null; b.hopAt = -1; b.poke = false;
+      b.nextFidget = t + rand(9, 16);
+      tick(b, t, 1 / 60, false);
     } else {
       const t = performance.now() / 1000;
+      b.face = null;
       // Paint a recognizable first pose on tap, even when the phone's next frame is delayed.
       b.fidget = expression; b.fidgetAt = t - (expression === 'wink' ? 0.09 : 0.3); b.hopAt = -1; b.poke = false;
       b.blinkAt = -9;

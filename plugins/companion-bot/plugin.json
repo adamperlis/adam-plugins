@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "companion-bot",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A furry 3D companion for your web app: a drop-in <companion-bot> element with moods and expressions, plus a customizer users can restyle it with.",
   "author": {
     "name": "Adam Perlis",
@@ -16,7 +16,7 @@
       "interface": {
         "displayName": "Companion Bot",
         "shortDescription": "A furry 3D companion and customizer for your web app.",
-        "longDescription": "A drop-in <companion-bot> web component: a plush 3D bot that blinks, follows the pointer, hops when clicked and mirrors your app's mood, with a customizer for fur, face, eyes, nose and 14 glasses frames. Three.js on WebGPU with WebGL fallbacks; plain ES modules, no build step.",
+        "longDescription": "A drop-in <companion-bot> web component: a plush 3D bot that blinks, follows the pointer, hops when clicked and mirrors your app's mood, with a customizer for fur, hair, brows, face, eyes, nose, 14 glasses frames, tinted lenses, chains and a grumpy temper. Three.js on WebGPU with WebGL fallbacks; plain ES modules, no build step.",
         "developerName": "Adam Perlis",
         "category": "Design",
         "capabilities": ["Generate"]
