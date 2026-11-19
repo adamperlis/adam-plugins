@@ -86,7 +86,7 @@ const U = {
   beardStrength: uniform(1), goatee: uniform(0), jaw: uniform(0), crown: uniform(1), noseWidth: uniform(1), noseLength: uniform(1), noseOffset: uniform(0.2),
   frameDark: uniform(new THREE.Color(0x391c15)), frameLight: uniform(new THREE.Color(0xa56232)), transmission: uniform(1),
   frameFinish: uniform(1),
-  mohawk: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
+  mohawk: uniform(0), neckline: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
   chainColor: uniform(new THREE.Color(0xd8aa3a)),
 };
 const NOSE_BASE_DEPTH = 0.07;
@@ -126,7 +126,9 @@ const beardMask = Fn(([n]) => {
   return smoothstep(-0.28, 0.18, n.z)
     .mul(float(1).sub(smoothstep(cheekLine.sub(0.085), cheekLine.add(0.039), n.y)))
     .mul(taper).mul(U.beardStrength)
-    .mul(mix(1, float(1).sub(smoothstep(0.25, 0.45, side)), U.goatee));
+    .mul(mix(1, float(1).sub(smoothstep(0.25, 0.45, side)), U.goatee))
+    // With chains on, the beard stops at a neckline so they hang on the chest below it.
+    .mul(mix(1, smoothstep(-0.9, -0.8, n.y), U.neckline));
 });
 const upperLipMask = Fn(([n]) => {
   const x = n.x.abs();
@@ -687,55 +689,111 @@ squashG.add(chains);
 function surfaceRadius(y) {  // matches surface(): the head narrows toward the chin
   return Math.sqrt(Math.max(0.02, 1 - y * y)) * (0.975 - y * 0.075 - y * y * 0.24);
 }
-// Built once and then shown or hidden: a customizer preview and the applied bot can wear different
-// counts, and draw() reconfigures between them every frame.
-const strands = [], pendants = new Map();
-function strand(i) {
-  if (strands[i]) return strands[i];
-  // The top strand clears the mouth at the front; each lower one hangs a little further.
-  const y0 = -0.3 - i * 0.05, droop = 0.21 + i * 0.045, thickness = 0.034 - i * 0.002;
-  const points = [];
-  for (let k = 0; k < 72; k++) {
-    const a = k / 72 * Math.PI * 2, front = (1 + Math.cos(a)) / 2;
-    const y = y0 - droop * front ** 1.6;
-    const r = surfaceRadius(y) + 0.2 + 0.11 * front;  // over the fur, and over the beard in front
-    points.push(new THREE.Vector3(r * Math.sin(a), y, r * Math.cos(a)));
+// Each strand is a group that swings on its own spring (see stepChains); the pendant swings again
+// on its ring. A set is built per chain count and fur depth and kept: a customizer preview and the
+// applied bot can wear different chains or fur, and draw() reconfigures between them every frame.
+let strands = [], pendantPivot = null;
+const chainSets = new Map();  // `${count}:${furDepth}` → { group, strands, pendantPivot }, newest last
+// `furDepth`: how far the chains sit off the skin (short with clipped hair, further over full fur).
+function buildChainSet(count, furDepth) {
+  const group = new THREE.Group(), set = { group, strands: [], pendantPivot: null };
+  let top = null;
+  for (let i = 0; i < count; i++) {
+    // A neck ring under the face: close round the back of the head, then swinging down and forward
+    // under the chin, clear of the beard's hanging tips. Each strand hangs a little lower.
+    const y0 = -0.6 - i * 0.04, droop = 0.32 + i * 0.07, thickness = 0.034 - i * 0.002;
+    const points = [];
+    for (let k = 0; k < 72; k++) {
+      const a = k / 72 * Math.PI * 2, front = (1 + Math.cos(a)) / 2;
+      const y = y0 - droop * front ** 1.6;
+      const r = surfaceRadius(y) + furDepth + 0.52 * front ** 2;
+      points.push(new THREE.Vector3(r * Math.sin(a), y, r * Math.cos(a)));
+    }
+    const curve = new THREE.CatmullRomCurve3(points, true, 'centripetal');
+    const geometry = new THREE.TubeGeometry(curve, 260, thickness, 8, true);
+    const uvs = geometry.attributes.uv, twists = curve.getLength() / (thickness * 1.7);
+    for (let j = 0; j < uvs.count; j++) uvs.setX(j, uvs.getX(j) * twists);
+    const strand = new THREE.Group();
+    strand.add(new THREE.Mesh(geometry, chainMat));
+    group.add(strand);
+    set.strands.push(strand);
+    if (i === 0) top = curve.getPoint(0);
   }
-  const curve = new THREE.CatmullRomCurve3(points, true, 'centripetal');
-  const geometry = new THREE.TubeGeometry(curve, 260, thickness, 8, true);
-  const uvs = geometry.attributes.uv, twists = curve.getLength() / (thickness * 1.7);
-  for (let j = 0; j < uvs.count; j++) uvs.setX(j, uvs.getX(j) * twists);
-  const mesh = new THREE.Mesh(geometry, chainMat);
-  mesh.userData.front = curve.getPoint(0);
-  chains.add(mesh);
-  return strands[i] = mesh;
-}
-const plateGeometry = (() => {  // a soft-cornered plate
-  const plate = new THREE.Shape(), w = 0.11, h = 0.14, c = 0.03;
+  if (!top) return set;
+  // A pendant with a soft-cornered plate, hung from the top strand by a ring it pivots on, in
+  // front of the strands below (hung from the lowest, it would reach the floor).
+  const plate = new THREE.Shape(), w = 0.08, h = 0.1, c = 0.025;
   plate.moveTo(-w + c, -h); plate.lineTo(w - c, -h); plate.quadraticCurveTo(w, -h, w, -h + c);
   plate.lineTo(w, h - c); plate.quadraticCurveTo(w, h, w - c, h); plate.lineTo(-w + c, h);
   plate.quadraticCurveTo(-w, h, -w, h - c); plate.lineTo(-w, -h + c); plate.quadraticCurveTo(-w, -h, -w + c, -h);
-  return new THREE.ExtrudeGeometry(plate, { depth: 0.03, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 2 });
-})();
-const ringGeometry = new THREE.TorusGeometry(0.035, 0.011, 8, 20);
-function pendant(count) {  // hung from the lowest strand by a ring
-  if (pendants.has(count)) return pendants.get(count);
-  const lowest = strand(count - 1).userData.front, group = new THREE.Group();
-  const plate = new THREE.Mesh(plateGeometry, chainMat);
-  plate.position.set(0, lowest.y - 0.14 - 0.05, lowest.z + 0.01);
-  plate.rotation.x = -0.35;  // lies against the curve of the chin
-  const ring = new THREE.Mesh(ringGeometry, chainMat);
-  ring.position.set(0, lowest.y - 0.035, lowest.z + 0.02);
-  group.add(plate, ring);
-  chains.add(group);
-  pendants.set(count, group);
-  return group;
+  const pendant = new THREE.Mesh(new THREE.ExtrudeGeometry(plate, { depth: 0.03, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 2 }), chainMat);
+  pendant.position.set(0, -h - 0.035, -0.01);
+  pendant.rotation.x = -0.3;  // rests against the curve of the chest
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.01, 8, 20), chainMat);
+  ring.position.set(0, -0.012, 0.01);
+  set.pendantPivot = new THREE.Group();  // at the point where it hangs from the strand
+  set.pendantPivot.position.set(0, top.y - 0.02, top.z + 0.05);
+  set.pendantPivot.add(pendant, ring);
+  set.strands[0].add(set.pendantPivot);
+  return set;
 }
-function showChains(count) {
-  for (let i = 0; i < count; i++) strand(i);
-  if (count > 0) pendant(count);
-  strands.forEach((mesh, i) => { mesh.visible = i < count; });
-  for (const [n, group] of pendants) group.visible = n === count;
+function showChains(count, furDepth) {
+  if (count === 0) {
+    for (const set of chainSets.values()) set.group.visible = false;
+    strands = []; pendantPivot = null;
+    return;
+  }
+  const key = `${count}:${furDepth}`;
+  let set = chainSets.get(key);
+  if (set) chainSets.delete(key);  // re-added below as the newest
+  else {
+    set = buildChainSet(count, furDepth);
+    chains.add(set.group);
+    if (chainSets.size >= 4) {  // keep a few: dragging the fur length would otherwise pile them up
+      const [oldest, old] = chainSets.entries().next().value;
+      old.group.traverse(child => child.geometry?.dispose());
+      chains.remove(old.group);
+      chainSets.delete(oldest);
+    }
+  }
+  chainSets.set(key, set);
+  for (const other of chainSets.values()) other.group.visible = other === set;
+  ({ strands, pendantPivot } = set);
+}
+
+// Chain swing, per bot: one damped spring per strand (sideways tilt, fore-aft tilt, drop) driven by
+// the body's acceleration, and a looser one for the pendant. Lower strands are heavier and looser.
+// Sized from the bot's own look, not the set drawn last: bots on a page can wear different counts.
+function stepChains(b, dt, count) {
+  if (!count) { b.chains = null; return; }
+  if (!b.chains || b.chains.length !== count + 1)
+    b.chains = Array.from({ length: count + 1 }, () => ({ z: 0, vz: 0, x: 0, vx: 0, y: 0, vy: 0 }));
+  for (let left = dt; left > 0; left -= 1 / 60) {
+    const h = Math.min(left, 1 / 60);
+    b.chains.forEach((c, i) => {
+      const pendant = i === count;
+      const k = pendant ? 24 : 52 - i * 8, damp = pendant ? 2.4 : 3.6 - i * 0.3;
+      // Accelerating one way leaves the chain behind; going up leaves it low, landing throws it up.
+      c.vz += (-k * c.z - damp * c.vz + b.ax * (pendant ? 0.45 : 0.28)) * h;
+      c.vx += (-k * c.x - damp * c.vx + b.ay * (pendant ? 0.35 : 0.1)) * h;
+      c.vy += (-k * c.y - damp * c.vy - b.ay * 0.18) * h;
+      c.z = clampN(c.z + c.vz * h, -0.4, 0.4);
+      c.x = clampN(c.x + c.vx * h, -0.45, 0.45);
+      c.y = clampN(c.y + c.vy * h, -0.16, 0.12);
+    });
+  }
+}
+function poseChains(b) {
+  const state = b.chains && b.chains.length === strands.length + 1 ? b.chains : null;
+  strands.forEach((strand, i) => {
+    const c = state ? state[i] : null;
+    strand.rotation.set(c ? c.x : 0, 0, c ? c.z : 0);
+    strand.position.y = c ? c.y : 0;
+  });
+  if (pendantPivot) {
+    const p = state ? state[strands.length] : null;
+    pendantPivot.rotation.set(p ? p.x : 0, 0, p ? p.z : 0);
+  }
 }
 
 // A soft contact shadow on the floor, smaller and fainter while it's in the air.
@@ -791,6 +849,7 @@ function pose(b) {
     e.slant.rotation.z = -e.side * s.lidSlant * 0.55 * (1 - Math.max(shut, wink));
   }
   U.pupil.value = s.pupil;
+  poseChains(b);
   shadow.scale.setScalar(1 - s.hop * 0.9);
   U.shadow.value = Math.max(0, 0.34 * (1 - s.hop * 2.4)) * (isDark() ? 0.8 : 1);
   rig.updateMatrixWorld(true);
@@ -975,6 +1034,7 @@ function tick(b, t, dt, focal) {
   b.ax = clampN(dt > 0 ? (pvx - b.pvx) / dt : 0, -90, 90) * 0.5;
   b.ay = clampN(dt > 0 ? (pvy - b.pvy) / dt : 0, -90, 90) * 0.5;
   b.ppx = px; b.ppy = py; b.pvx = pvx; b.pvy = pvy;
+  stepChains(b, dt, Math.round(appearance.jewelry.chains));
   const fxTo = clampN(-vx * 0.08, -0.13, 0.13), fyTo = clampN(-vy * 0.08 - s.sleep * 0.02, -0.13, 0.13);
   for (let left = dt; left > 0; left -= 1 / 60) {
     const h = Math.min(left, 1 / 60);
@@ -994,6 +1054,7 @@ function still(b) {  // reduced motion: one pose per mood, no wandering
     lidSlant: mood === 'working' ? -0.15 : 0.22, pupil: 0.40 });
   b.brushOn = false;
   b.ax = b.ay = 0;
+  b.chains = null;  // chains hang at rest
   if (b.previewExpression === 'wink') Object.assign(b.s, { wink: 1, smile: 0.035 });
   if (b.previewExpression === 'examine') Object.assign(b.s, { lx: 0, ly: -0.78, inspect: 0.65, glassesDown: 0.85, nose: -0.018, smile: 0.023 });
 }
@@ -1165,7 +1226,10 @@ function configureAppearance(values) {
 
   U.mohawk.value = appearance.fur.hairStyle === 'mohawk' ? 1 : 0;
   U.chainColor.value.set(appearance.jewelry.chainColor);
-  showChains(Math.round(appearance.jewelry.chains));  // a config default may not be a whole number
+  const chainCount = Math.round(appearance.jewelry.chains);  // a config default may not be a whole number
+  U.neckline.value = chainCount > 0 ? 1 : 0;
+  const furDepth = appearance.fur.hairStyle === 'mohawk' ? 0.1 : Math.round((appearance.fur.length * 0.7 + 0.02) * 100) / 100;
+  showChains(chainCount, furDepth);
 }
 function refreshAppearance(previewOnly = false) {
   for (const b of live) if (shown(b) && (!previewOnly || b.host.hasAttribute('preview'))) draw(b, 0);

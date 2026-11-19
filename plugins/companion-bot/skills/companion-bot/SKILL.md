@@ -125,7 +125,7 @@ Every one of these defaults to off, so a look that doesn't set them is unchanged
 | `glasses.finish` | adds `'metal'` | Polished metal frames and arms in `frameColor` (try `#d8aa3a` for gold). `shine` sets how glossy; `transparency` is ignored. |
 | `glasses.tint` | `0`–`0.9`, default `0` | Tinted lenses: `0` is clear (no lens is drawn), about `0.3` is a light tint, `0.6` sunglasses, `0.9` nearly black. Darker toward the top, like a gradient lens. Works with every frame. |
 | `glasses.lensColor` | color, default `#5a3a1e` | The lens's color. Dark colors read as sunglasses; light ones (yellow, rose) as colored glass. |
-| `jewelry.chains` | `0`–`6`, default `0` | Rope chains stacked around the lower head, with a pendant on the lowest. They hang from the body, so they stay put when the head turns. |
+| `jewelry.chains` | `0`–`6`, default `0` | Rope chains hung round the neck under the face, each a little lower, with a pendant on the top one. They hang from the body, so they stay put when the head turns, and swing on springs when it hops or leans. While chains are on, the beard stops at a neckline above them. |
 | `jewelry.chainColor` | color, default `#d8aa3a` | Gold by default; `#c0c0c8` reads as silver. |
 
 ```js
