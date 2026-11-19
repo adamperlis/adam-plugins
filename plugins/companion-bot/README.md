@@ -1,6 +1,6 @@
 # Companion Bot
 
-A furry 3D companion for your web app. Drop in one `<companion-bot>` element and you get a plush bot that blinks, glances at the pointer, fidgets, hops when clicked, and shows your app's mood: busy while it works, asleep while it's paused. Your users can restyle it in a customizer with presets, fur, hair, face, nose, eyes, 14 glasses frames (metal finishes and tinted lenses too) and gold chains.
+A furry 3D companion for your web app. Drop in one `<companion-bot>` element and you get a plush bot that blinks, glances at the pointer, fidgets, hops when clicked, and shows your app's mood: busy while it works, asleep while it's paused. Your users can restyle it in a customizer with presets, fur, hair, face, nose, eyes, 14 glasses frames (metal finishes and tinted lenses too), gold chains and a grumpy streak.
 
 **[Try the live demo](https://adamperlis.github.io/adam-plugins/plugins/companion-bot/examples/companion-bot-demo.html)**: switch moods, poke the bot, flip light and dark, and build your own in the customizer.
 

@@ -81,6 +81,7 @@ Mood is page-wide: every bot shares it. Calling it before the bot has loaded is 
 Also on `window.companionBot` once `companionbotready` fires on `window`:
 
 - `express(element, 'wink' | 'examine' | 'neutral')`: a wink, or peering down over its glasses.
+- `express(element, 'angry' | 'scary' | 'sideEye' | 'disapprove' | 'lecture')` (3D only): a face held for two or three seconds, then eased out. `angry` snarls through gritted teeth, `scary` roars with a head shake, `sideEye` cuts its eyes to one side, `disapprove` shakes its head slowly, `lecture` tells you off with its mouth working. Each pulls its glasses down its nose to glare over them. The flat fallback returns `false` for these.
 - `setView(element, view, { animate })`: turns on a spring (3D only).
 - `renderer`: `'webgpu'`, `'webgl'`, `'flat'` or `'still'`.
 
@@ -114,7 +115,7 @@ Set this before the script tag, or before the module first loads:
 
 `defaults` is partial and is the look a new visitor sees, and what Reset returns to. The keys are in `schema` in `appearance.js`; each value is checked and clamped there, so a bad value falls back instead of breaking the bot. To change the built-in presets, edit `presets` in `appearance.js`. Each needs a 384 × 384 PNG in `presets/`; the simplest way is to dial the look in the customizer, save it, and screenshot the preview.
 
-### Hair, sunglasses and chains
+### Hair, sunglasses, chains and temper
 
 Every one of these defaults to off, so a look that doesn't set them is unchanged.
 
@@ -127,6 +128,7 @@ Every one of these defaults to off, so a look that doesn't set them is unchanged
 | `glasses.lensColor` | color, default `#5a3a1e` | The lens's color. Dark colors read as sunglasses; light ones (yellow, rose) as colored glass. |
 | `jewelry.chains` | `0`–`6`, default `0` | Rope chains hung round the neck under the face, each a little lower, with a pendant on the top one. They hang from the body, so they stay put when the head turns, and swing on springs when it hops or leans. While chains are on, the beard stops at a neckline above them. |
 | `jewelry.chainColor` | color, default `#d8aa3a` | Gold by default; `#c0c0c8` reads as silver. |
+| `personality.temper` | `'soft'` (default), `'grumpy'` | Its resting face. Grumpy has lowered, slanted lids and a slight frown, and works the faces above (`angry`, `lecture`, `sideEye`, `scary`, `disapprove`) into its idle fidgets between readings and winks. Reduced motion holds the grumpy resting face. 3D only. |
 
 ```js
 window.companionBotConfig = { defaults: {
@@ -138,7 +140,7 @@ window.companionBotConfig = { defaults: {
 
 The customizer shows them with everything else, chains under **Jewelry**. Chains are an accessory, like `personality`: picking a built-in preset keeps whatever chains the bot wears, and Reset returns them to your `defaults`. A saved preset remembers them.
 
-The flat fallback (`bot2d.js`) draws tinted lenses and draws metal as a solid frame. It has no mohawk or chains: its fur is a single front-view shader, and those would need geometry it doesn't have. The look still keeps them, so they appear wherever the 3D bot runs.
+The flat fallback (`bot2d.js`) draws tinted lenses and draws metal as a solid frame. It has no mohawk, chains, temper or timed faces: its fur is a single front-view shader, and those would need geometry it doesn't have. The look still keeps them, so they appear wherever the 3D bot runs.
 
 Light and dark: the bot's lighting follows `<html data-theme="dark|light">`, then `class="dark|light"` on `<html>` (Tailwind, shadcn), then the system setting, and switches live.
 
@@ -163,7 +165,7 @@ If the same user can change the look on two devices, decide what happens when on
 
 - `companion-bot.js` imports `appearance.js`, then tries `bot3d.js`. If that throws (no WebGPU or WebGL 2, or a module failed to load), it imports `bot2d.js`.
 - `bot3d.js`: one shared Three.js renderer poses the model for each `<companion-bot>` in turn and copies the frame onto that bot's own canvas. The fur is shell fur, up to 44 layers. On WebGPU, each hair root is a spring simulated in a compute pass, so hair lags behind hops and turns and parts under the pointer. On WebGL 2 the whole pelt swings on one spring. A bot inside a hidden view (`display: none`) isn't drawn.
-- `bot2d.js`: the same character in a single WebGL 1 fragment shader, front view only, without the mohawk and chains.
+- `bot2d.js`: the same character in a single WebGL 1 fragment shader, front view only, without the mohawk, chains, temper or timed faces.
 - Tinted lenses multiply what's behind them rather than painting over it. The 3D scene is HDR until tone mapping, and the eye whites are bright enough to shine through an ordinary transparent pane.
 - `prefers-reduced-motion` is honored: bots hold a still pose, and expressions show a still pose instead of animating.
 - Events on `window`: `companionbotready`, `companionbotappearancechange`, `companionbotpreviewchange`, `companionbotpresetschange`, `companionbotthemechange`.

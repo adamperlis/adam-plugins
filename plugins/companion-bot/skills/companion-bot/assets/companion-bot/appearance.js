@@ -89,7 +89,9 @@ const schema = {
     // tinted lenses: 0 is clear (no lens drawn), 0.9 is nearly opaque sunglasses
     tint: [0, 0, 0.9, 0.05], lensColor: '#5a3a1e' },
   jewelry: { chains: [0, 0, 6, 1], chainColor: '#d8aa3a' },
-  personality: { idleGestures: true, blinkRate: [1, 0.5, 2, 0.1], mouthMovement: [1, 0, 1.5, 0.1] },
+  personality: { idleGestures: true, blinkRate: [1, 0.5, 2, 0.1], mouthMovement: [1, 0, 1.5, 0.1],
+    // its resting face: 'soft' (a little pleading) or 'grumpy' (lowered, slanted lids and a slight frown)
+    temper: { type: 'select', default: 'soft', options: ['soft', 'grumpy'] } },
 };
 const schemaDefaults = Object.fromEntries(Object.entries(schema).map(([group, controls]) => [group,
   Object.fromEntries(Object.entries(controls).map(([name, spec]) => [name,

@@ -9,6 +9,7 @@
 //
 //   window.companionBot.mood('idle' | 'working' | 'sleeping')    every bot on the page
 //   window.companionBot.express(element, 'wink' | 'examine' | 'neutral')
+//   window.companionBot.express(element, 'angry' | 'scary' | 'sideEye' | 'disapprove' | 'lecture')   3D only
 //   window.companionBot.setView(element, 'front' | 'threeQuarter' | 'profile')   3D only
 //   window.companionBot.renderer   'webgpu' | 'webgl' | 'flat' | 'still' once `companionbotready` fires
 import './appearance.js';

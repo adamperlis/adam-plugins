@@ -86,7 +86,7 @@ const U = {
   beardStrength: uniform(1), goatee: uniform(0), jaw: uniform(0), crown: uniform(1), noseWidth: uniform(1), noseLength: uniform(1), noseOffset: uniform(0.2),
   frameDark: uniform(new THREE.Color(0x391c15)), frameLight: uniform(new THREE.Color(0xa56232)), transmission: uniform(1),
   frameFinish: uniform(1),
-  mohawk: uniform(0), neckline: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
+  mohawk: uniform(0), neckline: uniform(0), teeth: uniform(0), lensTint: uniform(0), lensColor: uniform(new THREE.Color(0x5a3a1e)),
   chainColor: uniform(new THREE.Color(0xd8aa3a)),
 };
 const NOSE_BASE_DEPTH = 0.07;
@@ -107,7 +107,8 @@ const noseLight = Fn(([n, nose]) => {
 const mouthOpenness = smoothstep(0.035, 0.25, U.face.z);
 const mouthShape = Fn(([p]) => {
   const x = p.x.add(0.01);
-  const halfWidth = mix(0.175, 0.218, U.face.z).add(U.face.y.mul(0.15));
+  // Baring teeth pulls the lips back: a wider mouth.
+  const halfWidth = mix(0.175, 0.218, U.face.z).add(U.face.y.mul(0.15)).add(U.teeth.mul(0.07));
   const side = smoothstep(-0.16, 0.15, x);
   const lift = mix(0.012, 0.025, side).add(U.face.y.mul(mix(0.47, 0.84, side)));
   const corners = smoothstep(0.028, 0.19, x.abs()).mul(lift);
@@ -375,7 +376,14 @@ mouthMat.colorNode = Fn(() => {
   const lip = smoothstep(0.65, 1, radius).mul(lower);
   const closed = mix(color(0x743923), color(0xa15833), lower);
   const open = mix(mix(inner, color(0x975243), tongue.mul(U.face.z).mul(0.48)), color(0x9f4927), lip.mul(0.68));
-  return mix(closed, open, mouthOpenness);
+  // Teeth: an upper row under the top lip and a lower row over the bottom one, split into teeth
+  // by dark gaps. With the mouth only a little open the rows meet: gritted teeth.
+  const insideLips = float(1).sub(smoothstep(0.78, 0.95, radius));
+  const rows = max(smoothstep(-0.05, 0.12, p.y), float(1).sub(smoothstep(-0.62, -0.45, p.y)));
+  const gaps = smoothstep(0.03, 0.09, abs(fract(p.x.mul(3.6).add(0.5)).sub(0.5)));
+  const enamel = mix(color(0xf3ecdc), color(0xb9ad97), smoothstep(0.25, 1, abs(p.y)));  // bright at the bite, darker at the gums
+  const teeth = insideLips.mul(rows).mul(gaps).mul(U.teeth).mul(mouthOpenness);
+  return mix(mix(closed, open, mouthOpenness), enamel, teeth);
 })();
 mouthMat.positionNode = Fn(() => {
   const p = positionLocal;
@@ -878,6 +886,7 @@ function draw(b, dt) {
   U.motion.value = reduce.matches ? 0 : 1;
   U.dark.value = isDark() ? 1 : 0;
   U.face.value.set(b.s.nose, b.s.smile, b.s.mouth * appearance.personality.mouthMovement);
+  U.teeth.value = b.s.teeth || 0;
   U.density.value = clampN(N * 0.2, 14, 52);  // hair about a pixel and a half wide at any size
   U.shells.value = N < 100 ? 24 : N < 170 ? 34 : SHELLS;
   fur.count = U.shells.value;
@@ -942,12 +951,45 @@ function fidgetEase(t, start, end) {
   return u * u * (3 - 2 * u);
 }
 
+// Timed faces (express(host, 'angry' | 'scary')): where the lids, pupils, mouth and nose go, how
+// long it's held, and how hard the head shakes. Lid slant below 0 slopes the lids into a V (a brow).
+// `gaze` is where it looks ([x, y], x mirrored to a random side); without one it glares at you.
+// `shades`: how far it pulls its glasses down the nose to glare over them (0 to 1), so the brow
+// shows past the frame's top bar.
+const FACES = {
+  // angry: the snarl. Eyes squeezed to slits under a crushed brow, nose scrunched, gritted teeth
+  // in a wide grimace (`teeth` 0 to 1 shows them).
+  angry: { duration: 2.6, lid: 0.12, slant: -1.35, pupil: 0.26, smile: -0.08, nose: -0.13, mouth: 0.5, teeth: 1, shake: 0.006, shakeHz: 38, shades: 0.75 },
+  // scary: a roar baring both rows, under a hard scowl (wide-open lids would read as surprise), pupils pinned
+  scary: { duration: 1.9, lid: 0.6, slant: -1.3, pupil: 0.14, smile: -0.06, nose: -0.1, mouth: 1.1, teeth: 1, shake: 0.03, shakeHz: 26, shades: 0.85 },
+  // skeptical: narrowed eyes cut hard to one side, mouth flat
+  sideEye: { duration: 2.2, lid: 0.4, slant: -0.3, pupil: 0.32, smile: -0.02, nose: -0.03, mouth: 0, shake: 0, shakeHz: 0, gaze: [0.95, 0.12], shades: 0.35 },
+  // lecture: telling you off. A hard stare at you, mouth working as it talks (`talk`), and the head
+  // jabbing forward on the emphasis.
+  lecture: { duration: 2.8, lid: 0.45, slant: -0.95, pupil: 0.3, smile: -0.03, nose: -0.06, mouth: 0.12, talk: 0.3, shake: 0, shakeHz: 0, shades: 0.5 },
+  // disapproving: a slow head shake with a frown, eyes down and heavy-lidded
+  disapprove: { duration: 2.4, lid: 0.3, slant: -0.6, pupil: 0.34, smile: -0.07, nose: -0.05, mouth: 0.05, shake: 0.06, shakeHz: 7, gaze: [0, -0.1], shades: 0.55 },
+};
+// Resting faces (personality.temper): [lid, slant, pupil, smile, nose].
+const TEMPERS = { soft: [0.72, 0.22, 0.40, 0, 0], grumpy: [0.42, -0.8, 0.34, -0.04, -0.03] };
+// What a bot does now and then while idle, in turn. A grumpy one works the tough faces in.
+const FIDGETS = { soft: ['examine', 'wink'], grumpy: ['examine', 'angry', 'lecture', 'wink', 'sideEye', 'scary', 'disapprove'] };
+function activeFace(b, t) {
+  if (!b.face) return null;
+  const F = FACES[b.face.kind], e = t - b.face.at;
+  if (e > F.duration) { b.face = null; return null; }
+  return { F, e, side: b.face.side, w: Math.min(1, e / 0.12) * Math.min(1, (F.duration - e) / 0.35) };  // quick in, eased out
+}
+
 function tick(b, t, dt, focal) {
   const appearance = window.companionBotAppearance.forHost(b.host);
   const botMood = b.host.hasAttribute('preview') ? 'idle' : mood;
   const s = b.s, asleep = botMood === 'sleeping';
+  const face = asleep ? null : activeFace(b, t);
+  const rest = TEMPERS[appearance.personality.temper] || TEMPERS.soft;
   s.sleep += ((asleep ? 1 : 0) - s.sleep) * ease(4, dt);
   if (asleep) { s.tx = 0; s.ty = -0.4; }
+  else if (face) [s.tx, s.ty] = face.F.gaze ? [face.F.gaze[0] * face.side, face.F.gaze[1]] : [0, 0.22];  // default: glares at you
   else if (t > b.nextLook && t > b.attnUntil) {
     const glance = Math.random() < 0.3;
     if (botMood === 'working') [s.tx, s.ty] = glance ? [rand(-1, 1), rand(-0.2, 0.4)] : [rand(-0.3, 0.3), -0.45];
@@ -956,12 +998,21 @@ function tick(b, t, dt, focal) {
     b.nextLook = t + rand(1.2, 3.6);
   }
   // Only the main visible mascot fidgets. The gaze leads, then the head and glasses follow.
-  if (appearance.personality.idleGestures && botMood === 'idle' && focal && b.hopAt < 0 && t - b.joyAt > 0.3 && t > b.nextFidget && t - b.blinkAt > 0.16) {
-    b.fidget = b.fidget === 'examine' ? 'wink' : 'examine';
-    b.fidgetAt = t;
+  if (appearance.personality.idleGestures && botMood === 'idle' && !face && focal && b.hopAt < 0 && t - b.joyAt > 0.3 && t > b.nextFidget && t - b.blinkAt > 0.16) {
+    const turns = FIDGETS[appearance.personality.temper] || FIDGETS.soft;
+    b.fidgetTurn = ((b.fidgetTurn ?? -1) + 1) % turns.length;
+    const next = turns[b.fidgetTurn];
     b.fidgetSide = Math.random() < 0.5 ? -1 : 1;
     b.nextFidget = t + rand(9, 16);
-    b.nextBlink = Math.max(b.nextBlink, t + (b.fidget === 'wink' ? 0.36 : 1.55));
+    if (FACES[next]) {
+      b.face = { kind: next, at: t, side: b.fidgetSide };
+      b.fidget = null;
+      b.nextBlink = Math.max(b.nextBlink, t + 0.8);
+    } else {
+      b.fidget = next;
+      b.fidgetAt = t;
+      b.nextBlink = Math.max(b.nextBlink, t + (b.fidget === 'wink' ? 0.36 : 1.55));
+    }
   }
   const fidgetTime = botMood === 'idle' && b.hopAt < 0 ? t - b.fidgetAt : Infinity;
   const exam = b.fidget === 'examine' ? fidgetTime : Infinity;
@@ -970,7 +1021,7 @@ function tick(b, t, dt, focal) {
   const slide = fidgetEase(exam, 0.14, 0.46) * (1 - fidgetEase(exam, 1.17, 1.58));
   const readingX = lerp(-0.26, 0.26, fidgetEase(exam, 0.4, 0.97));
   s.inspect += (b.fidgetSide * tilt - s.inspect) * ease(24, dt);
-  s.glassesDown += (slide - s.glassesDown) * ease(20, dt);
+  s.glassesDown += (Math.max(slide, face ? face.F.shades * face.w : 0) - s.glassesDown) * ease(20, dt);
   s.wink = b.fidget === 'wink' && fidgetTime < 0.28
     ? b.fidgetSide * fidgetEase(fidgetTime, 0, 0.09) * (1 - fidgetEase(fidgetTime, 0.09, 0.28)) : 0;
   const previousLookY = s.ly;
@@ -979,10 +1030,14 @@ function tick(b, t, dt, focal) {
   // Its expression: soft and a little pleading at rest, wide-eyed with big pupils when your pointer
   // has its interest, and intent while it works.
   const interested = t < b.attnUntil;
-  const [lidTo, slantTo, pupilTo] = botMood === 'working' ? [0.55, -0.15, 0.34] : interested ? [0.9, 0.08, 0.46] : [0.72, 0.22, 0.40];
-  s.lidTop += (lidTo - s.lidTop) * ease(5, dt);
-  s.lidSlant += (slantTo - s.lidSlant) * ease(5, dt);
-  s.pupil += (pupilTo - s.pupil) * ease(4, dt);
+  let [lidTo, slantTo, pupilTo] = botMood === 'working' ? [0.55, -0.15, 0.34] : interested ? [0.9, 0.08, 0.46] : rest;
+  if (face) {
+    lidTo = lerp(lidTo, face.F.lid, face.w); slantTo = lerp(slantTo, face.F.slant, face.w); pupilTo = lerp(pupilTo, face.F.pupil, face.w);
+  }
+  const faceRate = face ? 3 : 1;  // a face snaps on; moods drift
+  s.lidTop += (lidTo - s.lidTop) * ease(5 * faceRate, dt);
+  s.lidSlant += (slantTo - s.lidSlant) * ease(5 * faceRate, dt);
+  s.pupil += (pupilTo - s.pupil) * ease(4 * faceRate, dt);
 
   if (!asleep && t > b.nextBlink) {
     b.blinkAt = t;
@@ -1013,21 +1068,36 @@ function tick(b, t, dt, focal) {
   const vy = dt > 0 ? (hop - b.prevHop) / dt : 0;
   b.prevHop = hop;
   // The body leans and turns toward where the eyes look, a beat behind them.
-  const leanTo = asleep ? 0 : s.lx * 0.09 + hopLean;
+  let leanTo = asleep ? 0 : s.lx * 0.09 + hopLean;
+  if (face) {
+    // angry trembles; scary shakes its head hard, settling as the roar runs out
+    const decay = face.F === FACES.scary ? Math.max(0, 1 - face.e / 1.3) : 1;
+    leanTo += face.F.shake * face.w * decay * Math.sin(t * face.F.shakeHz);
+    if (face.F === FACES.scary) s.squash -= 0.05 * face.w;  // puffs itself up taller
+    if (face.F.talk) s.squash -= 0.03 * face.w * Math.abs(Math.sin(t * 4.3));  // jabs on each word
+  }
   for (let left = dt; left > 0; left -= 1 / 60) {
     const h = Math.min(left, 1 / 60);
     s.leanV += (-70 * (s.lean - leanTo) - 11 * s.leanV) * h;
     s.lean += s.leanV * h;
   }
   // The nose follows the crouch and lift, and the smile follows the landing.
-  s.nose += (0.055 * s.wide - 0.095 * s.squint + 0.031 * s.joy - 0.018 * peek - s.nose) * ease(17, dt);
-  s.smile += (0.09 * s.joy + 0.035 * Math.abs(s.wink) + 0.023 * peek - s.smile) * ease(13, dt);
+  s.nose += (0.055 * s.wide - 0.095 * s.squint + 0.031 * s.joy - 0.018 * peek + rest[4] - s.nose) * ease(17, dt);
+  s.smile += (0.09 * s.joy + 0.035 * Math.abs(s.wink) + 0.023 * peek + rest[3] - s.smile) * ease(13, dt);
   const allFrom = s.leanAll;
   s.leanAll = s.lean + s.inspect * 0.08;
   const vx = dt > 0 ? (s.leanAll - allFrom) / dt * 0.8 : 0;
   const pitchSpeed = dt > 0 ? (s.ly - previousLookY) * 0.12 / dt : 0;
   const turnOpening = asleep ? 0 : clampN((Math.hypot(vx * 4, pitchSpeed) - 0.1) * 0.32, 0, 0.4);
   s.mouth += (Math.max(0.65 * s.wide, turnOpening) - s.mouth) * ease(15, dt);
+  s.teeth = (s.teeth || 0) + ((face ? (face.F.teeth || 0) * face.w : 0) - (s.teeth || 0)) * ease(18, dt);
+  if (face) {
+    const roar = face.F === FACES.scary ? 0.85 + 0.15 * Math.sin(t * 30) : 1;  // the roar flutters
+    s.smile = lerp(s.smile, face.F.smile, face.w);
+    s.nose = lerp(s.nose, face.F.nose, face.w);
+    const talking = face.F.talk ? face.F.talk * Math.abs(Math.sin(t * 8.6)) : 0;  // syllables
+    s.mouth = lerp(s.mouth, face.F.mouth * roar + talking, face.w);
+  }
   // The body's acceleration drives the GPU hair; the WebGL swing follows its velocity.
   const px = s.leanAll * 1.5 * 2, py = hop * 2.4;  // where the head is, in model units
   const pvx = dt > 0 ? (px - b.ppx) / dt : 0, pvy = dt > 0 ? (py - b.ppy) / dt : 0;
@@ -1057,6 +1127,14 @@ function still(b) {  // reduced motion: one pose per mood, no wandering
   b.chains = null;  // chains hang at rest
   if (b.previewExpression === 'wink') Object.assign(b.s, { wink: 1, smile: 0.035 });
   if (b.previewExpression === 'examine') Object.assign(b.s, { lx: 0, ly: -0.78, inspect: 0.65, glassesDown: 0.85, nose: -0.018, smile: 0.023 });
+  const F = FACES[b.previewExpression];
+  b.s.teeth = F ? F.teeth || 0 : 0;
+  if (F) Object.assign(b.s, { lidTop: F.lid, lidSlant: F.slant, pupil: F.pupil, smile: F.smile, nose: F.nose, mouth: F.mouth, glassesDown: F.shades,
+    lx: F.gaze ? F.gaze[0] : 0, ly: F.gaze ? F.gaze[1] : 0.22 });
+  // reduced motion still shows its resting temper
+  const rest = TEMPERS[window.companionBotAppearance.forHost(b.host).personality.temper];
+  if (!F && !zz && mood !== 'working' && rest && !b.previewExpression)
+    Object.assign(b.s, { lidTop: rest[0], lidSlant: rest[1], pupil: rest[2], smile: rest[3], nose: rest[4] });
 }
 const shown = (b) => b.host.getClientRects().length > 0;  // false inside a hidden view
 
@@ -1255,13 +1333,21 @@ window.companionBot = {
   },
   express(host, expression) {
     const b = host?.bot;
-    if (!b || !['wink', 'examine', 'neutral'].includes(expression)) return false;
+    if (!b || !['wink', 'examine', 'neutral', ...Object.keys(FACES)].includes(expression)) return false;
     b.previewExpression = reduce.matches && expression !== 'neutral' ? expression : null;
     if (reduce.matches || expression === 'neutral') {
       b.fidget = null;
+      b.face = null;
       still(b);
+    } else if (FACES[expression]) {
+      const t = performance.now() / 1000;
+      b.face = { kind: expression, at: t, side: Math.random() < 0.5 ? -1 : 1 };
+      b.fidget = null; b.hopAt = -1; b.poke = false;
+      b.nextFidget = t + rand(9, 16);
+      tick(b, t, 1 / 60, false);
     } else {
       const t = performance.now() / 1000;
+      b.face = null;
       // Paint a recognizable first pose on tap, even when the phone's next frame is delayed.
       b.fidget = expression; b.fidgetAt = t - (expression === 'wink' ? 0.09 : 0.3); b.hopAt = -1; b.poke = false;
       b.blinkAt = -9;
